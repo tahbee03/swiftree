@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Post from "../components/Post";
+import PostForm from "../components/PostForm";
 
 export default function Home() {
     const [posts, setPosts] = useState(null);
@@ -23,6 +24,7 @@ export default function Home() {
 
     return (
         <div className="container">
+            <PostForm />
             <div className="posts">
                 {posts && posts.map((post) => (
                     <Post key={post._id} post={post} />
