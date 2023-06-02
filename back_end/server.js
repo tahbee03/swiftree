@@ -1,6 +1,7 @@
 require("dotenv").config(); // Connect environment variables from .env file to process.env object
 const express = require("express"); // Include Express.js package
-const posts_api = require("./routes/posts_api"); // Include routes for application
+const posts_api = require("./routes/posts_api"); // Include API routes for posts
+const users_api = require("./routes/users_api"); // Include API routes for users 
 const mongoose = require("mongoose"); // Include Mongoose library
 
 const app = express(); // Instantiate Express.js app
@@ -15,6 +16,8 @@ app.get("/", (req, res) => {
 
 // Allows the app to use the routes defined in posts_api.js
 app.use("/api/posts", posts_api);
+
+app.use("/api/users", users_api);
 
 // Connect to database
 mongoose.connect(process.env.MONGO_URI)

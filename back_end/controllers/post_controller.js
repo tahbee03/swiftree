@@ -23,13 +23,13 @@ const getPost = async (req, res) => {
 
 // Create new post
 const createPost = async (req, res) => {
-    const {id, author, content} = req.body;
+    const {author, content} = req.body;
 
     try {
-        const post = await Post.create({id, author, content}); // Create a new entry
+        const post = await Post.create({author, content}); // Create a new entry
         res.status(200).json(post);
     } catch(err) {
-        res.status(400).json({error: err.message});
+        res.status(400).json({error: err});
     }
 };
 
