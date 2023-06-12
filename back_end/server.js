@@ -8,15 +8,13 @@ const app = express(); // Instantiate Express.js app
 
 app.use(express.json()); // ???
 
-app.get("/", (req, res) => {
-    // req -> request to endpoint
-    // res -> response from server
-    res.json({msg: "Welcome!"});
-});
+// req -> request to endpoint
+// res -> response from server
 
-// Allows the app to use the routes defined in posts_api.js
+// Routes for post API
 app.use("/api/posts", posts_api);
 
+// Routes for user API
 app.use("/api/users", users_api);
 
 // Connect to database

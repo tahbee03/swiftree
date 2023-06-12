@@ -1,6 +1,7 @@
 const User = require("../models/User")
 const mongoose = require("mongoose");
 
+// Get all users
 const getUsers = async (req, res) => {
     const users = await User.find({}).sort({createdAt: -1});
 
@@ -8,6 +9,7 @@ const getUsers = async (req, res) => {
     else res.status(200).json(users);
 };
 
+// Get specific user
 const getUser = async (req, res) => {
     const {id} = req.params;
 
@@ -19,7 +21,13 @@ const getUser = async (req, res) => {
     else res.status(200).json(user);
 };
 
-const createUser = async (req, res) => {
+/// Login functionality
+const userLogin = async (req, res) => {
+    // TODO: Implement
+};
+
+// Sign up functionality
+const userSignUp = async (req, res) => {
     const {email, username, password, currentUser} = req.body;
 
     try {
@@ -30,6 +38,7 @@ const createUser = async (req, res) => {
     }
 };
 
+// Update specific user
 const updateUser = async (req, res) => {
     const {id} = req.params;
     if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: "No such user!"});
@@ -39,6 +48,7 @@ const updateUser = async (req, res) => {
     else res.status(200).json(user);
 };
 
+// Delete specific user
 const deleteUser = async (req, res) => {
     const {id} = req.params;
 
@@ -50,4 +60,9 @@ const deleteUser = async (req, res) => {
     else res.status(200).json(user);
 };
 
-module.exports = {getUsers, getUser, createUser, updateUser, deleteUser};
+// TODO: Create and export controller functions for login and sign up functionalities
+// TODO: Hash passwords in sign up functionality with bcrypt
+// TODO: Implement input validation for login and sign up functionalities
+
+// Export functions to be used in other modules
+module.exports = {getUsers, getUser, userLogin, userSignUp, updateUser, deleteUser};

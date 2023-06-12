@@ -15,4 +15,4 @@ router.post("/", createPost);
 // Delete specific post
 router.delete("/:id", deletePost);
 
-module.exports = router; // Export the router so that if can be used in server.js
+module.exports = router; // Export the router so that it can be used in server.js
