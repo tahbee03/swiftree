@@ -1,4 +1,5 @@
 import "./Post.css";
+import format from "date-fns/format";
 
 export default function Post({ post }) {
     async function handleClick(id) {
@@ -12,8 +13,8 @@ export default function Post({ post }) {
         <div className="post">
             <p className="content">{post.content}</p>
             <p className="author">{post.author}</p>
-            <p className="date">{post.createdAt}</p>
+            <p className="date">{`Posted on ${format(new Date(post.createdAt), "MM/dd/yyyy")}`}</p>
             <img src="/delete_icon.png" alt="delete" onClick={() => handleClick(post._id)} />
         </div>
     );
-} 
+}

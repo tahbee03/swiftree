@@ -1,4 +1,6 @@
+import "./Home.css";
 import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 import Post from "../components/Post";
 import PostForm from "../components/PostForm";
 
@@ -23,13 +25,16 @@ export default function Home() {
     console.log(posts);
 
     return (
-        <div className="container">
-            <PostForm />
-            <div className="posts">
-                {posts && posts.map((post) => (
-                    <Post key={post._id} post={post} />
-                ))}
+        <>
+            <Navbar />
+            <div className="container">
+                <PostForm />
+                <div className="posts">
+                    {posts && posts.map((post) => (
+                        <Post key={post._id} post={post} />
+                    ))}
+                </div>
             </div>
-        </div>
+        </>
     );
 }

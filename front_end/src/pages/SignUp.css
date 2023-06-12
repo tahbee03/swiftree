@@ -1,0 +1,21 @@
+html, body {
+    height: 100%;
+}
+
+.sign-up-main {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 60%;
+    height: 80%;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 25px;
+
+    color: #e1efe6;
+}
