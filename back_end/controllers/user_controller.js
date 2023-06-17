@@ -1,5 +1,11 @@
-const User = require("../models/User")
+const User = require("../models/User");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
+const createToken = (id, email, username) => {
+    return jwt.sign({id, email, username}, process.env.TOKEN_SECRET, { expiresIn: "1d" }); // payload | secret | options
+};
 
 // Get all users
 const getUsers = async (req, res) => {
@@ -23,17 +29,45 @@ const getUser = async (req, res) => {
 
 /// Login functionality
 const userLogin = async (req, res) => {
-    // TODO: Implement
+    const {username, password} = req.body;
+
+    try {
+        const user = await User.findOne({username});
+        if(!user) throw Error("Username not found!");
+
+        const match = await bcrypt.compare(password, user.password);
+        if(!match) throw Error("Incorrect password!");
+        
+        const token = createToken(user._id, user.email, user.username);
+        res.status(200).json({token});
+
+    } catch(err) {
+        res.status(400).json({error: err.message});
+    }
+
 };
 
 // Sign up functionality
 const userSignUp = async (req, res) => {
-    const {email, username, password, currentUser} = req.body;
+    const {email, username, password} = req.body;
+
+    const ematch = await User.find({email});
+    // console.log(ematch);
+    if(ematch.length != 0) return res.status(400).json({error: "Email already in use!"});
+
+    const umatch = await User.find({username});
+    // console.log(umatch);
+    if(umatch.length != 0) return res.status(400).json({error: "Username already in use!"})
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
 
     try {
-        const user = await User.create({email, username, password, currentUser});
-        res.status(200).json(user);
+        const user = await User.create({email, username, password: hash});
+        const token = createToken(user._id, user.email, user.username);
+        res.status(200).json({token});
     } catch(err) {
+        console.log(err.message);
         res.status(400).json({error: err});
     }
 };
