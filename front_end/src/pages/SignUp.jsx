@@ -1,12 +1,15 @@
 import "./SignUp.css";
 import { useState } from "react";
 import { useSignUp } from "../context_and_hooks/useSignUp";
+import { useNavigate } from "react-router-dom";
 
 export default function SignUp() {
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const { signUp, error, isLoading } = useSignUp();
+    const [error, setError] = useState(null);
+    const { signUp, isLoading } = useSignUp();
+    const navigate = useNavigate();
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -14,8 +17,9 @@ export default function SignUp() {
         // console.log(`${email} | ${username} | ${password}`);
         try {
             await signUp(email, username, password);
+            navigate("/");
         } catch (err) {
-            console.log(err);
+            setError(err.message);
         }
     }
 

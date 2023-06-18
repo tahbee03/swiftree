@@ -39,7 +39,7 @@ const userLogin = async (req, res) => {
         if(!match) throw Error("Incorrect password!");
         
         const token = createToken(user._id, user.email, user.username);
-        res.status(200).json({token});
+        res.status(200).json({username, token});
 
     } catch(err) {
         res.status(400).json({error: err.message});
@@ -65,7 +65,7 @@ const userSignUp = async (req, res) => {
     try {
         const user = await User.create({email, username, password: hash});
         const token = createToken(user._id, user.email, user.username);
-        res.status(200).json({token});
+        res.status(200).json({username, token});
     } catch(err) {
         console.log(err.message);
         res.status(400).json({error: err});
