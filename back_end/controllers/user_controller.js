@@ -16,7 +16,7 @@ const getUsers = async (req, res) => {
 };
 
 // Get specific user
-const getUser = async (req, res) => {
+const getUserByID = async (req, res) => {
     const {id} = req.params;
 
     if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: "No such user!"});
@@ -26,6 +26,19 @@ const getUser = async (req, res) => {
     if(!user) res.status(404).json({error: "No such user!"});
     else res.status(200).json(user);
 };
+
+// Get specific user (via username)
+const getUserByName = async (req, res) => {
+    const {username} = req.params;
+
+    try {
+        const user = await User.findOne({username});
+        if(!user) throw Error(`The user '${username}' does not exist!`);
+        else res.status(200).json({user});
+    } catch(err) {
+        res.status(404).json({error: err.message});
+    }
+}
 
 /// Login functionality
 const userLogin = async (req, res) => {
@@ -94,9 +107,5 @@ const deleteUser = async (req, res) => {
     else res.status(200).json(user);
 };
 
-// TODO: Create and export controller functions for login and sign up functionalities
-// TODO: Hash passwords in sign up functionality with bcrypt
-// TODO: Implement input validation for login and sign up functionalities
-
 // Export functions to be used in other modules
-module.exports = {getUsers, getUser, userLogin, userSignUp, updateUser, deleteUser};
+module.exports = {getUsers, getUserByID, getUserByName, userLogin, userSignUp, updateUser, deleteUser};

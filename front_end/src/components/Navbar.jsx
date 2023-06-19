@@ -1,6 +1,15 @@
 import "./Navbar.css";
+import { useAuthContext } from "../context_and_hooks/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+    const { user } = useAuthContext();
+    const navigate = useNavigate();
+
+    function handleLogin() {
+        navigate("/login");
+    }
+
     return (
         <nav className="navbar">
             <div className="container-fluid">
@@ -10,9 +19,14 @@ export default function Navbar() {
                 <a href="/">
                     <h1>swiftree</h1>
                 </a>
-                <a href="/profile">
-                    <img src="/account_icon.png" alt="account" className="nav-icon" />
-                </a>
+                {user && (
+                    <a href={`/profile/${user.username}`}>
+                        <img src="/account_icon.png" alt="account" className="nav-icon" />
+                    </a>
+                )}
+                {!user && (
+                    <button onClick={handleLogin}>Log In</button>
+                )}
             </div>
         </nav>
     );
