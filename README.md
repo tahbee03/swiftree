@@ -3,29 +3,5 @@
 ## Description
 ...
 
-Run Front-End Server: `npm start`  
-Run Back-End Server: `npm run dev`
-
 ## Project Layout
-```
-swiftree/
-|-- back_end/ # Node.js + Express.js back-end
-|   |-- controllers/ # Functionality for HTTP requests
-|   |-- models/ # Schemas for database collections
-|   |-- routes/ # Routes for API
-|   |-- package-lock.json
-|   |-- package.json # Dependencies + scripts
-|   |-- server.js # Main back-end file
-|-- front_end/ # React.js front-end
-|   |-- public/ # Resources
-|   |-- src/ # Source code
-|   |   |-- components/ # Reusable components
-|   |   |-- pages/ # Content for webpages
-|   |   |-- App.jsx # App file
-|   |   |-- index.css
-|   |   |-- index.jsx # Main front-end file
-|   |-- package-lock.json
-|   |-- package.json # Dependencies + scripts
-|-- .gitignore
-|-- README.md
-```
+...
