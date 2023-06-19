@@ -33,6 +33,17 @@ const createPost = async (req, res) => {
     }
 };
 
+// Update specific post
+const updatePost = async (req, res) => {
+    const {id} = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: "No such post!"});
+    
+    const post = await Post.findByIdAndUpdate({_id: id}, {...req.body});
+    if(!post) res.status(404).json({error: "No such post!"});
+    else res.status(200).json(post);
+};
+
 // Delete specific post
 const deletePost = async (req, res) => {
     const {id} = req.params;
@@ -46,4 +57,4 @@ const deletePost = async (req, res) => {
 };
 
 // Export functions to be used in other modules
-module.exports = {getPosts, getPost, createPost, deletePost};
+module.exports = {getPosts, getPost, createPost, updatePost, deletePost};
