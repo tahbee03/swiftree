@@ -34,7 +34,7 @@ const getUserByName = async (req, res) => {
     try {
         const user = await User.findOne({username});
         if(!user) throw Error(`The user '${username}' does not exist!`);
-        else res.status(200).json({user});
+        else res.status(200).json(user);
     } catch(err) {
         res.status(404).json({error: err.message});
     }
