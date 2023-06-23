@@ -21,7 +21,7 @@ export function useSignUp() {
             // setError(data.error);
             throw Error(data.error);
         } else {
-            localStorage.setItem("user", JSON.stringify(data)); // Store user in browser local storage
+            sessionStorage.setItem("user", JSON.stringify(data)); // Store user in browser local storage
             dispatch({type: "LOGIN", payload: data}); // Dispatch login action and update AuthContext
             setIsLoading(false);
         }
