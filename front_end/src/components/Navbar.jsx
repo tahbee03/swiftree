@@ -21,7 +21,10 @@ export default function Navbar() {
                 </a>
                 {user && (
                     <a href={`/profile/${user.username}`}>
-                        <img src="/account_icon.png" alt="account" className="nav-icon" />
+                        <div id="profile-link">
+                            <p>{user.username}</p>
+                            <img src="/account_icon.png" alt="account" className="nav-icon" />
+                        </div>
                     </a>
                 )}
                 {!user && (
