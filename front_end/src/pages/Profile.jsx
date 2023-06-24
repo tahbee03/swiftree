@@ -13,7 +13,7 @@ export default function Profile() {
     const { user } = useAuthContext();
     const navigate = useNavigate();
     const [error, setError] = useState(null);
-    const [posts, setPosts] = useState(null);
+    const [posts, setPosts] = useState([]);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -22,23 +22,18 @@ export default function Profile() {
                 const userData = await userRes.json();
 
                 if (!userRes.ok) throw Error(userData.error);
-                // console.log(`error: ${error}`);
 
                 const postRes = await fetch("/api/posts");
                 const postData = await postRes.json();
-
-                console.log(postData);
 
                 if (postRes.ok) setPosts(postData.filter((post) => post.author === username));
                 else throw Error(postData.error);
             } catch (err) {
                 setError(err.message);
-                // console.log(`error: ${error}`);
             }
         };
 
         fetchUser();
-        // console.log(posts);
 
     }, [username, error]);
 
@@ -50,33 +45,35 @@ export default function Profile() {
     return (
         <>
             <Navbar />
-            <div className="container">
-                {error && <div>{error}</div>}
+            <div className="container" id="profile-cont">
+                {error && (
+                    <div>{error}</div>
+                )}
                 {!error && (
-                    <p>Profile page for: <b>{username}</b></p>
-                )}
-                {user && (user.username === username) && (
-                    <>
-                        <hr />
-                        <button onClick={handleLogout}>Log Out</button>
-                        <PostForm />
-                    </>
-                )}
-                {!error && posts && (
-                    <>
-                        <hr />
-                        <h3>User Posts</h3>
-                        {posts.map((post) => (
-                            <Post key={post._id} post={post} />
-                        ))}
-                    </>
-                )}
-                {!error && !posts && (
-                    <p>This user has no posts!</p>
+                    <div className="row">
+                        <div className="col-3" id="info-col">
+                            <img src="/account_icon.png" alt="account pic" />
+                            <p><b>{username}</b></p>
+                            <p>{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
+                            {user && (user.username === username) && (
+                                <>
+                                    <button onClick={handleLogout} id="logout-button">Log Out</button>
+                                    <hr />
+                                    <PostForm />
+                                </>
+                            )}
+                        </div>
+                        <div className="col-8" id="posts-col">
+                            {(posts.length === 0) && (
+                                <p>This user has no posts!</p>
+                            )}
+                            {!(posts.length === 0) && posts.map((post) => (
+                                <Post key={post._id} post={post} canDelete={user && (user.username === username)} />
+                            ))}
+                        </div>
+                    </div>
                 )}
             </div>
         </>
     );
 }
-
-// Extend functionality so that user posts show on the profile page

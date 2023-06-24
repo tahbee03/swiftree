@@ -1,0 +1,41 @@
+#profile-cont {
+    height: 75vh;
+    margin-top: 5vh;
+}
+#profile-cont > .row {
+    height: 100%;
+}
+#profile-cont #info-col, #profile-cont #posts-col {
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: auto;
+    height: 100%;
+    border-radius: 15px;
+}
+#profile-cont #info-col {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    align-items: center;
+}
+#profile-cont #info-col > img {
+    border: 5px solid gray;
+    border-radius: 50%;
+    margin: 10px auto 10px auto;
+}
+#profile-cont #info-col > #logout-button {
+    width: 50%;
+    transition: 0.25s;
+}
+#profile-cont #info-col > #logout-button:hover {
+    transform: scale(0.9);
+}
+#profile-cont #info-col > hr {
+    width: 80%;
+    height: 2px;
+}
+#profile-cont #posts-col {
+    overflow-y: hidden;
+}
+#profile-cont #posts-col:hover {
+    overflow-y: auto;
+}
