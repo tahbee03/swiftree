@@ -7,6 +7,9 @@ export default function Post({ post, canDelete }) {
 
         if (res.ok) console.log("Post removed!");
         else console.log("Error removing post.");
+
+        window.location.reload();
+        // TODO: Figure out a way to re-render Profile page using React tools instead of window.location.reload();
     }
 
     return (
