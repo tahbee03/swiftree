@@ -25,7 +25,9 @@ export default function Login() {
     return (
         <main className="login-main">
             <div>
-                <h1>swiftree</h1>
+                <a href="/">
+                    <h1>swiftree</h1>
+                </a>
                 <h2>Login</h2>
                 <form className="login-form" onSubmit={handleSubmit}>
                     <div className="form-item">

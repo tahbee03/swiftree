@@ -26,7 +26,9 @@ export default function SignUp() {
     return (
         <main className="sign-up-main">
             <div>
-                <h1>swiftree</h1>
+                <a href="/">
+                    <h1>swiftree</h1>
+                </a>
                 <h2>Sign Up</h2>
                 <form className="sign-up-form" onSubmit={handleSubmit}>
                     <div className="form-item">
