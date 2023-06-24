@@ -4,3 +4,27 @@
     padding: 10px;
     border-radius: 10px;
 }
+
+.info-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.icon-section {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+
+#delete-icon {
+    transition: 0.25s;
+    height: 50%;
+}
+#delete-icon:hover {
+    transform: scale(0.75);
+    cursor: pointer;
+    filter: invert(21%) sepia(100%) saturate(10000%) brightness(75%);
+}
+
+/* https://stackoverflow.com/questions/64476753/how-to-convert-black-image-to-red-color-image-using-css3-filter */
