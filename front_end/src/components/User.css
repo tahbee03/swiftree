@@ -1,0 +1,11 @@
+.user {
+    background-color: #d6d6d6;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    transition: 0.25s;
+}
+
+a .user:hover {
+    transform: scale(0.9);
+}
