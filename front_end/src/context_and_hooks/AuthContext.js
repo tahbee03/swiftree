@@ -10,6 +10,8 @@ export function authReducer(state, action) {
             return { user: action.payload };
         case "LOGOUT":
             return { user: null };
+        case "UPDATE":
+            return { user: action.payload };
         default:
             return state;
     }

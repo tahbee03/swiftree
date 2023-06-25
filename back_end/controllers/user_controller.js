@@ -28,6 +28,7 @@ const getUserByID = async (req, res) => {
 };
 
 // Get specific user (via username)
+// TODO: Remove and refactor (since it's not really necessary)
 const getUserByName = async (req, res) => {
     const {username} = req.params;
 
@@ -52,7 +53,7 @@ const userLogin = async (req, res) => {
         if(!match) throw Error("Incorrect password!");
         
         const token = createToken(user._id, user.email, user.username);
-        res.status(200).json({username, token});
+        res.status(200).json({username, posts: user.posts, token});
 
     } catch(err) {
         res.status(400).json({error: err.message});
@@ -78,7 +79,7 @@ const userSignUp = async (req, res) => {
     try {
         const user = await User.create({email, username, password: hash});
         const token = createToken(user._id, user.email, user.username);
-        res.status(200).json({username, token});
+        res.status(200).json({username, posts: user.posts, token});
     } catch(err) {
         console.log(err.message);
         res.status(400).json({error: err});
@@ -89,6 +90,8 @@ const userSignUp = async (req, res) => {
 const updateUser = async (req, res) => {
     const {id} = req.params;
     if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: "No such user!"});
+
+    console.log(req.body);
     
     const user = await User.findByIdAndUpdate({_id: id}, {...req.body});
     if(!user) res.status(404).json({error: "No such user!"});

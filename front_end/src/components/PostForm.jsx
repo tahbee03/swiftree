@@ -4,7 +4,7 @@ import { useAuthContext } from "../context_and_hooks/AuthContext";
 export default function PostForm() {
     const [content, setContent] = useState("");
     const [error, setError] = useState(null);
-    const { user } = useAuthContext();
+    const { user, dispatch } = useAuthContext();
 
     async function handleSubmit(e) {
         e.preventDefault(); // No refresh on submit
@@ -12,18 +12,48 @@ export default function PostForm() {
         const post = { author: user.username, content };
 
         // Create new post
-        const res = await fetch("/api/posts", {
+        const postRes = await fetch("/api/posts", {
             method: "POST",
             body: JSON.stringify(post),
             headers: { "Content-Type": "application/json" }
         });
-        const data = await res.json();
+        const postData = await postRes.json();
 
-        if (!res.ok) setError(data.error);
+        if (!postRes.ok) setError(postData.error);
         else {
             console.log("Post added!");
             setContent("");
             setError(null);
+        }
+
+        // console.log(postData);
+
+        // Update user info
+        const users = await (await fetch("/api/users")).json();
+        // console.log(users);
+
+        const match = users.filter((u) => u.username === user.username);
+        console.log(match);
+
+        let userPosts = match[0].posts;
+        // console.log(userPosts);
+
+        userPosts.push(postData._id);
+        console.log(JSON.stringify({ posts: userPosts }));
+
+        const userRes = await fetch(`/api/users/${match[0]._id}`, {
+            method: "PATCH",
+            body: JSON.stringify({ posts: userPosts }),
+            headers: { "Content-Type": "application/json" }
+        });
+        const userData = await userRes.json();
+
+        if (!userRes.ok) setError(userData.error);
+        else {
+            console.log("User updated!");
+            console.log(userData);
+            dispatch({ type: "UPDATE", payload: { username: user.username, posts: userPosts, token: user.token } });
+            sessionStorage.setItem("user", JSON.stringify({ username: user.username, posts: userPosts, token: user.token }));
         }
 
         window.location.reload();
