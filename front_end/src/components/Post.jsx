@@ -1,8 +1,36 @@
 import "./Post.css";
 import format from "date-fns/format";
+import { useState } from "react";
+import { useAuthContext } from "../context_and_hooks/AuthContext";
 
 export default function Post({ post, canDelete }) {
+    const [error, setError] = useState(null);
+    const { user, dispatch } = useAuthContext();
+
     async function handleClick(id) {
+
+        // Update user info
+        const users = await (await fetch("/api/users")).json();
+        const match = users.filter((u) => u.username === user.username);
+        let userPosts = match[0].posts;
+        userPosts.splice(userPosts.indexOf(id), 1);
+
+        const userRes = await fetch(`/api/users/${match[0]._id}`, {
+            method: "PATCH",
+            body: JSON.stringify({ posts: userPosts }),
+            headers: { "Content-Type": "application/json" }
+        });
+        const userData = await userRes.json();
+
+        if (!userRes.ok) setError(userData.error);
+        else {
+            console.log("User updated!");
+            console.log(userData);
+            dispatch({ type: "UPDATE", payload: { username: user.username, posts: userPosts, token: user.token } });
+            sessionStorage.setItem("user", JSON.stringify({ username: user.username, posts: userPosts, token: user.token }));
+        }
+
+        // Delete post
         const res = await fetch(`/api/posts/${id}`, { method: "DELETE" });
 
         if (res.ok) console.log("Post removed!");

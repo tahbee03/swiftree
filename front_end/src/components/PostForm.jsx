@@ -26,20 +26,14 @@ export default function PostForm() {
             setError(null);
         }
 
-        // console.log(postData);
-
         // Update user info
         const users = await (await fetch("/api/users")).json();
-        // console.log(users);
 
         const match = users.filter((u) => u.username === user.username);
-        console.log(match);
 
         let userPosts = match[0].posts;
-        // console.log(userPosts);
 
         userPosts.push(postData._id);
-        console.log(JSON.stringify({ posts: userPosts }));
 
         const userRes = await fetch(`/api/users/${match[0]._id}`, {
             method: "PATCH",
