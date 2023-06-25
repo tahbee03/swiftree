@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuthContext } from "../context_and_hooks/AuthContext";
+import "./PostForm.css";
 
 export default function PostForm() {
     const [content, setContent] = useState("");

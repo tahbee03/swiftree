@@ -5,6 +5,7 @@ import { useLogout } from "../context_and_hooks/useLogout";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import PostForm from "../components/PostForm";
+import PictureForm from "../components/PictureForm";
 import Post from "../components/Post";
 
 export default function Profile() {
@@ -14,6 +15,7 @@ export default function Profile() {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [posts, setPosts] = useState([]);
+    const [showForm, setShowForm] = useState(null);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -57,9 +59,20 @@ export default function Profile() {
                             <p>{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
                             {user && (user.username === username) && (
                                 <>
-                                    <button onClick={handleLogout} id="logout-button">Log Out</button>
-                                    <hr />
-                                    <PostForm />
+                                    <button type="button" onClick={() => setShowForm("post-form")}>Make New Post</button>
+                                    <button type="button" onClick={() => setShowForm("pfp-form")}>Change Profile Picture</button>
+                                    <button type="button" onClick={handleLogout}>Log Out</button>
+                                    {showForm && (
+                                        <>
+                                            <hr />
+                                            {(showForm === "post-form") && (
+                                                <PostForm />
+                                            )}
+                                            {(showForm === "pfp-form") && (
+                                                <PictureForm />
+                                            )}
+                                        </>
+                                    )}
                                 </>
                             )}
                         </div>

@@ -22,11 +22,11 @@
     border-radius: 50%;
     margin: 10px auto 10px auto;
 }
-#profile-cont #info-col > #logout-button {
-    width: 50%;
+#profile-cont #info-col > button {
+    width: 70%;
     transition: 0.25s;
 }
-#profile-cont #info-col > #logout-button:hover {
+#profile-cont #info-col > button:hover {
     transform: scale(0.9);
 }
 #profile-cont #info-col > hr {
