@@ -46,12 +46,18 @@ export default function PostForm() {
         if (!userRes.ok) setError(userData.error);
         else {
             console.log("User updated!");
-            console.log(userData);
-            dispatch({ type: "UPDATE", payload: { username: user.username, posts: userPosts, token: user.token } });
-            sessionStorage.setItem("user", JSON.stringify({ username: user.username, posts: userPosts, token: user.token }));
+
+            const payload = {
+                username: user.username,
+                pfp: user.pfp,
+                posts: userPosts,
+                token: user.token
+            };
+            dispatch({ type: "UPDATE", payload });
+            sessionStorage.setItem("user", JSON.stringify(payload));
+            window.location.reload();
         }
 
-        window.location.reload();
         // TODO: Figure out a way to re-render Profile page using React tools instead of window.location.reload();
     }
 

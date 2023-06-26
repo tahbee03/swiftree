@@ -6,7 +6,7 @@ const mongoose = require("mongoose"); // Include Mongoose library
 
 const app = express(); // Instantiate Express.js app
 
-app.use(express.json()); // ???
+app.use(express.json({limit: "100MB"})); // Custom request body size (to process larger files)
 
 // req -> request to endpoint
 // res -> response from server

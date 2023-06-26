@@ -2,6 +2,11 @@
     max-height: 50px;
 }
 
+#pfp {
+    border: 5px solid gray;
+    border-radius: 50%;
+}
+
 a {
     text-decoration: none;
     color: black;

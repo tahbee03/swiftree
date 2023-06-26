@@ -15,6 +15,7 @@ export default function Profile() {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [posts, setPosts] = useState([]);
+    const [picture, setPicture] = useState("");
     const [showForm, setShowForm] = useState(null);
 
     useEffect(() => {
@@ -24,6 +25,8 @@ export default function Profile() {
                 const userData = await userRes.json();
 
                 if (!userRes.ok) throw Error(userData.error);
+
+                setPicture(userData.image.url);
 
                 const postRes = await fetch("/api/posts");
                 const postData = await postRes.json();
@@ -37,7 +40,7 @@ export default function Profile() {
 
         fetchUser();
 
-    }, [username, error]);
+    }, [username, error, picture]);
 
     function handleLogout() {
         logout();
@@ -54,7 +57,12 @@ export default function Profile() {
                 {!error && (
                     <div className="row">
                         <div className="col-3" id="info-col">
-                            <img src="/account_icon.png" alt="account pic" />
+                            {(picture === "") && (
+                                <img src="/account_icon.png" alt="account pic" />
+                            )}
+                            {!(picture === "") && (
+                                <img src={picture} alt="account pic" />
+                            )}
                             <p><b>{username}</b></p>
                             <p>{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
                             {user && (user.username === username) && (

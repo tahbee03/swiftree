@@ -2,6 +2,7 @@ const User = require("../models/User");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const cloudinary = require("../cloudinary");
 
 const createToken = (id, email, username) => {
     return jwt.sign({id, email, username}, process.env.TOKEN_SECRET, { expiresIn: "1d" }); // payload | secret | options
@@ -53,7 +54,7 @@ const userLogin = async (req, res) => {
         if(!match) throw Error("Incorrect password!");
         
         const token = createToken(user._id, user.email, user.username);
-        res.status(200).json({username, posts: user.posts, token});
+        res.status(200).json({username, pfp: user.image.url, posts: user.posts, token}); // Return data to be used in hooks
 
     } catch(err) {
         res.status(400).json({error: err.message});
@@ -77,9 +78,9 @@ const userSignUp = async (req, res) => {
     const hash = await bcrypt.hash(password, salt);
 
     try {
-        const user = await User.create({email, username, password: hash});
+        const user = await User.create({email, username, password: hash, image: {public_id: "", url: ""}});
         const token = createToken(user._id, user.email, user.username);
-        res.status(200).json({username, posts: user.posts, token});
+        res.status(200).json({username, pfp: user.image.url, posts: user.posts, token}); // Return data to be used in hooks
     } catch(err) {
         console.log(err.message);
         res.status(400).json({error: err});
@@ -91,7 +92,18 @@ const updateUser = async (req, res) => {
     const {id} = req.params;
     if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: "No such user!"});
 
-    console.log(req.body);
+    if(req.body.image) {
+        // Upload image to cloud
+        const cloudRes = await cloudinary.uploader.upload(req.body.image, {
+            folder: "user-pfps"
+        });
+
+        // Update image property of request body using the response from the cloud
+        req.body.image = {
+            public_id: cloudRes.public_id,
+            url: cloudRes.secure_url
+        }
+    }
     
     const user = await User.findByIdAndUpdate({_id: id}, {...req.body});
     if(!user) res.status(404).json({error: "No such user!"});

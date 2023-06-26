@@ -5,7 +5,12 @@ export default function User({ user }) {
         <a href={`/profile/${user.username}`}>
             <div className="user row">
                 <div className="col-3" id="icon-section">
-                    <img src="/account_icon.png" alt="pfp" />
+                    {(user.image.url === "") && (
+                        <img src="/account_icon.png" alt="pfp" />
+                    )}
+                    {!(user.image.url === "") && (
+                        <img src={user.image.url} alt="pfp" />
+                    )}
                 </div>
                 <div className="col-9" id="info-section">
                     <p className="username">{user.username}</p>

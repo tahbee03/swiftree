@@ -6,6 +6,12 @@
     transition: 0.25s;
 }
 
+.user img {
+    width: 100%;
+    border: 5px solid gray;
+    border-radius: 50%;
+}
+
 a .user:hover {
     transform: scale(0.9);
 }
