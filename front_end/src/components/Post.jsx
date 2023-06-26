@@ -1,10 +1,8 @@
 import "./Post.css";
 import format from "date-fns/format";
-import { useState } from "react";
 import { useAuthContext } from "../context_and_hooks/AuthContext";
 
 export default function Post({ post, canDelete }) {
-    const [error, setError] = useState(null);
     const { user, dispatch } = useAuthContext();
 
     async function handleClick(id) {
@@ -22,12 +20,18 @@ export default function Post({ post, canDelete }) {
         });
         const userData = await userRes.json();
 
-        if (!userRes.ok) setError(userData.error);
+        if (!userRes.ok) console.log(userData.error);
         else {
             console.log("User updated!");
-            console.log(userData);
-            dispatch({ type: "UPDATE", payload: { username: user.username, posts: userPosts, token: user.token } });
-            sessionStorage.setItem("user", JSON.stringify({ username: user.username, posts: userPosts, token: user.token }));
+
+            const payload = {
+                username: user.username,
+                pfp: user.pfp,
+                posts: userPosts,
+                token: user.token
+            };
+            dispatch({ type: "UPDATE", payload });
+            sessionStorage.setItem("user", JSON.stringify(payload));
         }
 
         // Delete post
