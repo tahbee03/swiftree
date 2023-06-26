@@ -93,15 +93,25 @@ const updateUser = async (req, res) => {
     if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: "No such user!"});
 
     if(req.body.image) {
-        // Upload image to cloud
-        const cloudRes = await cloudinary.uploader.upload(req.body.image, {
-            folder: "user-pfps"
-        });
+        if(req.body.image.public_id) {
+            await cloudinary.uploader.destroy(req.body.image.public_id, (result) => {
+                console.log(result);
+            });
+            req.body.image = {
+                public_id: "",
+                url: ""
+            }
+        } else {
+            // Upload image to cloud
+            const cloudRes = await cloudinary.uploader.upload(req.body.image, {
+                folder: "user-pfps"
+            });
 
-        // Update image property of request body using the response from the cloud
-        req.body.image = {
-            public_id: cloudRes.public_id,
-            url: cloudRes.secure_url
+            // Update image property of request body using the response from the cloud
+            req.body.image = {
+                public_id: cloudRes.public_id,
+                url: cloudRes.secure_url
+            }
         }
     }
     

@@ -11,7 +11,7 @@ import Post from "../components/Post";
 export default function Profile() {
     const { username } = useParams();
     const { logout } = useLogout();
-    const { user } = useAuthContext();
+    const { user, dispatch } = useAuthContext();
     const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [posts, setPosts] = useState([]);
@@ -42,6 +42,36 @@ export default function Profile() {
 
     }, [username, error, picture]);
 
+    async function handlePictureRemoval() {
+        const users = await (await fetch("/api/users")).json();
+        const match = users.filter((u) => u.username === user.username);
+
+        const userRes = await fetch(`/api/users/${match[0]._id}`, {
+            method: "PATCH",
+            body: JSON.stringify({ image: match[0].image }),
+            headers: { "Content-Type": "application/json" }
+        });
+        const userData = await userRes.json();
+
+        if (!userRes.ok) console.log(userData.error);
+        else {
+            console.log("User updated!");
+
+            const payload = {
+                username: user.username,
+                pfp: "",
+                posts: user.posts,
+                token: user.token
+            };
+            dispatch({ type: "UPDATE", payload });
+            sessionStorage.setItem("user", JSON.stringify(payload));
+            console.log(sessionStorage.getItem("user"));
+
+        }
+
+        window.location.reload();
+    }
+
     function handleLogout() {
         logout();
         navigate("/login");
@@ -69,6 +99,9 @@ export default function Profile() {
                                 <>
                                     <button type="button" onClick={() => setShowForm("post-form")}>Make New Post</button>
                                     <button type="button" onClick={() => setShowForm("pfp-form")}>Change Profile Picture</button>
+                                    {!(picture === "") && (
+                                        <button type="button" onClick={handlePictureRemoval}>Remove Profile Picture</button>
+                                    )}
                                     <button type="button" onClick={handleLogout}>Log Out</button>
                                     {showForm && (
                                         <>
