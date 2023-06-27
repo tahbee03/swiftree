@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 export default function Post({ post, canDelete }) {
     const { user, dispatch } = useAuthContext();
     const [userPic, setUserPic] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -17,6 +18,7 @@ export default function Post({ post, canDelete }) {
     }, [post.author]);
 
     async function handleClick(id) {
+        setIsLoading(true);
 
         // Update user info
         const users = await (await fetch("/api/users")).json();
@@ -56,13 +58,14 @@ export default function Post({ post, canDelete }) {
         if (res.ok) console.log("Post removed!");
         else console.log("Error removing post.");
 
+        setIsLoading(false);
         window.location.reload();
         // TODO: Figure out a way to re-render Profile page using React tools instead of window.location.reload();
     }
 
     return (
         <div className="post row">
-            <div className="col-9 info-section">
+            <div className={`col-9 info-section ${isLoading ? "loading" : ""}`}>
                 <p className="content">{post.content}</p>
                 <a href={`/profile/${post.author}`} className="author-section">
                     <img src={(userPic === "") ? "/account_icon.png" : userPic} alt="user-pfp" />
@@ -72,7 +75,14 @@ export default function Post({ post, canDelete }) {
             </div>
             <div className="col-3 icon-section">
                 {canDelete && (
-                    <img src="/delete_icon.png" alt="delete" onClick={() => handleClick(post._id)} id="delete-icon" />
+                    <>
+                        {isLoading && (
+                            <span className="spinner-border"></span>
+                        )}
+                        {!isLoading && (
+                            <img src="/delete_icon.png" alt="delete" onClick={() => handleClick(post._id)} id="delete-icon" />
+                        )}
+                    </>
                 )}
             </div>
         </div>

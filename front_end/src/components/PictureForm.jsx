@@ -20,7 +20,6 @@ export default function PictureForm() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-
         setIsLoading(true);
 
         const users = await (await fetch("/api/users")).json();
@@ -70,11 +69,10 @@ export default function PictureForm() {
             dispatch({ type: "UPDATE", payload });
             sessionStorage.setItem("user", JSON.stringify(payload));
             console.log(sessionStorage.getItem("user"));
-            setIsLoading(false);
-
         }
 
-        if (!isLoading) window.location.reload();
+        setIsLoading(false);
+        window.location.reload();
     }
 
     return (
@@ -82,7 +80,16 @@ export default function PictureForm() {
             <h3>New Profile Picture</h3>
 
             <input type="file" onChange={processImage} />
-            <button type="submit" disabled={isLoading}>Upload Picture</button>
+            <button type="submit" disabled={isLoading}>
+                {isLoading && (
+                    <span className="spinner-border"></span>
+                )}
+                {!isLoading && (
+                    <>
+                        Upload Picture
+                    </>
+                )}
+            </button>
         </form>
     );
 }

@@ -6,9 +6,11 @@ export default function PostForm() {
     const [content, setContent] = useState("");
     const [error, setError] = useState(null);
     const { user, dispatch } = useAuthContext();
+    const [isLoading, setIsLoading] = useState(false);
 
     async function handleSubmit(e) {
         e.preventDefault(); // No refresh on submit
+        setIsLoading(true);
 
         const post = { author: user.username, content };
 
@@ -60,8 +62,10 @@ export default function PostForm() {
             };
             dispatch({ type: "UPDATE", payload });
             sessionStorage.setItem("user", JSON.stringify(payload));
-            window.location.reload();
         }
+
+        setIsLoading(false);
+        window.location.reload();
 
         // TODO: Figure out a way to re-render Profile page using React tools instead of window.location.reload();
     }
@@ -72,7 +76,16 @@ export default function PostForm() {
 
             {/* <label>Content</label> */}
             <textarea onChange={(e) => setContent(e.target.value)} value={content}></textarea>
-            <button>Submit Post</button>
+            <button type="submit" disabled={isLoading}>
+                {isLoading && (
+                    <span className="spinner-border"></span>
+                )}
+                {!isLoading && (
+                    <>
+                        Submit Post
+                    </>
+                )}
+            </button>
             {error && <div>{error}</div>}
         </form>
     );

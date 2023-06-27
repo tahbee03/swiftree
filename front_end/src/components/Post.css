@@ -50,4 +50,8 @@
     filter: invert(21%) sepia(100%) saturate(10000%) brightness(75%);
 }
 
+.loading {
+    filter: blur(5px);
+}
+
 /* https://stackoverflow.com/questions/64476753/how-to-convert-black-image-to-red-color-image-using-css3-filter */

@@ -17,6 +17,7 @@ export default function Profile() {
     const [posts, setPosts] = useState([]);
     const [picture, setPicture] = useState("");
     const [showForm, setShowForm] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -43,6 +44,8 @@ export default function Profile() {
     }, [username, error, picture]);
 
     async function handlePictureRemoval() {
+        setIsLoading(true);
+
         const users = await (await fetch("/api/users")).json();
         const match = users.filter((u) => u.username === user.username);
 
@@ -75,6 +78,7 @@ export default function Profile() {
 
         }
 
+        setIsLoading(false);
         window.location.reload();
     }
 
@@ -106,7 +110,20 @@ export default function Profile() {
                                     <button type="button" onClick={() => setShowForm("post-form")}>Make New Post</button>
                                     <button type="button" onClick={() => setShowForm("pfp-form")}>Change Profile Picture</button>
                                     {!(picture === "") && (
-                                        <button type="button" onClick={handlePictureRemoval}>Remove Profile Picture</button>
+                                        <button
+                                            type="button"
+                                            onClick={handlePictureRemoval}
+                                            disabled={isLoading}
+                                        >
+                                            {isLoading && (
+                                                <span className="spinner-border"></span>
+                                            )}
+                                            {!isLoading && (
+                                                <>
+                                                    Remove Profile Picture
+                                                </>
+                                            )}
+                                        </button>
                                     )}
                                     <button type="button" onClick={handleLogout}>Log Out</button>
                                     {showForm && (
