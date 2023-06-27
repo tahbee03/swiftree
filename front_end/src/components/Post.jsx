@@ -1,9 +1,20 @@
 import "./Post.css";
 import format from "date-fns/format";
 import { useAuthContext } from "../context_and_hooks/AuthContext";
+import { useEffect, useState } from "react";
 
 export default function Post({ post, canDelete }) {
     const { user, dispatch } = useAuthContext();
+    const [userPic, setUserPic] = useState("");
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const match = await (await fetch(`/api/users/name-search/${post.author}`)).json();
+            setUserPic(match.image.url);
+        };
+
+        fetchUser();
+    }, [post.author]);
 
     async function handleClick(id) {
 
@@ -53,7 +64,10 @@ export default function Post({ post, canDelete }) {
         <div className="post row">
             <div className="col-9 info-section">
                 <p className="content">{post.content}</p>
-                <p className="author">{post.author}</p>
+                <a href={`/profile/${post.author}`} className="author-section">
+                    <img src={(userPic === "") ? "/account_icon.png" : userPic} alt="user-pfp" />
+                    <p className="author">{post.author}</p>
+                </a>
                 <p className="date">{`Posted on ${format(new Date(post.createdAt), "MM/dd/yyyy")}`}</p>
             </div>
             <div className="col-3 icon-section">

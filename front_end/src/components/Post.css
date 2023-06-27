@@ -11,6 +11,29 @@
     justify-content: center;
 }
 
+.info-section > .content {
+    margin-bottom: 0.5rem;
+}
+
+.info-section > .date {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+.author-section {
+    width: fit-content;
+}
+
+.author-section img {
+    width: 1rem;
+    border-radius: 50%;
+}
+
+.author-section p {
+    display: inline;
+    margin-left: 5px;
+}
+
 .icon-section {
     display: flex;
     justify-content: right;
