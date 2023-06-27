@@ -38,7 +38,12 @@ export default function PostForm() {
 
         const userRes = await fetch(`/api/users/${match[0]._id}`, {
             method: "PATCH",
-            body: JSON.stringify({ posts: userPosts }),
+            body: JSON.stringify({
+                mode: "POST",
+                content: {
+                    posts: userPosts
+                }
+            }),
             headers: { "Content-Type": "application/json" }
         });
         const userData = await userRes.json();

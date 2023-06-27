@@ -48,7 +48,13 @@ export default function Profile() {
 
         const userRes = await fetch(`/api/users/${match[0]._id}`, {
             method: "PATCH",
-            body: JSON.stringify({ image: match[0].image }),
+            body: JSON.stringify({
+                mode: "IMAGE",
+                content: {
+                    selectedFile: "",
+                    public_id: match[0].image.public_id
+                }
+            }),
             headers: { "Content-Type": "application/json" }
         });
         const userData = await userRes.json();

@@ -87,32 +87,61 @@ const userSignUp = async (req, res) => {
     }
 };
 
-// Update specific user
-const updateUser = async (req, res) => {
-    const {id} = req.params;
-    if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: "No such user!"});
+const updateImage = async ({selectedFile: s, public_id: p}) => {
+    if(p === "") { // Create image
+        // Upload image to cloud
+        const res = await cloudinary.uploader.upload(s, {
+            folder: "user-pfps"
+        });
 
-    if(req.body.image) {
-        if(req.body.image.public_id) {
-            await cloudinary.uploader.destroy(req.body.image.public_id, (result) => {
-                console.log(result);
-            });
-            req.body.image = {
+        return {
+            image: {
+                public_id: res.public_id,
+                url: res.secure_url
+            }
+        }
+    } else if(s === "") { // Delete image
+        // Remove image from cloud
+        await cloudinary.uploader.destroy(p, (result) => {
+            console.log(result);
+        });
+
+        return {
+            image: {
                 public_id: "",
                 url: ""
             }
-        } else {
-            // Upload image to cloud
-            const cloudRes = await cloudinary.uploader.upload(req.body.image, {
-                folder: "user-pfps"
-            });
+        }
+    } else { // Update image
+        // Remove image from cloud
+        await cloudinary.uploader.destroy(p, (result) => {
+            console.log(result);
+        });
 
-            // Update image property of request body using the response from the cloud
-            req.body.image = {
-                public_id: cloudRes.public_id,
-                url: cloudRes.secure_url
+        // Upload image to cloud
+        const res = await cloudinary.uploader.upload(s, {
+            folder: "user-pfps"
+        });
+
+        return {
+            image: {
+                public_id: res.public_id,
+                url: res.secure_url
             }
         }
+    }
+};
+
+// Update specific user
+const updateUser = async (req, res) => {
+    const {id} = req.params; // ID of user to update
+    if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({error: "No such user!"});
+
+    try {
+        if(req.body.mode === "IMAGE") req.body = await updateImage(req.body.content);
+        else req.body = req.body.content;
+    } catch(err) {
+        console.log(err);
     }
     
     const user = await User.findByIdAndUpdate({_id: id}, {...req.body});

@@ -25,13 +25,34 @@ export default function PictureForm() {
 
         const users = await (await fetch("/api/users")).json();
         const match = users.filter((u) => u.username === user.username);
-        console.log(match[0]);
+        let userRes = null;
 
-        const userRes = await fetch(`/api/users/${match[0]._id}`, {
-            method: "PATCH",
-            body: JSON.stringify({ image: selectedFile }),
-            headers: { "Content-Type": "application/json" }
-        });
+        if (match[0].image.public_id === "") { // No existing image for the user
+            userRes = await fetch(`/api/users/${match[0]._id}`, {
+                method: "PATCH",
+                body: JSON.stringify({
+                    mode: "IMAGE",
+                    content: {
+                        selectedFile,
+                        public_id: ""
+                    }
+                }),
+                headers: { "Content-Type": "application/json" }
+            });
+        } else { // An image for the user already exists
+            userRes = await fetch(`/api/users/${match[0]._id}`, {
+                method: "PATCH",
+                body: JSON.stringify({
+                    mode: "IMAGE",
+                    content: {
+                        selectedFile,
+                        public_id: match[0].image.public_id
+                    }
+                }),
+                headers: { "Content-Type": "application/json" }
+            });
+        }
+
         const userData = await userRes.json();
         // console.log(userData);
 
