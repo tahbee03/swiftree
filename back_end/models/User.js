@@ -13,5 +13,3 @@ const userSchema = new Schema({
 });
 
 module.exports = mongoose.model("User", userSchema);
-
-// TODO: Figure out a way to allow users to have custom profile pictures

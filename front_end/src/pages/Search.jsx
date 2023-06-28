@@ -54,7 +54,6 @@ export default function Search() {
         <>
             <Navbar />
             <div className="container" id="search-cont">
-                {/* TODO: Implement user and post search functionalities */}
                 <form onSubmit={handleSearch} id="search-form" className="row">
                     <div id="search-input" className="col-6">
                         <input
