@@ -60,7 +60,6 @@ export default function Post({ post, canDelete }) {
 
         setIsLoading(false);
         window.location.reload();
-        // TODO: Figure out a way to re-render Profile page using React tools instead of window.location.reload();
     }
 
     return (
