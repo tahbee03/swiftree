@@ -16,7 +16,7 @@ export default function Profile() {
     const [error, setError] = useState(null);
     const [posts, setPosts] = useState([]);
     const [picture, setPicture] = useState("");
-    const [showForm, setShowForm] = useState(null);
+    // const [showForm, setShowForm] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -87,10 +87,39 @@ export default function Profile() {
         navigate("/login");
     }
 
+    function openModal(id) {
+        const m = document.getElementById(id);
+        m.style.display = "block";
+        m.style.zIndex = "1";
+    }
+
+    function closeModal(id) {
+        const m = document.getElementById(id);
+        m.style.display = "none";
+        m.style.zIndex = "-1";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target.id === "post-form-modal") {
+            document.getElementById("post-form-modal").style.display = "none";
+        }
+
+        if (event.target.id === "picture-form-modal") {
+            document.getElementById("picture-form-modal").style.display = "none";
+        }
+    }
+
     return (
         <>
             <Navbar />
             <div className="container" id="profile-cont">
+                <div id="post-form-modal">
+                    <PostForm closeFunc={closeModal} />
+                </div>
+                <div id="picture-form-modal">
+                    <PictureForm closeFunc={closeModal} />
+                </div>
                 {error && (
                     <div>{error}</div>
                 )}
@@ -107,8 +136,8 @@ export default function Profile() {
                             <p>{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
                             {user && (user.username === username) && (
                                 <>
-                                    <button type="button" onClick={() => setShowForm("post-form")}>Make New Post</button>
-                                    <button type="button" onClick={() => setShowForm("pfp-form")}>Change Profile Picture</button>
+                                    <button type="button" onClick={() => openModal("post-form-modal")}>Make New Post</button>
+                                    <button type="button" onClick={() => openModal("picture-form-modal")}>Change Profile Picture</button>
                                     {!(picture === "") && (
                                         <button
                                             type="button"
@@ -126,17 +155,6 @@ export default function Profile() {
                                         </button>
                                     )}
                                     <button type="button" onClick={handleLogout}>Log Out</button>
-                                    {showForm && (
-                                        <>
-                                            <hr />
-                                            {(showForm === "post-form") && (
-                                                <PostForm />
-                                            )}
-                                            {(showForm === "pfp-form") && (
-                                                <PictureForm />
-                                            )}
-                                        </>
-                                    )}
                                 </>
                             )}
                         </div>

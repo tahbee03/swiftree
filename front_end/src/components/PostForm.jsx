@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuthContext } from "../context_and_hooks/AuthContext";
 import "./PostForm.css";
 
-export default function PostForm() {
+export default function PostForm({ closeFunc }) {
     const [content, setContent] = useState("");
     const [error, setError] = useState(null);
     const { user, dispatch } = useAuthContext();
@@ -66,27 +66,29 @@ export default function PostForm() {
 
         setIsLoading(false);
         window.location.reload();
-
-        // TODO: Figure out a way to re-render Profile page using React tools instead of window.location.reload();
     }
 
     return (
-        <form className="post-form" onSubmit={handleSubmit}>
-            <h3>New Post</h3>
+        <div className="modal-content">
+            <div className="close" onClick={() => closeFunc("post-form-modal")}>&times;</div>
+            <form className="post-form" onSubmit={handleSubmit}>
+                <h3>New Post</h3>
 
-            {/* <label>Content</label> */}
-            <textarea onChange={(e) => setContent(e.target.value)} value={content}></textarea>
-            <button type="submit" disabled={isLoading}>
-                {isLoading && (
-                    <span className="spinner-border"></span>
-                )}
-                {!isLoading && (
-                    <>
-                        Submit Post
-                    </>
-                )}
-            </button>
-            {error && <div>{error}</div>}
-        </form>
+                <textarea onChange={(e) => setContent(e.target.value)} value={content}></textarea>
+                <button type="submit" disabled={isLoading}>
+                    {isLoading && (
+                        <span className="spinner-border"></span>
+                    )}
+                    {!isLoading && (
+                        <>
+                            Submit Post
+                        </>
+                    )}
+                </button>
+                {error && <div>{error}</div>}
+            </form>
+        </div>
     );
 }
+
+// TODO: Create a modal structure for the form

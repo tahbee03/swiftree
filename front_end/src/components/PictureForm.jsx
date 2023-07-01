@@ -2,7 +2,7 @@ import "./PictureForm.css";
 import { useState } from "react";
 import { useAuthContext } from "../context_and_hooks/AuthContext";
 
-export default function PictureForm() {
+export default function PictureForm({ closeFunc }) {
     const [selectedFile, setSelectedFile] = useState(null);
     const { user, dispatch } = useAuthContext();
     const [isLoading, setIsLoading] = useState(false);
@@ -76,20 +76,25 @@ export default function PictureForm() {
     }
 
     return (
-        <form className="pfp-form" onSubmit={handleSubmit}>
-            <h3>New Profile Picture</h3>
+        <div className="modal-content">
+            <div className="close" onClick={() => closeFunc("picture-form-modal")}>&times;</div>
+            <form className="pfp-form" onSubmit={handleSubmit}>
+                <h3>New Profile Picture</h3>
 
-            <input type="file" onChange={processImage} />
-            <button type="submit" disabled={isLoading}>
-                {isLoading && (
-                    <span className="spinner-border"></span>
-                )}
-                {!isLoading && (
-                    <>
-                        Upload Picture
-                    </>
-                )}
-            </button>
-        </form>
+                <input type="file" onChange={processImage} />
+                <button type="submit" disabled={isLoading}>
+                    {isLoading && (
+                        <span className="spinner-border"></span>
+                    )}
+                    {!isLoading && (
+                        <>
+                            Upload Picture
+                        </>
+                    )}
+                </button>
+            </form>
+        </div>
     );
 }
+
+// TODO: Create a modal structure for the form
