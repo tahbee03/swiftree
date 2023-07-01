@@ -1,7 +1,7 @@
 import "./Home.css";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import Post from "../components/Post";
+import PostTree from "../components/PostTree";
 
 export default function Home() {
     const [posts, setPosts] = useState(null);
@@ -21,21 +21,19 @@ export default function Home() {
         fetchPosts();
     }, []);
 
-    console.log(posts);
-
     return (
         <>
             <Navbar />
-            <div className="container">
-                <div className="posts">
-                    {posts && posts.map((post) => (
-                        <Post key={post._id} post={post} />
-                    ))}
-                    {!posts && (
-                        <p>There are no posts!</p>
-                    )}
-                </div>
+            <div className="container" id="home-cont">
+                {posts && (
+                    <PostTree posts={posts} />
+                )}
+                {!posts && (
+                    <p>There are no posts!</p>
+                )}
             </div>
         </>
     );
 }
+
+// TODO: Make website responsive
