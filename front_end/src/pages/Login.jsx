@@ -53,7 +53,7 @@ export default function Login() {
                     </div>
 
                     <button disabled={isLoading}>Login</button>
-                    {error && <div>{JSON.stringify(error)}</div>}
+                    {error && <div>{error}</div>}
                 </form>
 
                 <p>

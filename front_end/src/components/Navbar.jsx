@@ -22,7 +22,7 @@ export default function Navbar() {
                 {user && (
                     <a href={`/profile/${user.username}`}>
                         <div id="profile-link">
-                            <p>{user.username}</p>
+                            <p>{user.display_name}</p>
                             {(user.pfp === "") && (
                                 <img src="/account_icon.png" alt="account" className="nav-icon" id="pfp" />
                             )}

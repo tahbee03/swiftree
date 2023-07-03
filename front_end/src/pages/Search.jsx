@@ -7,12 +7,15 @@ import { useState } from "react";
 export default function Search() {
     const [searchInput, setSearchInput] = useState("");
     const [searchKey, setSearchKey] = useState("");
-    const [posts, setPosts] = useState(null);
-    const [users, setUsers] = useState(null);
+    const [posts, setPosts] = useState([]);
+    const [users, setUsers] = useState([]);
     const [mode, setMode] = useState("post");
+    const [searchProcessed, setSearchProcessed] = useState(false);
 
     async function handleSearch(e) {
         e.preventDefault();
+
+        setSearchProcessed(false);
 
         if (mode === "post") {
             const res = await fetch("/api/posts");
@@ -23,11 +26,16 @@ export default function Search() {
             const res = await fetch("/api/users");
             const data = await res.json();
 
-            if (res.ok) setUsers(data.filter((user) => user.username.search(searchInput) !== -1));
+            if (res.ok) {
+                const usernameMatch = data.filter((user) => user.username.search(searchInput) !== -1);
+                const displayNameMatch = data.filter((user) => user.display_name.search(searchInput) !== -1);
+                setUsers(Array.from(new Set([].concat(usernameMatch, displayNameMatch)))); // Intersection of arrays
+            }
         }
 
         setSearchKey(searchInput);
         setSearchInput("");
+        setSearchProcessed(true);
     }
 
     function switchMode() {
@@ -46,8 +54,9 @@ export default function Search() {
 
         setSearchInput("");
         setSearchKey("");
-        setPosts(null);
-        setUsers(null);
+        setPosts([]);
+        setUsers([]);
+        setSearchProcessed(false);
     }
 
     return (
@@ -74,44 +83,30 @@ export default function Search() {
                 <div id="search-results">
                     {(mode === "post") && (
                         <>
-                            {!posts && (
-                                <></>
+                            {searchProcessed && (posts.length === 0) && (
+                                <p>No posts match your search!</p>
                             )}
-                            {posts && (
+                            {!(posts.length === 0) && (
                                 <>
-                                    {(posts.length === 0) && (
-                                        <p>No posts match your search!</p>
-                                    )}
-                                    {!(posts.length === 0) && (
-                                        <>
-                                            <p id="match-text">Posts matching "{searchKey}"</p>
-                                            {posts.map((post) => (
-                                                <Post key={post._id} post={post} />
-                                            ))}
-                                        </>
-                                    )}
+                                    <p id="match-text">Posts matching "{searchKey}"</p>
+                                    {posts.map((post) => (
+                                        <Post key={post._id} post={post} />
+                                    ))}
                                 </>
                             )}
                         </>
                     )}
                     {(mode === "user") && (
                         <>
-                            {!users && (
-                                <></>
+                            {searchProcessed && (users.length === 0) && (
+                                <p>No users match your search!</p>
                             )}
-                            {users && (
+                            {!(users.length === 0) && (
                                 <>
-                                    {(users.length === 0) && (
-                                        <p>No users match your search!</p>
-                                    )}
-                                    {!(users.length === 0) && (
-                                        <>
-                                            <p id="match-text">Users matching "{searchKey}"</p>
-                                            {users.map((user) => (
-                                                <User key={user._id} user={user} />
-                                            ))}
-                                        </>
-                                    )}
+                                    <p id="match-text">Users matching "{searchKey}"</p>
+                                    {users.map((user) => (
+                                        <User key={user._id} user={user} />
+                                    ))}
                                 </>
                             )}
                         </>

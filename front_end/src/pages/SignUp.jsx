@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 export default function SignUp() {
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
+    const [displayName, setDisplayName] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const { signUp, isLoading } = useSignUp();
@@ -16,7 +17,7 @@ export default function SignUp() {
 
         // console.log(`${email} | ${username} | ${password}`);
         try {
-            await signUp(email, username, password);
+            await signUp(email, username, displayName, password);
             navigate("/");
         } catch (err) {
             setError(err.message);
@@ -53,6 +54,16 @@ export default function SignUp() {
                     </div>
 
                     <div className="form-item">
+                        <p>Display Name</p>
+                        <input
+                            type="text"
+                            name="display_name"
+                            required
+                            onChange={(e) => setDisplayName(e.target.value)}
+                            value={displayName} />
+                    </div>
+
+                    <div className="form-item">
                         <p>Password</p>
                         <input
                             type="password"
@@ -64,7 +75,7 @@ export default function SignUp() {
                     </div>
 
                     <button disabled={isLoading}>Sign Up</button>
-                    {error && <div>{JSON.stringify(error)}</div>}
+                    {error && <div>{error}</div>}
                 </form>
 
                 <p>

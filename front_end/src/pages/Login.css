@@ -19,3 +19,11 @@ html, body {
 
     color: #e1efe6;
 }
+
+.form-item {
+    margin-bottom: 10px;
+}
+
+.form-item p {
+    margin: 0;
+}

@@ -62,6 +62,7 @@ export default function PictureForm({ closeFunc }) {
 
             const payload = {
                 username: user.username,
+                display_name: user.display_name,
                 pfp: u.image.url,
                 posts: user.posts,
                 token: user.token

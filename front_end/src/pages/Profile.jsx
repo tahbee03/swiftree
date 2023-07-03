@@ -10,13 +10,13 @@ import Post from "../components/Post";
 
 export default function Profile() {
     const { username } = useParams();
+    const [displayName, setDisplayName] = useState("");
     const { logout } = useLogout();
     const { user, dispatch } = useAuthContext();
     const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [posts, setPosts] = useState([]);
     const [picture, setPicture] = useState("");
-    // const [showForm, setShowForm] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -28,6 +28,7 @@ export default function Profile() {
                 if (!userRes.ok) throw Error(userData.error);
 
                 setPicture(userData.image.url);
+                setDisplayName(userData.display_name);
 
                 const postRes = await fetch("/api/posts");
                 const postData = await postRes.json();
@@ -68,6 +69,7 @@ export default function Profile() {
 
             const payload = {
                 username: user.username,
+                display_name: user.display_name,
                 pfp: "",
                 posts: user.posts,
                 token: user.token
@@ -132,7 +134,7 @@ export default function Profile() {
                             {!(picture === "") && (
                                 <img src={picture} alt="account pic" />
                             )}
-                            <p><b>{username}</b></p>
+                            <p><b>{displayName}</b> &#183; {username}</p>
                             <p>{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
                             {user && (user.username === username) && (
                                 <>
@@ -172,3 +174,5 @@ export default function Profile() {
         </>
     );
 }
+
+// TODO: Modify so that users are able to update their username and display name

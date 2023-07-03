@@ -56,6 +56,7 @@ export default function PostForm({ closeFunc }) {
 
             const payload = {
                 username: user.username,
+                display_name: user.display_name,
                 pfp: user.pfp,
                 posts: userPosts,
                 token: user.token

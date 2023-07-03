@@ -6,12 +6,14 @@ import { useEffect, useState } from "react";
 export default function Post({ post, canDelete }) {
     const { user, dispatch } = useAuthContext();
     const [userPic, setUserPic] = useState("");
+    const [displayName, setDisplayName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
             const match = await (await fetch(`/api/users/name-search/${post.author}`)).json();
             setUserPic(match.image.url);
+            setDisplayName(match.display_name);
         };
 
         fetchUser();
@@ -44,6 +46,7 @@ export default function Post({ post, canDelete }) {
 
             const payload = {
                 username: user.username,
+                display_name: user.display_name,
                 pfp: user.pfp,
                 posts: userPosts,
                 token: user.token
@@ -68,7 +71,7 @@ export default function Post({ post, canDelete }) {
                 <p className="content">{post.content}</p>
                 <a href={`/profile/${post.author}`} className="author-section">
                     <img src={(userPic === "") ? "/account_icon.png" : userPic} alt="user-pfp" />
-                    <p className="author">{post.author}</p>
+                    <p className="author">{displayName}</p>
                 </a>
                 <p className="date">{`Posted on ${format(new Date(post.createdAt), "MM/dd/yyyy")}`}</p>
             </div>

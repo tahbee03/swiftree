@@ -33,9 +33,13 @@ const getUserByID = async (req, res) => {
 const getUserByName = async (req, res) => {
     const {username} = req.params;
 
+    let usernameL = username.toLowerCase();
+
     try {
-        const user = await User.findOne({username});
-        if(!user) throw Error(`The user '${username}' does not exist!`);
+        const user = await User.findOne({
+            username: usernameL
+        });
+        if(!user) throw Error(`The user '${usernameL}' does not exist!`);
         else res.status(200).json(user);
     } catch(err) {
         res.status(404).json({error: err.message});
@@ -46,15 +50,25 @@ const getUserByName = async (req, res) => {
 const userLogin = async (req, res) => {
     const {username, password} = req.body;
 
+    let usernameL = username.toLowerCase();
+
     try {
-        const user = await User.findOne({username});
+        const user = await User.findOne({
+            username: usernameL
+        });
         if(!user) throw Error("Username not found!");
 
         const match = await bcrypt.compare(password, user.password);
         if(!match) throw Error("Incorrect password!");
         
         const token = createToken(user._id, user.email, user.username);
-        res.status(200).json({username, pfp: user.image.url, posts: user.posts, token}); // Return data to be used in hooks
+        res.status(200).json({
+            username: user.username, 
+            display_name: user.display_name, 
+            pfp: user.image.url, 
+            posts: user.posts, 
+            token
+        }); // Return data to be used in hooks
 
     } catch(err) {
         res.status(400).json({error: err.message});
@@ -64,23 +78,37 @@ const userLogin = async (req, res) => {
 
 // Sign up functionality
 const userSignUp = async (req, res) => {
-    const {email, username, password} = req.body;
+    const {email, username, display_name, password} = req.body;
+
+    let usernameL = username.toLowerCase();
 
     const ematch = await User.find({email});
-    // console.log(ematch);
     if(ematch.length != 0) return res.status(400).json({error: "Email already in use!"});
 
-    const umatch = await User.find({username});
-    // console.log(umatch);
+    const umatch = await User.find({
+        username: usernameL
+    });
     if(umatch.length != 0) return res.status(400).json({error: "Username already in use!"})
 
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
     try {
-        const user = await User.create({email, username, password: hash, image: {public_id: "", url: ""}});
+        const user = await User.create({
+            email, 
+            username: usernameL, 
+            display_name, 
+            password: hash, 
+            image: {public_id: "", url: ""}
+        });
         const token = createToken(user._id, user.email, user.username);
-        res.status(200).json({username, pfp: user.image.url, posts: user.posts, token}); // Return data to be used in hooks
+        res.status(200).json({
+            username: user.username, 
+            display_name: user.display_name, 
+            pfp: user.image.url, 
+            posts: user.posts, 
+            token
+        }); // Return data to be used in hooks
     } catch(err) {
         console.log(err.message);
         res.status(400).json({error: err});
