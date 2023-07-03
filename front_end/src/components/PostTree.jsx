@@ -110,8 +110,8 @@ export default function PostTree({ posts }) {
     return (
         <>
             <div id="post-modal">
-                <div id="modal-content">
-                    <div id="close" onClick={closeModal}>&times;</div>
+                <div className="modal-content">
+                    <div className="close" onClick={closeModal}>&times;</div>
                     {currentPost && (
                         <Post post={currentPost} />
                     )}
@@ -153,6 +153,7 @@ export default function PostTree({ posts }) {
                             stroke="black"
                             strokeWidth="3"
                             fill="#A532FF"
+                            onClick={() => window.location.reload()}
                         />
                     </>
                 )}
@@ -163,3 +164,4 @@ export default function PostTree({ posts }) {
 
 // https://youtu.be/nnRZBuLjhDY
 // https://www.w3schools.com/js/js_random.asp
+// TODO: Find a way to not have the edges overlap
