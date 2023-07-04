@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { useEffect } from "react";
 import "./PostTree.css";
 import Post from "../components/Post";
+const _ = require("lodash");
 
 export default function PostTree({ posts }) {
+    // TODO: Create a separate file to handle tree logic
+
     const [bounds, setBounds] = useState({
         top: 0,
         bottom: 0,
@@ -15,10 +18,6 @@ export default function PostTree({ posts }) {
 
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
-
-    function randomNum(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
 
     // Run on mount
     useEffect(() => {
@@ -37,23 +36,50 @@ export default function PostTree({ posts }) {
 
     // Run when posts prop or bounds state is updated
     useEffect(() => {
+        const randomNum = (min, max) => {
+            return (Math.random() * (max - min)) + min;
+        };
+
         const createNodeList = (num) => {
             let arr = [{
                 x: (bounds.right - bounds.left) / 2,
-                y: (bounds.bottom - bounds.top) / 2
+                y: (bounds.bottom - bounds.top) / 2,
+                depth: 0
             }]; // Initialize with root node
 
-            for (let i = 0; i < num; i++) {
+            let count = 0; // Depth child count
+
+            for (let i = 1; i <= num; i++) {
+                let parent = arr[Math.floor((i - 1) / 2)];
+                let depth = parent.depth + 1;
+                let radius = depth * 50;
+
+                if (arr[i - 1].depth !== depth) count = 0;
+                let angle = randomNum(count * ((2 * Math.PI) / (Math.pow(2, depth))), (count + 1) * ((2 * Math.PI) / Math.pow(2, depth)));
+
+                // maximum DCC: 2^depth
+                // node partition: (2 * PI) / 2^depth
+
                 arr.push({
-                    x: randomNum(0, bounds.right - bounds.left),
-                    y: randomNum(0, bounds.bottom - bounds.top)
+                    x: (radius * Math.cos(angle)) + ((bounds.right - bounds.left) / 2),
+                    y: (radius * Math.sin(angle)) + ((bounds.bottom - bounds.top) / 2),
+                    depth
                 });
+
+                count += 1;
             }
 
             return arr;
         };
 
-        if (posts && posts.length > 0) setNodes(createNodeList(posts.length));
+        const initialBounds = {
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0
+        };
+
+        if (posts.length > 0 && !_.isEqual(bounds, initialBounds)) setNodes(createNodeList(posts.length));
     }, [posts, bounds]);
 
     // Run when nodes state is updated
@@ -114,8 +140,6 @@ export default function PostTree({ posts }) {
 
         if (window.innerWidth < 576) canvas.style.width = "100%";
         else canvas.style.width = canvas.getBoundingClientRect().height;
-
-        console.log(canvas.getBoundingClientRect());
     });
 
     return (
