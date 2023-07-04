@@ -16,20 +16,22 @@ export default function PostTree({ posts }) {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
 
-
     function randomNum(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     // Run on mount
     useEffect(() => {
-        const canvasRect = document.getElementById("tree-canvas").getBoundingClientRect();
+        const canvas = document.getElementById("tree-canvas");
+
+        if (window.innerWidth < 576) canvas.style.width = "100%";
+        else canvas.style.width = canvas.getBoundingClientRect().height;
 
         setBounds({
-            top: canvasRect.top,
-            bottom: canvasRect.bottom,
-            left: canvasRect.left,
-            right: canvasRect.right
+            top: canvas.getBoundingClientRect().top,
+            bottom: canvas.getBoundingClientRect().bottom,
+            left: canvas.getBoundingClientRect().left,
+            right: canvas.getBoundingClientRect().right
         });
     }, []);
 
@@ -107,6 +109,15 @@ export default function PostTree({ posts }) {
         }
     }
 
+    window.addEventListener("resize", () => {
+        const canvas = document.getElementById("tree-canvas");
+
+        if (window.innerWidth < 576) canvas.style.width = "100%";
+        else canvas.style.width = canvas.getBoundingClientRect().height;
+
+        console.log(canvas.getBoundingClientRect());
+    });
+
     return (
         <>
             <div id="post-modal">
@@ -136,12 +147,12 @@ export default function PostTree({ posts }) {
                                 className="tree-node"
                                 cx={n.x}
                                 cy={n.y}
-                                r="15"
+                                r="10"
                                 stroke="black"
                                 strokeWidth="3"
                                 fill={(posts[i] && visited.includes(posts[i]._id)) ? "#A532FF" : "white"}
-                                onMouseEnter={(e) => { e.target.setAttribute("r", "25") }}
-                                onMouseLeave={(e) => { e.target.setAttribute("r", "15") }}
+                                onMouseEnter={(e) => { e.target.setAttribute("r", "20") }}
+                                onMouseLeave={(e) => { e.target.setAttribute("r", "10") }}
                                 onClick={() => openModal(posts[i])}
                             />
                         ))}
@@ -149,7 +160,7 @@ export default function PostTree({ posts }) {
                             className="tree-node"
                             cx={(bounds.right - bounds.left) / 2}
                             cy={(bounds.bottom - bounds.top) / 2}
-                            r="30"
+                            r="25"
                             stroke="black"
                             strokeWidth="3"
                             fill="#A532FF"
