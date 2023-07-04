@@ -12,29 +12,35 @@ export default function Navbar() {
 
     return (
         <nav className="navbar">
-            <div className="container-fluid">
-                <a href="/search">
-                    <img src="/search_icon.png" alt="search" className="nav-icon" />
-                </a>
-                <a href="/">
-                    <h1>swiftree</h1>
-                </a>
-                {user && (
-                    <a href={`/profile/${user.username}`}>
-                        <div id="profile-link">
-                            <p>{user.display_name}</p>
-                            {(user.pfp === "") && (
-                                <img src="/account_icon.png" alt="account" className="nav-icon" id="pfp" />
-                            )}
-                            {!(user.pfp === "") && (
-                                <img src={user.pfp} alt="account" className="nav-icon" id="pfp" />
-                            )}
-                        </div>
+            <div className="row">
+                <div className="col-4" id="left">
+                    <a href="/search">
+                        <img src="/search_icon.png" alt="search" className="nav-icon" />
                     </a>
-                )}
-                {!user && (
-                    <button onClick={handleLogin}>Log In</button>
-                )}
+                </div>
+                <div className="col-4" id="middle">
+                    <a href="/">
+                        <h1>swiftree</h1>
+                    </a>
+                </div>
+                <div className="col-4" id="right">
+                    {user && (
+                        <a href={`/profile/${user.username}`}>
+                            <div id="profile-link">
+                                <p>{user.display_name}</p>
+                                {(user.pfp === "") && (
+                                    <img src="/account_icon.png" alt="account" className="nav-icon" id="pfp" />
+                                )}
+                                {!(user.pfp === "") && (
+                                    <img src={user.pfp} alt="account" className="nav-icon" id="pfp" />
+                                )}
+                            </div>
+                        </a>
+                    )}
+                    {!user && (
+                        <button onClick={handleLogin}>Log In</button>
+                    )}
+                </div>
             </div>
         </nav>
     );

@@ -1,8 +1,38 @@
-.nav-icon {
+.navbar {
+    width: 100%;
+    display: block;
+}
+
+.navbar .row {
+    width: 100%;
+    margin: 0;
+}
+
+.navbar .col-4 {
+    display: flex;
+}
+
+.navbar #left {
+    justify-content: left;
+}
+
+.navbar #middle {
+    justify-content: center;
+}
+
+.navbar #middle * {
+    margin: 0;
+}
+
+.navbar #right {
+    justify-content: right;
+}
+
+.navbar .nav-icon {
     max-height: 50px;
 }
 
-#pfp {
+.navbar #pfp {
     border: 5px solid gray;
     border-radius: 50%;
 }
@@ -16,11 +46,11 @@ a:hover {
     transform: scale(0.9);
 }
 
-#profile-link {
+.navbar #profile-link {
     display: flex;
     column-gap: 10px;
     align-items: center;
 }
-#profile-link > p {
+.navbar #profile-link > p {
     margin: 0;
 }
