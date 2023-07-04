@@ -75,7 +75,7 @@ export default function SignUp() {
                     </div>
 
                     <button disabled={isLoading}>Sign Up</button>
-                    {error && <div>{error}</div>}
+                    {error && <div className="error-msg">{error}</div>}
                 </form>
 
                 <p>
