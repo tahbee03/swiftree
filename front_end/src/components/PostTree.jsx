@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useEffect } from "react";
 import "./PostTree.css";
 import Post from "../components/Post";
 const _ = require("lodash");
+
+function randomNum(min, max) {
+    return (Math.random() * (max - min)) + min;
+}
 
 export default function PostTree({ posts }) {
     // TODO: Create a separate file to handle tree logic
@@ -18,6 +22,42 @@ export default function PostTree({ posts }) {
 
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
+
+    const createNodeList = useCallback((num) => {
+        console.log("Function called!");
+
+        let arr = [{
+            x: (bounds.right - bounds.left) / 2,
+            y: (bounds.bottom - bounds.top) / 2,
+            depth: 0
+        }]; // Initialize with root node
+
+        let count = 0; // Depth child count
+
+        // TODO: Modify to ensure no two nodes have the same angle
+
+        for (let i = 1; i <= num; i++) {
+            let parent = arr[Math.floor((i - 1) / 2)];
+            let depth = parent.depth + 1;
+            let radius = depth * 50;
+
+            if (arr[i - 1].depth !== depth) count = 0;
+            let angle = randomNum(count * ((2 * Math.PI) / (Math.pow(2, depth))), (count + 1) * ((2 * Math.PI) / Math.pow(2, depth)));
+
+            // maximum DCC: 2^depth
+            // node partition: (2 * PI) / 2^depth
+
+            arr.push({
+                x: (radius * Math.cos(angle)) + ((bounds.right - bounds.left) / 2),
+                y: (radius * Math.sin(angle)) + ((bounds.bottom - bounds.top) / 2),
+                depth
+            });
+
+            count += 1;
+        }
+
+        return arr;
+    }, [bounds]);
 
     // Run on mount
     useEffect(() => {
@@ -36,42 +76,6 @@ export default function PostTree({ posts }) {
 
     // Run when posts prop or bounds state is updated
     useEffect(() => {
-        const randomNum = (min, max) => {
-            return (Math.random() * (max - min)) + min;
-        };
-
-        const createNodeList = (num) => {
-            let arr = [{
-                x: (bounds.right - bounds.left) / 2,
-                y: (bounds.bottom - bounds.top) / 2,
-                depth: 0
-            }]; // Initialize with root node
-
-            let count = 0; // Depth child count
-
-            for (let i = 1; i <= num; i++) {
-                let parent = arr[Math.floor((i - 1) / 2)];
-                let depth = parent.depth + 1;
-                let radius = depth * 50;
-
-                if (arr[i - 1].depth !== depth) count = 0;
-                let angle = randomNum(count * ((2 * Math.PI) / (Math.pow(2, depth))), (count + 1) * ((2 * Math.PI) / Math.pow(2, depth)));
-
-                // maximum DCC: 2^depth
-                // node partition: (2 * PI) / 2^depth
-
-                arr.push({
-                    x: (radius * Math.cos(angle)) + ((bounds.right - bounds.left) / 2),
-                    y: (radius * Math.sin(angle)) + ((bounds.bottom - bounds.top) / 2),
-                    depth
-                });
-
-                count += 1;
-            }
-
-            return arr;
-        };
-
         const initialBounds = {
             top: 0,
             bottom: 0,
@@ -80,7 +84,7 @@ export default function PostTree({ posts }) {
         };
 
         if (posts.length > 0 && !_.isEqual(bounds, initialBounds)) setNodes(createNodeList(posts.length));
-    }, [posts, bounds]);
+    }, [posts, bounds, createNodeList]);
 
     // Run when nodes state is updated
     useEffect(() => {
@@ -188,7 +192,7 @@ export default function PostTree({ posts }) {
                             stroke="black"
                             strokeWidth="3"
                             fill="#A532FF"
-                            onClick={() => window.location.reload()}
+                            onClick={() => setNodes(createNodeList(posts.length))}
                         />
                     </>
                 )}
