@@ -1,7 +1,9 @@
 import "./Home.css"; // Styles for Home page
-import { useEffect, useState } from "react"; // useEffect(), useState()
+
 import Navbar from "../components/Navbar"; // <Navbar />
 import PostTree from "../components/PostTree"; // <PostTree />
+
+import { useEffect, useState } from "react"; // useEffect(), useState()
 
 export default function Home() {
     const [posts, setPosts] = useState(null); // Contains posts to be passed into post tree
@@ -14,8 +16,8 @@ export default function Home() {
             const res = await fetch("/api/posts");
             const data = await res.json();
 
-            if (res.ok) setPosts(data);
-            else setError(data);
+            if (!res.ok) setError(data.error);
+            else setPosts(data);
         };
 
         fetchPosts();
@@ -30,7 +32,7 @@ export default function Home() {
                     <PostTree posts={posts} />
                 )}
                 {!posts && (
-                    <p>{error}</p>
+                    <p className="error-msg">{error}</p>
                 )}
             </div>
         </>
