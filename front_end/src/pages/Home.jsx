@@ -1,26 +1,27 @@
-import "./Home.css";
-import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import PostTree from "../components/PostTree";
+import "./Home.css"; // Styles for Home page
+import { useEffect, useState } from "react"; // useEffect(), useState()
+import Navbar from "../components/Navbar"; // <Navbar />
+import PostTree from "../components/PostTree"; // <PostTree />
 
 export default function Home() {
-    const [posts, setPosts] = useState(null);
+    const [posts, setPosts] = useState(null); // Contains posts to be passed into post tree
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
-    // Fire function when component is rendered
-    // NOTE: An empty dependency array is passed in so this is only called once
+    // Runs on component render
     useEffect(() => {
+        // Gets all posts from back-end
         const fetchPosts = async () => {
             const res = await fetch("/api/posts");
             const data = await res.json();
 
-            if (res.ok) {
-                setPosts(data);
-            }
+            if (res.ok) setPosts(data);
+            else setError(data);
         };
 
         fetchPosts();
     }, []);
 
+    // Renders elements
     return (
         <>
             <Navbar />
@@ -29,7 +30,7 @@ export default function Home() {
                     <PostTree posts={posts} />
                 )}
                 {!posts && (
-                    <p>There are no posts!</p>
+                    <p>{error}</p>
                 )}
             </div>
         </>
