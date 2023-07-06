@@ -1,43 +1,64 @@
-import "./Search.css";
-import Navbar from "../components/Navbar";
-import Post from "../components/Post";
-import User from "../components/User";
-import { useState } from "react";
+import "./Search.css"; // Styles for Search page
+
+import Navbar from "../components/Navbar"; // <Navbar />
+import Post from "../components/Post"; // <Post />
+import User from "../components/User"; // <User />
+
+import { useState } from "react"; // useState()
 
 export default function Search() {
-    const [searchInput, setSearchInput] = useState("");
-    const [searchKey, setSearchKey] = useState("");
-    const [posts, setPosts] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [mode, setMode] = useState("post");
-    const [searchProcessed, setSearchProcessed] = useState(false);
+    const [dyInput, setDyInput] = useState(""); // Stores dynamic search input (form is updated)
+    const [statInput, setStatInput] = useState(""); // Stores static search input (visible for comparison)
+    const [posts, setPosts] = useState([]); // Stores posts matching search input
+    const [users, setUsers] = useState([]); // Stores users matching search input
+    const [mode, setMode] = useState("post"); // Stores the current search mode
+    const [searchProcessed, setSearchProcessed] = useState(false); // Boolean value used to show search results
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
+    // Processes submitted search input
     async function handleSearch(e) {
-        e.preventDefault();
+        e.preventDefault(); // No reload on submit
 
         setSearchProcessed(false);
 
-        if (mode === "post") {
+        if (mode === "post") { // Post search mode
+            // Gets all posts from back-end
             const res = await fetch("/api/posts");
             const data = await res.json();
 
-            if (res.ok) setPosts(data.filter((post) => post.content.search(searchInput) !== -1));
-        } else {
+            if (!res.ok) {
+                setError(data.error);
+                return;
+            }
+
+            // Filters posts to find the ones whose content matches the search input
+            setPosts(data.filter((post) => post.content.search(dyInput) !== -1));
+        } else { // User search mode
+            // Gets all users from back-end
             const res = await fetch("/api/users");
             const data = await res.json();
 
-            if (res.ok) {
-                const usernameMatch = data.filter((user) => user.username.search(searchInput) !== -1);
-                const displayNameMatch = data.filter((user) => user.display_name.search(searchInput) !== -1);
-                setUsers(Array.from(new Set([].concat(usernameMatch, displayNameMatch)))); // Intersection of arrays
+            if (!res.ok) {
+                setError(data.error);
+                return;
             }
+
+            // Filters users to find the ones whose username matches the search input
+            const usernameMatch = data.filter((u) => u.username.search(dyInput) !== -1);
+
+            // Filters users to find the ones whose display name matches the search input
+            const displayNameMatch = data.filter((u) => u.display_name.search(dyInput) !== -1);
+
+            // Creates a combined list of unique matches
+            setUsers(Array.from(new Set([].concat(usernameMatch, displayNameMatch))));
         }
 
-        setSearchKey(searchInput);
-        setSearchInput("");
+        setStatInput(dyInput);
+        setDyInput("");
         setSearchProcessed(true);
     }
 
+    // Changes search functionality and applies appropriate text color to buttons
     function switchMode() {
         const postButton = document.getElementById("toggle-post-mode");
         const userButton = document.getElementById("toggle-user-mode");
@@ -52,8 +73,8 @@ export default function Search() {
             postButton.classList.add("active-button");
         }
 
-        setSearchInput("");
-        setSearchKey("");
+        setDyInput("");
+        setStatInput("");
         setPosts([]);
         setUsers([]);
         setSearchProcessed(false);
@@ -68,8 +89,8 @@ export default function Search() {
                         <input
                             type="text"
                             name="search-input"
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            value={searchInput}
+                            onChange={(e) => setDyInput(e.target.value)}
+                            value={dyInput}
                             required
                         />
                         <button type="submit">Search</button>
@@ -80,38 +101,43 @@ export default function Search() {
                     </div>
                 </form>
                 <hr />
-                <div id="search-results">
-                    {(mode === "post") && (
-                        <>
-                            {searchProcessed && (posts.length === 0) && (
-                                <p>No posts match your search!</p>
-                            )}
-                            {!(posts.length === 0) && (
-                                <>
-                                    <p id="match-text">Posts matching "{searchKey}"</p>
-                                    {posts.map((post) => (
-                                        <Post key={post._id} post={post} />
-                                    ))}
-                                </>
-                            )}
-                        </>
-                    )}
-                    {(mode === "user") && (
-                        <>
-                            {searchProcessed && (users.length === 0) && (
-                                <p>No users match your search!</p>
-                            )}
-                            {!(users.length === 0) && (
-                                <>
-                                    <p id="match-text">Users matching "{searchKey}"</p>
-                                    {users.map((user) => (
-                                        <User key={user._id} user={user} />
-                                    ))}
-                                </>
-                            )}
-                        </>
-                    )}
-                </div>
+                {error && (
+                    <div className="error-msg">{error}</div>
+                )}
+                {!error && (
+                    <div id="search-results">
+                        {(mode === "post") && (
+                            <>
+                                {searchProcessed && (posts.length === 0) && (
+                                    <p>No posts match your search!</p>
+                                )}
+                                {!(posts.length === 0) && (
+                                    <>
+                                        <p id="match-text">Posts matching "{statInput}"</p>
+                                        {posts.map((post) => (
+                                            <Post key={post._id} post={post} />
+                                        ))}
+                                    </>
+                                )}
+                            </>
+                        )}
+                        {(mode === "user") && (
+                            <>
+                                {searchProcessed && (users.length === 0) && (
+                                    <p>No users match your search!</p>
+                                )}
+                                {!(users.length === 0) && (
+                                    <>
+                                        <p id="match-text">Users matching "{statInput}"</p>
+                                        {users.map((user) => (
+                                            <User key={user._id} user={user} />
+                                        ))}
+                                    </>
+                                )}
+                            </>
+                        )}
+                    </div>
+                )}
             </div>
         </>
     );
