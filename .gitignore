@@ -3,3 +3,5 @@ node_modules/
 .env
 initial_brainstorm.jpg
 dev/
+build/
+.vercel
