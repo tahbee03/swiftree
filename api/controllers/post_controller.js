@@ -3,10 +3,12 @@ const mongoose = require("mongoose");
 
 // Get all posts
 const getPosts = async (req, res) => {
-    const posts = await Post.find({}).sort({createdAt: -1});
-    
-    if(posts.length == 0) res.status(400).json({error: "There are no posts!"});
-    else res.status(200).json(posts);
+    try {
+        const posts = await Post.find({}).sort({createdAt: -1});
+        res.status(200).json(posts);
+    } catch(err) {
+        res.status(400).json({error: err});
+    }
 };
 
 // Get specific post
