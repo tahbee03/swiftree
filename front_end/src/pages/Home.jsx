@@ -5,23 +5,29 @@ import PostTree from "../components/PostTree"; // <PostTree />
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
 
-// require("dotenv").config();
-
 export default function Home() {
     const [posts, setPosts] = useState(null); // Contains posts to be passed into post tree
+    const [isLoading, setIsLoading] = useState(true); // Boolean value used to render loading spinner
     const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
     // Runs on component render
     useEffect(() => {
         // Gets all posts from back-end
         const fetchPosts = async () => {
-            console.log(`${process.env.REACT_APP_API_URL}/posts`);
+            setIsLoading(true);
+
             const res = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
-            // const res = await fetch(`${window.location.origin}/api/posts`);
             const data = await res.json();
 
-            if (!res.ok) setError(data.error);
-            else setPosts(data);
+            if (!res.ok) {
+                setError(data.error);
+                setPosts(null);
+            } else {
+                setPosts(data);
+                setError(null);
+            }
+
+            setIsLoading(false);
         };
 
         fetchPosts();
@@ -32,16 +38,16 @@ export default function Home() {
         <>
             <Navbar />
             <div className="container" id="home-cont">
-                {posts && (
-                    <PostTree posts={posts} />
-                )}
-                {!posts && (
+                {error && (
                     <p className="error-msg">{error}</p>
+                )}
+                {isLoading && (
+                    <span className="spinner-border"></span>
+                )}
+                {posts && !isLoading && (
+                    <PostTree posts={posts} />
                 )}
             </div>
         </>
     );
 }
-
-// TODO: Make website responsive
-// TODO: Create a global error state (context) instead of redefining it in every component

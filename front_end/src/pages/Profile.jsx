@@ -10,8 +10,6 @@ import { useNavigate, useParams } from "react-router-dom"; // useNavigate(), use
 import { useAuthContext } from "../context_and_hooks/AuthContext"; // useAuthContext()
 import { useLogout } from "../context_and_hooks/useLogout"; // useLogout()
 
-// require("dotenv").config();
-
 export default function Profile() {
     const [presentedUser, setPresentedUser] = useState({
         displayName: "",

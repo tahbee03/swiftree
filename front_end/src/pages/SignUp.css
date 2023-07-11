@@ -12,8 +12,8 @@ html, body {
     justify-content: center;
     align-items: center;
 
-    width: 60%;
-    height: 80%;
+    width: 60vw; /* Width is 60% of the viewport width */
+    height: 80vh; /* Height is 80% of the viewport height */
     background-color: rgba(255, 255, 255, 0.5);
     border-radius: 25px;
 
@@ -26,8 +26,4 @@ html, body {
 
 .form-item p {
     margin: 0;
-}
-
-.error-msg {
-    color: red;
 }

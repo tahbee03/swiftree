@@ -1,24 +1,25 @@
-import "./SignUp.css";
-import { useState } from "react";
-import { useSignUp } from "../context_and_hooks/useSignUp";
-import { useNavigate } from "react-router-dom";
+import "./SignUp.css"; // Styles for Sign Up page
+
+import { useState } from "react"; // useState()
+import { useSignUp } from "../context_and_hooks/useSignUp"; // useSignUp()
+import { useNavigate } from "react-router-dom"; // useNavigate()
 
 export default function SignUp() {
-    const [email, setEmail] = useState("");
-    const [username, setUsername] = useState("");
-    const [displayName, setDisplayName] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
-    const { signUp, isLoading } = useSignUp();
-    const navigate = useNavigate();
+    const [email, setEmail] = useState(""); // Stores email input
+    const [username, setUsername] = useState(""); // Stores username input
+    const [displayName, setDisplayName] = useState(""); // Stores display name input
+    const [password, setPassword] = useState(""); // Stores password input
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
+
+    const { signUp, isLoading } = useSignUp(); // Custom hook to create new user
+    const navigate = useNavigate(); // Needed to redirect to another page
 
     async function handleSubmit(e) {
-        e.preventDefault();
+        e.preventDefault(); // No reload on submit
 
-        // console.log(`${email} | ${username} | ${password}`);
         try {
-            await signUp(email, username, displayName, password);
-            navigate("/");
+            await signUp(email, username, displayName, password); // Process input with useSignUp hook
+            navigate("/"); // Redirect to Home page
         } catch (err) {
             setError(err.message);
         }

@@ -7,3 +7,7 @@
 body {
     background-color: #A532FF;
 }
+
+.error-msg {
+    color: red;
+}
