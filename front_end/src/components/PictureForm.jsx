@@ -1,6 +1,7 @@
 import "./PictureForm.css";
 import { useState } from "react";
 import { useAuthContext } from "../context_and_hooks/AuthContext";
+require("dotenv").config();
 
 export default function PictureForm({ closeFunc }) {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -22,12 +23,12 @@ export default function PictureForm({ closeFunc }) {
         e.preventDefault();
         setIsLoading(true);
 
-        const users = await (await fetch("/api/users")).json();
+        const users = await (await fetch(`${process.env.API_URL}/users`)).json();
         const match = users.filter((u) => u.username === user.username);
         let userRes = null;
 
         if (match[0].image.public_id === "") { // No existing image for the user
-            userRes = await fetch(`/api/users/${match[0]._id}`, {
+            userRes = await fetch(`${process.env.API_URL}/users/${match[0]._id}`, {
                 method: "PATCH",
                 body: JSON.stringify({
                     mode: "IMAGE",
@@ -39,7 +40,7 @@ export default function PictureForm({ closeFunc }) {
                 headers: { "Content-Type": "application/json" }
             });
         } else { // An image for the user already exists
-            userRes = await fetch(`/api/users/${match[0]._id}`, {
+            userRes = await fetch(`${process.env.API_URL}/users/${match[0]._id}`, {
                 method: "PATCH",
                 body: JSON.stringify({
                     mode: "IMAGE",
@@ -57,7 +58,7 @@ export default function PictureForm({ closeFunc }) {
 
         if (!userRes.ok) console.log(userData.error);
         else {
-            const u = await (await fetch(`/api/users/id-search/${match[0]._id}`)).json();
+            const u = await (await fetch(`${process.env.API_URL}/users/id-search/${match[0]._id}`)).json();
             console.log("User updated!");
 
             const payload = {

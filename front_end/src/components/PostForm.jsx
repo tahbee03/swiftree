@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuthContext } from "../context_and_hooks/AuthContext";
 import "./PostForm.css";
+require("dotenv").config();
 
 export default function PostForm({ closeFunc }) {
     const [content, setContent] = useState("");
@@ -15,7 +16,7 @@ export default function PostForm({ closeFunc }) {
         const post = { author: user.username, content };
 
         // Create new post
-        const postRes = await fetch("/api/posts", {
+        const postRes = await fetch(`${process.env.API_URL}/posts`, {
             method: "POST",
             body: JSON.stringify(post),
             headers: { "Content-Type": "application/json" }
@@ -30,7 +31,7 @@ export default function PostForm({ closeFunc }) {
         }
 
         // Update user info
-        const users = await (await fetch("/api/users")).json();
+        const users = await (await fetch(`${process.env.API_URL}/users`)).json();
 
         const match = users.filter((u) => u.username === user.username);
 
@@ -38,7 +39,7 @@ export default function PostForm({ closeFunc }) {
 
         userPosts.push(postData._id);
 
-        const userRes = await fetch(`/api/users/${match[0]._id}`, {
+        const userRes = await fetch(`${process.env.API_URL}/users/${match[0]._id}`, {
             method: "PATCH",
             body: JSON.stringify({
                 mode: "POST",

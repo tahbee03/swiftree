@@ -6,6 +6,8 @@ import User from "../components/User"; // <User />
 
 import { useState } from "react"; // useState()
 
+require("dotenv").config();
+
 export default function Search() {
     const [dyInput, setDyInput] = useState(""); // Stores dynamic search input (form is updated)
     const [statInput, setStatInput] = useState(""); // Stores static search input (visible for comparison)
@@ -23,7 +25,7 @@ export default function Search() {
 
         if (mode === "post") { // Post search mode
             // Gets all posts from back-end
-            const res = await fetch("/api/posts");
+            const res = await fetch(`${process.env.API_URL}/posts`);
             const data = await res.json();
 
             if (!res.ok) {
@@ -35,7 +37,7 @@ export default function Search() {
             setPosts(data.filter((post) => post.content.search(dyInput) !== -1));
         } else { // User search mode
             // Gets all users from back-end
-            const res = await fetch("/api/users");
+            const res = await fetch(`${process.env.API_URL}/users`);
             const data = await res.json();
 
             if (!res.ok) {

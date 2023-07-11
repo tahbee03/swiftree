@@ -203,4 +203,5 @@ export default function PostTree({ posts }) {
 
 // https://youtu.be/nnRZBuLjhDY
 // https://www.w3schools.com/js/js_random.asp
-// TODO: Find a way to not have the edges overlap
+// https://www.goldencreche.com/blog/functions-in-dependency-array-of-useeffect
+// https://react.dev/reference/react/useCallback
