@@ -10,7 +10,7 @@ export function useSignUp() {
         setIsLoading(true);
         // setError(null);
 
-        const res = await fetch(`${process.env.API_URL}/users/sign-up`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/users/sign-up`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({email, username, display_name: displayName, password})

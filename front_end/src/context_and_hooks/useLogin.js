@@ -11,7 +11,7 @@ export function useLogin() {
         setIsLoading(true);
         // setError(null);
 
-        const res = await fetch(`${process.env.API_URL}/users/login`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/users/login`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({username, password})

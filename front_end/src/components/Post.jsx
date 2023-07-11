@@ -12,7 +12,7 @@ export default function Post({ post, canDelete }) {
 
     useEffect(() => {
         const fetchUser = async () => {
-            const match = await (await fetch(`${process.env.API_URL}/users/name-search/${post.author}`)).json();
+            const match = await (await fetch(`${process.env.REACT_APP_API_URL}/users/name-search/${post.author}`)).json();
             setUserPic(match.image.url);
             setDisplayName(match.display_name);
         };
@@ -24,12 +24,12 @@ export default function Post({ post, canDelete }) {
         setIsLoading(true);
 
         // Update user info
-        const users = await (await fetch(`${process.env.API_URL}/users`)).json();
+        const users = await (await fetch(`${process.env.REACT_APP_API_URL}/users`)).json();
         const match = users.filter((u) => u.username === user.username);
         let userPosts = match[0].posts;
         userPosts.splice(userPosts.indexOf(id), 1);
 
-        const userRes = await fetch(`${process.env.API_URL}/users/${match[0]._id}`, {
+        const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
             method: "PATCH",
             body: JSON.stringify({
                 mode: "POST",
@@ -57,7 +57,7 @@ export default function Post({ post, canDelete }) {
         }
 
         // Delete post
-        const res = await fetch(`${process.env.API_URL}/posts/${id}`, { method: "DELETE" });
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/posts/${id}`, { method: "DELETE" });
 
         if (res.ok) console.log("Post removed!");
         else console.log("Error removing post.");

@@ -30,7 +30,7 @@ export default function Profile() {
     useEffect(() => {
         const fetchUser = async () => {
             // Gets all users from back-end
-            const userRes = await fetch(`${process.env.API_URL}/users`);
+            const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users`);
             const userData = await userRes.json();
 
             if (!userRes.ok) {
@@ -53,7 +53,7 @@ export default function Profile() {
             });
 
             // Gets all posts from back-end
-            const postRes = await fetch(`${process.env.API_URL}/posts`);
+            const postRes = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
             const postData = await postRes.json();
 
             if (!postRes.ok) {
@@ -73,7 +73,7 @@ export default function Profile() {
         setIsLoading(true);
 
         // Gets all users from back-end
-        const res = await fetch(`${process.env.API_URL}/users`);
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/users`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -85,7 +85,7 @@ export default function Profile() {
         const match = data.filter((u) => u.username === user.username);
 
         // Updates logged in user in back-end
-        const userRes = await fetch(`${process.env.API_URL}/users/${match[0]._id}`, {
+        const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
             method: "PATCH",
             body: JSON.stringify({
                 mode: "IMAGE",

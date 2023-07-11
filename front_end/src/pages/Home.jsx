@@ -15,7 +15,8 @@ export default function Home() {
     useEffect(() => {
         // Gets all posts from back-end
         const fetchPosts = async () => {
-            const res = await fetch(`${process.env.API_URL}/posts`);
+            console.log(`${process.env.REACT_APP_API_URL}/posts`);
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
             // const res = await fetch(`${window.location.origin}/api/posts`);
             const data = await res.json();
 

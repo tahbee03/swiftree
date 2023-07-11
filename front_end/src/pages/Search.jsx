@@ -25,7 +25,7 @@ export default function Search() {
 
         if (mode === "post") { // Post search mode
             // Gets all posts from back-end
-            const res = await fetch(`${process.env.API_URL}/posts`);
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
             const data = await res.json();
 
             if (!res.ok) {
@@ -37,7 +37,7 @@ export default function Search() {
             setPosts(data.filter((post) => post.content.search(dyInput) !== -1));
         } else { // User search mode
             // Gets all users from back-end
-            const res = await fetch(`${process.env.API_URL}/users`);
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/users`);
             const data = await res.json();
 
             if (!res.ok) {
