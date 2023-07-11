@@ -22,9 +22,9 @@ app.use("/api/posts", posts_api);
 app.use("/api/users", users_api);
 
 // Re-route all other paths to React routes
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "front_end/build/index.html"));
-});
+// app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "front_end/build/index.html"));
+// });
 
 // Connect to database
 mongoose.connect(process.env.MONGO_URI)
