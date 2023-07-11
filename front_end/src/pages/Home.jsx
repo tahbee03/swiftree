@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"; // useEffect(), useState()
 
 export default function Home() {
     const [posts, setPosts] = useState(null); // Contains posts to be passed into post tree
-    const [isLoading, setIsLoading] = useState(true); // Boolean value used to render loading spinner
+    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
     const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
     // Runs on component render
@@ -42,7 +42,9 @@ export default function Home() {
                     <p className="error-msg">{error}</p>
                 )}
                 {isLoading && (
-                    <span className="spinner-border"></span>
+                    <div className="spinner-cont">
+                        <span className="spinner-border"></span>
+                    </div>
                 )}
                 {posts && !isLoading && (
                     <PostTree posts={posts} />
