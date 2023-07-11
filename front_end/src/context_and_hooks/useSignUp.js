@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuthContext } from "./AuthContext";
-require("dotenv").config();
+// require("dotenv").config();
 
 export function useSignUp() {
     const [isLoading, setIsLoading] = useState(null);

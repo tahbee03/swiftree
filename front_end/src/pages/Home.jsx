@@ -5,7 +5,7 @@ import PostTree from "../components/PostTree"; // <PostTree />
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
 
-require("dotenv").config();
+// require("dotenv").config();
 
 export default function Home() {
     const [posts, setPosts] = useState(null); // Contains posts to be passed into post tree

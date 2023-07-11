@@ -6,7 +6,7 @@ import User from "../components/User"; // <User />
 
 import { useState } from "react"; // useState()
 
-require("dotenv").config();
+// require("dotenv").config();
 
 export default function Search() {
     const [dyInput, setDyInput] = useState(""); // Stores dynamic search input (form is updated)

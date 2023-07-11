@@ -2,7 +2,7 @@ import "./Post.css";
 import format from "date-fns/format";
 import { useAuthContext } from "../context_and_hooks/AuthContext";
 import { useEffect, useState } from "react";
-require("dotenv").config();
+// require("dotenv").config();
 
 export default function Post({ post, canDelete }) {
     const { user, dispatch } = useAuthContext();

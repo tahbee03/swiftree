@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuthContext } from "../context_and_hooks/AuthContext";
 import "./PostForm.css";
-require("dotenv").config();
+// require("dotenv").config();
 
 export default function PostForm({ closeFunc }) {
     const [content, setContent] = useState("");

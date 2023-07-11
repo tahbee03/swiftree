@@ -1,7 +1,7 @@
 import "./PictureForm.css";
 import { useState } from "react";
 import { useAuthContext } from "../context_and_hooks/AuthContext";
-require("dotenv").config();
+// require("dotenv").config();
 
 export default function PictureForm({ closeFunc }) {
     const [selectedFile, setSelectedFile] = useState(null);
