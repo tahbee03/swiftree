@@ -99,7 +99,7 @@ const userSignUp = async (req, res) => {
             username: usernameL, 
             display_name, 
             password: hash, 
-            image: {public_id: "", url: ""}
+            image: {public_id: "", url: "/account_icon.png"}
         });
         const token = createToken(user._id, user.email, user.username);
         res.status(200).json({
@@ -137,7 +137,7 @@ const updateImage = async ({selectedFile: s, public_id: p}) => {
         return {
             image: {
                 public_id: "",
-                url: ""
+                url: "/account_icon.png"
             }
         }
     } else { // Update image
@@ -168,13 +168,14 @@ const updateUser = async (req, res) => {
     try {
         if(req.body.mode === "IMAGE") req.body = await updateImage(req.body.content);
         else req.body = req.body.content;
+
+        const user = await User.findByIdAndUpdate({_id: id}, {...req.body});
+        if(!user) res.status(404).json({error: "No such user!"});
+        else res.status(200).json(user);
     } catch(err) {
-        console.log(err);
+        console.log(err.message);
+        res.status(500).json({error: err});
     }
-    
-    const user = await User.findByIdAndUpdate({_id: id}, {...req.body});
-    if(!user) res.status(404).json({error: "No such user!"});
-    else res.status(200).json(user);
 };
 
 // Delete specific user

@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const getPosts = async (req, res) => {
     const posts = await Post.find({}).sort({createdAt: -1});
     
-    if(posts.length == 0) res.status(400).json({err: "There are no posts!"});
+    if(posts.length == 0) res.status(400).json({error: "There are no posts!"});
     else res.status(200).json(posts);
 };
 
