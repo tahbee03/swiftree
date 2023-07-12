@@ -92,5 +92,3 @@ export default function PostForm({ closeFunc }) {
         </div>
     );
 }
-
-// TODO: Create a modal structure for the form

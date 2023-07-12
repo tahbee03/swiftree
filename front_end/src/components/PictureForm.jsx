@@ -98,5 +98,3 @@ export default function PictureForm({ closeFunc }) {
         </div>
     );
 }
-
-// TODO: Create a modal structure for the form
