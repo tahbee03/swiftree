@@ -1,8 +1,7 @@
 import "./Post.css";
-import format from "date-fns/format";
 import { useAuthContext } from "../context_and_hooks/AuthContext";
 import { useEffect, useState } from "react";
-// require("dotenv").config();
+import { format, formatDistanceToNow } from "date-fns"; // format(), formatDistanceToNow()
 
 export default function Post({ post, canDelete }) {
     const { user, dispatch } = useAuthContext();
@@ -74,7 +73,12 @@ export default function Post({ post, canDelete }) {
                     <img src={(userPic === "") ? "/account_icon.png" : userPic} alt="user-pfp" />
                     <p className="author">{displayName}</p>
                 </a>
-                <p className="date">{`Posted on ${format(new Date(post.createdAt), "MM/dd/yyyy")}`}</p>
+                {window.location.pathname === "/" && (
+                    <p className="date">{`Posted ${formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}`}</p>
+                )}
+                {!(window.location.pathname === "/") && (
+                    <p className="date">{`Posted on ${format(new Date(post.createdAt), "MM/dd/yyyy")} at ${format(new Date(post.createdAt), "hh:mm  a")} (${format(new Date(post.createdAt), "O")})`}</p>
+                )}
             </div>
             <div className="col-3 icon-section">
                 {canDelete && (

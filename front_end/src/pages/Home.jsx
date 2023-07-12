@@ -23,9 +23,18 @@ export default function Home() {
                 setError(data.error);
                 setPosts(null);
             } else {
-                setPosts(data);
+                const now = new Date().getTime();
+                setPosts(data.filter((p) => (now - new Date(p.createdAt).getTime()) < (3600000 * 24)));
                 setError(null);
             }
+
+            /*
+            1 hour = 3600000 milliseconds
+            => 24 hours = (3600000 * 24) milliseconds
+            
+            new Date().getTime() -> milliseconds since Unix epoch
+            => new Date(a).getTime() - new Date(b).getTime() -> time difference between times a and b in milliseconds
+            */
 
             setIsLoading(false);
         };
