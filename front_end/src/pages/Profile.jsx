@@ -7,8 +7,9 @@ import Navbar from "../components/Navbar"; // <Navbar />
 
 import { useState, useEffect } from "react"; // useState(), useEffect()
 import { useNavigate, useParams } from "react-router-dom"; // useNavigate(), useParams()
-import { useAuthContext } from "../context_and_hooks/AuthContext"; // useAuthContext()
-import { useLogout } from "../context_and_hooks/useLogout"; // useLogout()
+import { useAuthContext } from "../contexts/AuthContext"; // useAuthContext()
+import { useLogout } from "../hooks/useLogout"; // useLogout()
+import { useErrorContext } from "../contexts/ErrorContext"; // useErrorContext()
 
 export default function Profile() {
     const [presentedUser, setPresentedUser] = useState({
@@ -17,12 +18,13 @@ export default function Profile() {
     }); // Contains data for the user presented on the page
     const [posts, setPosts] = useState([]); // Contains posts to be displayed in the posts container
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
-    const [error, setError] = useState(null); // Stores error from back-end response (if any)
+    // const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
     const navigate = useNavigate(); // Needed to redirect to another page
     const { username } = useParams(); // Grabs username of the user that the page belongs to from the URL
     const { logout } = useLogout(); // Custom hook to log out logged in user
-    const { user, dispatch } = useAuthContext(); // Contains data for logged in user
+    const { user, dispatch: authDispatch } = useAuthContext(); // Contains data for logged in user
+    const { error, dispatch: errorDispatch } = useErrorContext(); // Stores error from back-end response (if any)
 
     // Runs when username value is updated
     useEffect(() => {
@@ -31,18 +33,12 @@ export default function Profile() {
             const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users`);
             const userData = await userRes.json();
 
-            if (!userRes.ok) {
-                setError(userData.error);
-                return;
-            }
+            if (!userRes.ok) throw Error(userData.error);
 
             // Filters users to match the one in the URL
             const match = userData.filter((u) => u.username === username);
 
-            if (match.length === 0) {
-                setError(`The user '${username}' does not exist!`);
-                return;
-            }
+            if (match.length === 0) throw Error(`The user '${username}' does not exist!`);
 
             // Updates the presented user's information
             setPresentedUser({
@@ -54,74 +50,80 @@ export default function Profile() {
             const postRes = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
             const postData = await postRes.json();
 
-            if (!postRes.ok) {
-                setError(postData.error);
-                return;
-            }
+            if (!postRes.ok) throw Error(postData.error);
 
             // Filters posts to match the one in the URL and updates the posts to be shown
             setPosts(postData.filter((post) => post.author === username));
         };
 
-        fetchUser();
+        try {
+            fetchUser();
+            errorDispatch({ type: "RESET" });
+        } catch (err) {
+            errorDispatch({ type: "SET", payload: err.message });
+        }
     }, [username]);
 
     // Removes user's picture from cloud and sets it to default
     async function handlePictureRemoval() {
-        setIsLoading(true);
+        try {
+            setIsLoading(true);
 
-        // Gets all users from back-end
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/users`);
-        const data = await res.json();
+            // Gets all users from back-end
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/users`);
+            const data = await res.json();
 
-        if (!res.ok) {
-            setError(data.error);
-            return;
+            if (!res.ok) throw Error(data.error);
+
+            // Filters users to match the one logged in
+            const match = data.filter((u) => u.username === user.username);
+
+            // Updates logged in user in back-end
+            const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
+                method: "PATCH",
+                body: JSON.stringify({
+                    mode: "IMAGE",
+                    content: {
+                        selectedFile: "",
+                        public_id: match[0].image.public_id
+                    }
+                }),
+                headers: { "Content-Type": "application/json" }
+            });
+            const userData = await userRes.json();
+
+            if (!userRes.ok) throw Error(userData.error);
+
+            // Updates logged in user in AuthContext
+            const payload = {
+                username: user.username,
+                display_name: user.display_name,
+                pfp: "/account_icon.png",
+                posts: user.posts,
+                token: user.token
+            };
+            authDispatch({ type: "UPDATE", payload });
+
+            // Updates logged in user in browser storage
+            sessionStorage.setItem("user", JSON.stringify(payload));
+
+            setIsLoading(false);
+            errorDispatch({ type: "RESET" });
+            window.location.reload(); // Reloads page
+        } catch (err) {
+            errorDispatch({ type: "SET", payload: err.message });
         }
-
-        // Filters users to match the one logged in
-        const match = data.filter((u) => u.username === user.username);
-
-        // Updates logged in user in back-end
-        const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
-            method: "PATCH",
-            body: JSON.stringify({
-                mode: "IMAGE",
-                content: {
-                    selectedFile: "",
-                    public_id: match[0].image.public_id
-                }
-            }),
-            headers: { "Content-Type": "application/json" }
-        });
-        const userData = await userRes.json();
-
-        if (!userRes.ok) {
-            setError(userData.error);
-            return;
-        }
-
-        // Updates logged in user in AuthContext
-        const payload = {
-            username: user.username,
-            display_name: user.display_name,
-            pfp: "/account_icon.png",
-            posts: user.posts,
-            token: user.token
-        };
-        dispatch({ type: "UPDATE", payload });
-
-        // Updates logged in user in browser storage
-        sessionStorage.setItem("user", JSON.stringify(payload));
-
-        setIsLoading(false);
-        window.location.reload(); // Reloads page
     }
 
     // Logs out logged in user
     function handleLogout() {
-        logout();
-        navigate("/login"); // Redirect to Login page
+        try {
+            logout();
+            errorDispatch({ type: "RESET" });
+            navigate("/login"); // Redirect to Login page
+        } catch (err) {
+            errorDispatch({ type: "SET", payload: err.message });
+        }
     }
 
     // Opens modal to show active form

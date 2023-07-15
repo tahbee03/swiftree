@@ -1,4 +1,4 @@
-import { useAuthContext } from "./AuthContext";
+import { useAuthContext } from "../contexts/AuthContext";
 
 export function useLogout() {
 

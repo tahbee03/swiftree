@@ -1,5 +1,5 @@
 import "./Post.css";
-import { useAuthContext } from "../context_and_hooks/AuthContext";
+import { useAuthContext } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { format, formatDistanceToNow } from "date-fns"; // format(), formatDistanceToNow()
 

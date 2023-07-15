@@ -5,6 +5,7 @@ import Post from "../components/Post"; // <Post />
 import User from "../components/User"; // <User />
 
 import { useState } from "react"; // useState()
+import { useErrorContext } from "../contexts/ErrorContext"; // useErrorContext()
 
 export default function Search() {
     const [dyInput, setDyInput] = useState(""); // Stores dynamic search input (form is updated)
@@ -13,49 +14,51 @@ export default function Search() {
     const [users, setUsers] = useState([]); // Stores users matching search input
     const [mode, setMode] = useState("post"); // Stores the current search mode
     const [searchProcessed, setSearchProcessed] = useState(false); // Boolean value used to show search results
-    const [error, setError] = useState(null); // Stores error from back-end response (if any)
+    // const [error, setError] = useState(null); // Stores error from back-end response (if any)
+
+    const { error, dispatch } = useErrorContext(); // Stores error from back-end response (if any)
 
     // Processes submitted search input
     async function handleSearch(e) {
         e.preventDefault(); // No reload on submit
 
-        setSearchProcessed(false);
+        try {
+            setSearchProcessed(false);
 
-        if (mode === "post") { // Post search mode
-            // Gets all posts from back-end
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
-            const data = await res.json();
+            if (mode === "post") { // Post search mode
+                // Gets all posts from back-end
+                const res = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
+                const data = await res.json();
 
-            if (!res.ok) {
-                setError(data.error);
-                return;
+                if (!res.ok) throw Error(data.error);
+
+                // Filters posts to find the ones whose content matches the search input
+                setPosts(data.filter((post) => post.content.search(dyInput) !== -1));
+            } else { // User search mode
+                // Gets all users from back-end
+                const res = await fetch(`${process.env.REACT_APP_API_URL}/users`);
+                const data = await res.json();
+
+                if (!res.ok) throw Error(data.error);
+
+                // Filters users to find the ones whose username matches the search input
+                const usernameMatch = data.filter((u) => u.username.search(dyInput) !== -1);
+
+                // Filters users to find the ones whose display name matches the search input
+                const displayNameMatch = data.filter((u) => u.display_name.search(dyInput) !== -1);
+
+                // Creates a combined list of unique matches
+                setUsers(Array.from(new Set([].concat(usernameMatch, displayNameMatch))));
             }
 
-            // Filters posts to find the ones whose content matches the search input
-            setPosts(data.filter((post) => post.content.search(dyInput) !== -1));
-        } else { // User search mode
-            // Gets all users from back-end
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/users`);
-            const data = await res.json();
+            setStatInput(dyInput);
+            setDyInput("");
+            setSearchProcessed(true);
 
-            if (!res.ok) {
-                setError(data.error);
-                return;
-            }
-
-            // Filters users to find the ones whose username matches the search input
-            const usernameMatch = data.filter((u) => u.username.search(dyInput) !== -1);
-
-            // Filters users to find the ones whose display name matches the search input
-            const displayNameMatch = data.filter((u) => u.display_name.search(dyInput) !== -1);
-
-            // Creates a combined list of unique matches
-            setUsers(Array.from(new Set([].concat(usernameMatch, displayNameMatch))));
+            dispatch({ type: "RESET" });
+        } catch (err) {
+            dispatch({ type: "SET", payload: err.message });
         }
-
-        setStatInput(dyInput);
-        setDyInput("");
-        setSearchProcessed(true);
     }
 
     // Changes search functionality and applies appropriate text color to buttons

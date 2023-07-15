@@ -1,20 +1,19 @@
 import { useState } from "react";
-import { useAuthContext } from "./AuthContext";
+import { useAuthContext } from "../contexts/AuthContext";
 // require("dotenv").config();
 
-export function useLogin() {
-    // const [error, setError] = useState(null);
+export function useSignUp() {
     const [isLoading, setIsLoading] = useState(null);
     const {dispatch} = useAuthContext();
 
-    async function login(username, password) {
+    async function signUp(email, username, displayName, password) {
         setIsLoading(true);
         // setError(null);
 
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/users/login`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/users/sign-up`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({username, password})
+            body: JSON.stringify({email, username, display_name: displayName, password})
         });
         const data = await res.json();
 
@@ -29,5 +28,5 @@ export function useLogin() {
         }
     }
 
-    return { login, isLoading };
+    return { signUp, isLoading };
 }
