@@ -40,7 +40,6 @@ https://www.w3schools.com/howto/howto_css_modals.asp
 
 #tree-canvas {
     height: 100%;
-    background-color: white;
     border-radius: 15px;
 
     display: block;
@@ -55,4 +54,8 @@ https://www.w3schools.com/howto/howto_css_modals.asp
 .tree-edge {
     stroke: rgb(134, 134, 134);
     stroke-width: 3px;
+}
+
+#tree-canvas image {
+    cursor: pointer;
 }

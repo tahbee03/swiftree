@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom"; // useNavigate(), use
 import { useAuthContext } from "../contexts/AuthContext"; // useAuthContext()
 import { useLogout } from "../hooks/useLogout"; // useLogout()
 import { useErrorContext } from "../contexts/ErrorContext"; // useErrorContext()
+import PostTree from "../components/PostTree";
 
 export default function Profile() {
     const [presentedUser, setPresentedUser] = useState({
@@ -192,9 +193,12 @@ export default function Profile() {
                             {(posts.length === 0) && (
                                 <p>This user has no posts!</p>
                             )}
-                            {!(posts.length === 0) && posts.map((post) => (
+                            {!(posts.length === 0) && (
+                                <PostTree posts={posts} page={"profile"} />
+                            )}
+                            {/* {!(posts.length === 0) && posts.map((post) => (
                                 <Post key={post._id} post={post} canDelete={user && (user.username === username)} />
-                            ))}
+                            ))} */}
                         </div>
                     </div>
                 )}

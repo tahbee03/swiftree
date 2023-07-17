@@ -8,7 +8,7 @@ function randomNum(min, max) {
     return (Math.random() * (max - min)) + min;
 }
 
-export default function PostTree({ posts }) {
+export default function PostTree({ posts, page }) {
     // TODO: Create a separate file to handle tree logic
 
     const [bounds, setBounds] = useState({
@@ -72,6 +72,9 @@ export default function PostTree({ posts }) {
             left: canvas.getBoundingClientRect().left,
             right: canvas.getBoundingClientRect().right
         });
+
+        if (page === "home") canvas.style.backgroundColor = "white";
+        else canvas.style.backgroundColor = "rgba(255, 255, 255, 0)";
     }, []);
 
     // Run when posts prop or bounds state is updated
@@ -192,6 +195,13 @@ export default function PostTree({ posts }) {
                             stroke="black"
                             strokeWidth="3"
                             fill="#A532FF"
+                        />
+                        <image
+                            href="/refresh.png"
+                            x={((bounds.right - bounds.left) / 2) - 25}
+                            y={((bounds.bottom - bounds.top) / 2) - 25}
+                            width="50"
+                            height="50"
                             onClick={() => setNodes(createNodeList(posts.length))}
                         />
                     </>

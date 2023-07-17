@@ -65,7 +65,7 @@ export default function Home() {
                     </div>
                 )}
                 {posts && !isLoading && (
-                    <PostTree posts={posts} />
+                    <PostTree posts={posts} page={"home"} />
                 )}
             </div>
         </>
