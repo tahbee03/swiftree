@@ -1,13 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import "bootstrap/dist/css/bootstrap.css"; // Import Bootstrap CSS
-import App from './App';
-import './index.css';
-import { AuthContextProvider } from './contexts/AuthContext';
-import { ErrorContextProvider } from './contexts/ErrorContext';
+import "bootstrap/dist/css/bootstrap.css"; // Bootstrap CSS
+import './index.css'; // Global styles (must be after Bootstrap to override)
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+import App from './App'; // <App />
+import { AuthContextProvider } from './contexts/AuthContext'; // <AuthContextProvider>
+import { ErrorContextProvider } from './contexts/ErrorContext'; // <ErrorContextProvider>
+
+import ReactDOM from 'react-dom/client'; // ReactDOM.createRoot()
+
+ReactDOM.createRoot(document.getElementById('root')).render(
     <ErrorContextProvider>
         <AuthContextProvider>
             <App />
