@@ -1,4 +1,6 @@
 import { useCallback, useState } from 'react';
+import { useAuthContext } from "../contexts/AuthContext"; // useAuthContext()
+import { useParams } from "react-router-dom"; // useParams()
 import { useEffect } from "react";
 import "./PostTree.css";
 import Post from "../components/Post";
@@ -10,6 +12,9 @@ function randomNum(min, max) {
 
 export default function PostTree({ posts, page }) {
     // TODO: Create a separate file to handle tree logic
+
+    const { user } = useAuthContext(); // Contains data for logged in user
+    const { username } = useParams(); // Grabs username of the user that the page belongs to from the URL
 
     const [bounds, setBounds] = useState({
         top: 0,
@@ -155,7 +160,7 @@ export default function PostTree({ posts, page }) {
                 <div className="modal-content">
                     <div className="close" onClick={closeModal}>&times;</div>
                     {currentPost && (
-                        <Post post={currentPost} />
+                        <Post post={currentPost} canDelete={user && user.username === username} />
                     )}
                 </div>
             </div>
