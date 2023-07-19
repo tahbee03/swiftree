@@ -1,12 +1,11 @@
-import { useAuthContext } from "../contexts/AuthContext";
+import { useAuthContext } from "../contexts/AuthContext"; // useAuthContext()
 
 export function useLogout() {
-
-    const {dispatch} = useAuthContext();
+    const { dispatch } = useAuthContext(); // Gives the hook the ability to update the logged in user's info
 
     function logout() {
-        sessionStorage.removeItem("user"); // Remove user from browser local storage
-        dispatch({type: "LOGOUT"}); // Dispatch logout action and update AuthContext
+        sessionStorage.removeItem("user"); // Removes user from browser local storage
+        dispatch({type: "LOGOUT"}); // Dispatches logout action and updates AuthContext
     }
 
     return { logout };

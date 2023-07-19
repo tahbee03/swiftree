@@ -19,7 +19,6 @@ export default function Profile() {
     }); // Contains data for the user presented on the page
     const [posts, setPosts] = useState([]); // Contains posts to be displayed in the posts container
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
-    // const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
     const navigate = useNavigate(); // Needed to redirect to another page
     const { username } = useParams(); // Grabs username of the user that the page belongs to from the URL
@@ -119,11 +118,13 @@ export default function Profile() {
     // Logs out logged in user
     function handleLogout() {
         try {
+            setIsLoading(true);
             logout();
             errorDispatch({ type: "RESET" });
             navigate("/login"); // Redirect to Login page
         } catch (err) {
             errorDispatch({ type: "SET", payload: err.message });
+            setIsLoading(false);
         }
     }
 

@@ -8,9 +8,9 @@ import { useErrorContext } from "../contexts/ErrorContext"; // useErrorContext()
 export default function Login() {
     const [username, setUsername] = useState(""); // Stores username input
     const [password, setPassword] = useState(""); // Stores password input
-    // const [error, setError] = useState(null); // Stores error from back-end response (if any)
+    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
 
-    const { login, isLoading } = useLogin(); // Custom hook to log in user
+    const { login } = useLogin(); // Custom hook to log in user
     const navigate = useNavigate(); // Needed to redirect to another page
     const { error, dispatch } = useErrorContext(); // Stores error from back-end response (if any)
 
@@ -18,12 +18,13 @@ export default function Login() {
         e.preventDefault(); // No reload on submit
 
         try {
+            setIsLoading(true);
             await login(username, password); // Process input with useLogin hook
             dispatch({ type: "RESET" });
             navigate("/"); // Redirect to Home page
         } catch (err) {
-            // setError(err.message);
             dispatch({ type: "SET", payload: err.message });
+            setIsLoading(false);
         }
     }
 
@@ -57,7 +58,16 @@ export default function Login() {
                         />
                     </div>
 
-                    <button disabled={isLoading}>Login</button>
+                    <button disabled={isLoading}>
+                        {isLoading && (
+                            <span className="spinner-border"></span>
+                        )}
+                        {!isLoading && (
+                            <>
+                                Login
+                            </>
+                        )}
+                    </button>
                     {error && <div className="error-msg">{error}</div>}
                 </form>
 

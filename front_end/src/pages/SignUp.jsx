@@ -10,9 +10,9 @@ export default function SignUp() {
     const [username, setUsername] = useState(""); // Stores username input
     const [displayName, setDisplayName] = useState(""); // Stores display name input
     const [password, setPassword] = useState(""); // Stores password input
-    // const [error, setError] = useState(null); // Stores error from back-end response (if any)
+    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
 
-    const { signUp, isLoading } = useSignUp(); // Custom hook to create new user
+    const { signUp } = useSignUp(); // Custom hook to create new user
     const navigate = useNavigate(); // Needed to redirect to another page
     const { error, dispatch } = useErrorContext(); // Stores error from back-end response (if any)
 
@@ -20,12 +20,13 @@ export default function SignUp() {
         e.preventDefault(); // No reload on submit
 
         try {
+            setIsLoading(true);
             await signUp(email, username, displayName, password); // Process input with useSignUp hook
             dispatch({ type: "RESET" });
             navigate("/"); // Redirect to Home page
         } catch (err) {
-            // setError(err.message);
             dispatch({ type: "SET", payload: err.message });
+            setIsLoading(false);
         }
     }
 
@@ -79,7 +80,16 @@ export default function SignUp() {
                         />
                     </div>
 
-                    <button disabled={isLoading}>Sign Up</button>
+                    <button disabled={isLoading}>
+                        {isLoading && (
+                            <span className="spinner-border"></span>
+                        )}
+                        {!isLoading && (
+                            <>
+                                Sign Up
+                            </>
+                        )}
+                    </button>
                     {error && <div className="error-msg">{error}</div>}
                 </form>
 
