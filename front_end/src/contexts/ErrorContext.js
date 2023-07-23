@@ -1,9 +1,9 @@
-import { createContext } from "react";
+import { createContext } from "react"; // createContext()
 
 // Context
 export const ErrorContext = createContext();
 
-// Reducer
+// Reducer (defines actions done to update error info)
 export function errorReducer(state, action) {
     switch(action.type) {
         case "SET":
