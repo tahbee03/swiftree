@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuthContext } from "../contexts/AuthContext";
+import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import "./PostForm.css";
 // require("dotenv").config();
 

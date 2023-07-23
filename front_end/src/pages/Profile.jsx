@@ -7,7 +7,7 @@ import Navbar from "../components/Navbar"; // <Navbar />
 
 import { useState, useEffect } from "react"; // useState(), useEffect()
 import { useNavigate, useParams } from "react-router-dom"; // useNavigate(), useParams()
-import { useAuthContext } from "../contexts/AuthContext"; // useAuthContext()
+import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { useLogout } from "../hooks/useLogout"; // useLogout()
 import { useErrorContext } from "../contexts/ErrorContext"; // useErrorContext()
 import PostTree from "../components/PostTree";

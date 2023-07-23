@@ -1,6 +1,6 @@
 import "./PictureForm.css";
 import { useState } from "react";
-import { useAuthContext } from "../contexts/AuthContext";
+import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 // require("dotenv").config();
 
 export default function PictureForm({ closeFunc }) {

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useAuthContext } from "../contexts/AuthContext"; // useAuthContext()
+import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { useParams } from "react-router-dom"; // useParams()
 import { useEffect } from "react";
 import "./PostTree.css";

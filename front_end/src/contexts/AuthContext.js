@@ -1,4 +1,4 @@
-import { createContext, useReducer, useContext, useEffect } from "react";
+import { createContext } from "react";
 
 // Context
 export const AuthContext = createContext();
@@ -15,34 +15,4 @@ export function authReducer(state, action) {
         default:
             return state;
     }
-}
-
-// React component
-export function AuthContextProvider({ children }) {
-    const [state, dispatch] = useReducer(authReducer, { 
-        user: null
-    });
-
-    useEffect(() => {
-        const user = JSON.parse(sessionStorage.getItem("user"));
-
-        if(user) dispatch({type: "LOGIN", payload: user});
-    }, []);
-
-    console.log(state);
-    
-    return (
-        <AuthContext.Provider value={{ ...state, dispatch }}>
-            { children }
-        </AuthContext.Provider>
-    );
-}
-
-// Context hook
-export function useAuthContext() {
-    const context = useContext(AuthContext);
-
-    if(!context) throw Error("useAuthContext must be inside an AuthContextProvider");
-
-    return context;
 }

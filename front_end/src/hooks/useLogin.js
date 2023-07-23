@@ -1,4 +1,4 @@
-import { useAuthContext } from "../contexts/AuthContext"; // useAuthContext()
+import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 
 export function useLogin() {
     const { dispatch } = useAuthContext(); // Gives the hook the ability to update the logged in user's info
