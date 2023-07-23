@@ -3,7 +3,7 @@ import "./Login.css"; // Styles for Login page
 import { useState } from "react"; // useState()
 import { useLogin } from "../hooks/useLogin"; // useLogin()
 import { useNavigate } from "react-router-dom"; // useNavigate()
-import { useErrorContext } from "../contexts/ErrorContext"; // useErrorContext()
+import { useErrorContext } from "../hooks/useErrorContext"; // useErrorContext()
 
 export default function Login() {
     const [username, setUsername] = useState(""); // Stores username input

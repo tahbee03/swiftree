@@ -3,7 +3,7 @@ import "./SignUp.css"; // Styles for Sign Up page
 import { useState } from "react"; // useState()
 import { useSignUp } from "../hooks/useSignUp"; // useSignUp()
 import { useNavigate } from "react-router-dom"; // useNavigate()
-import { useErrorContext } from "../contexts/ErrorContext"; // useErrorContext()
+import { useErrorContext } from "../hooks/useErrorContext"; // useErrorContext()
 
 export default function SignUp() {
     const [email, setEmail] = useState(""); // Stores email input

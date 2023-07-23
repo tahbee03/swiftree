@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar"; // <Navbar />
 import PostTree from "../components/PostTree"; // <PostTree />
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
-import { useErrorContext } from "../contexts/ErrorContext"; // useErrorContext()
+import { useErrorContext } from "../hooks/useErrorContext"; // useErrorContext()
 
 export default function Home() {
     const [posts, setPosts] = useState(null); // Contains posts to be passed into post tree

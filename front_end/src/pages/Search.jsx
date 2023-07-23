@@ -5,7 +5,7 @@ import Post from "../components/Post"; // <Post />
 import User from "../components/User"; // <User />
 
 import { useState } from "react"; // useState()
-import { useErrorContext } from "../contexts/ErrorContext"; // useErrorContext()
+import { useErrorContext } from "../hooks/useErrorContext"; // useErrorContext()
 
 export default function Search() {
     const [dyInput, setDyInput] = useState(""); // Stores dynamic search input (form is updated)
