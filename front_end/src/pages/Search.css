@@ -35,12 +35,8 @@
 }
 
 #search-cont > #search-results {
-    overflow-y: hidden;
+    overflow-y: scroll;
     height: 90%; /* Needed for overflow-y to work (1) */
-}
-
-#search-cont > #search-results:hover {
-    overflow-y: auto;
 }
 
 #search-cont > #search-results > #match-text { 
