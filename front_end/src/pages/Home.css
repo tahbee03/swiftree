@@ -1,6 +1,7 @@
 #home-cont {
     height: 75vh; /* Container is 75% of the viewport height */
     margin-top: 5vh; /* Spacing between navbar and container */
+    padding: 0;
 }
 
 .spinner-cont {

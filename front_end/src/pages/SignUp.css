@@ -1,8 +1,4 @@
-html, body {
-    height: 100%;
-}
-
-.sign-up-main {
+#sign-up-main {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -12,7 +8,6 @@ html, body {
     justify-content: center;
     align-items: center;
 
-    width: 60vw; /* Width is 60% of the viewport width */
     height: 80vh; /* Height is 80% of the viewport height */
     background-color: rgba(255, 255, 255, 0.5);
     border-radius: 25px;

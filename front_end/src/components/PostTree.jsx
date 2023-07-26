@@ -127,9 +127,8 @@ export default function PostTree({ posts, page }) {
         document.getElementById("refresh").addEventListener("click", createCanvas);
         window.addEventListener("resize", createCanvas);
 
-        // Cleans up event listeners when the component unmounts
+        // Cleans up event listeners when the component unmounts (?)
         return () => {
-            document.getElementById("refresh").removeEventListener("click", createCanvas);
             window.removeEventListener("resize", createCanvas);
         };
     }, []);

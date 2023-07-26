@@ -88,7 +88,7 @@ export default function Search() {
             <Navbar />
             <div className="container" id="search-cont">
                 <form onSubmit={handleSearch} id="search-form" className="row">
-                    <div id="search-input" className="col-6">
+                    <div id="search-input" className="col-sm-6 col-12">
                         <input
                             type="text"
                             name="search-input"
@@ -98,7 +98,7 @@ export default function Search() {
                         />
                         <button type="submit">Search</button>
                     </div>
-                    <div id="search-options" className="col-6">
+                    <div id="search-options" className="col-sm-6 col-12">
                         <button type="button" id="toggle-post-mode" onClick={switchMode} className="active-button">Post Search</button>
                         <button type="button" id="toggle-user-mode" onClick={switchMode}>User Search</button>
                     </div>

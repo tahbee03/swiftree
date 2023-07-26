@@ -1,6 +1,6 @@
 import "./Login.css"; // Styles for Login page
 
-import { useState } from "react"; // useState()
+import { useState, useEffect } from "react"; // useState()
 import { useLogin } from "../hooks/useLogin"; // useLogin()
 import { useNavigate } from "react-router-dom"; // useNavigate()
 import { useErrorContext } from "../hooks/useErrorContext"; // useErrorContext()
@@ -28,8 +28,25 @@ export default function Login() {
         }
     }
 
+    useEffect(() => {
+        const adjustContainer = () => {
+            const container = document.getElementById("login-main");
+
+            if (window.innerWidth < 576) container.style.width = "90vw";
+            else container.style.width = "60vw";
+        };
+
+        adjustContainer();
+
+        window.addEventListener("resize", adjustContainer);
+
+        return () => {
+            window.removeEventListener("resize", adjustContainer);
+        };
+    }, []);
+
     return (
-        <main className="login-main">
+        <main id="login-main">
             <div>
                 <a href="/">
                     <h1>swiftree</h1>

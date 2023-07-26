@@ -26,6 +26,33 @@ export default function Profile() {
     const { user, dispatch: authDispatch } = useAuthContext(); // Contains data for logged in user
     const { error, dispatch: errorDispatch } = useErrorContext(); // Stores error from back-end response (if any)
 
+    useEffect(() => {
+        const adjust = () => {
+            const infoCol = document.getElementById("info-col");
+            const profileCont = document.getElementById("profile-cont");
+
+            if (window.innerWidth < 768) {
+                infoCol.style.backgroundColor = "rgba(255, 255, 255, 0)";
+                infoCol.style.height = "fit-content";
+
+                profileCont.style.marginTop = "0";
+            } else {
+                infoCol.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+                infoCol.style.height = "100%";
+
+                profileCont.style.marginTop = "5vh";
+            }
+        };
+
+        adjust();
+
+        window.addEventListener("resize", adjust);
+
+        return () => {
+            window.removeEventListener("resize", adjust);
+        };
+    }, []);
+
     // Runs when username value is updated
     useEffect(() => {
         const fetchUser = async () => {
@@ -162,7 +189,7 @@ export default function Profile() {
                 )}
                 {!error && (
                     <div className="row">
-                        <div className="col-3" id="info-col">
+                        <div className="col-md-3 col-12" id="info-col">
                             <img src={presentedUser.pfp} alt="account pic" />
                             <p><b>{presentedUser.displayName}</b> &#183; {username}</p>
                             <p>{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
@@ -190,7 +217,7 @@ export default function Profile() {
                                 </>
                             )}
                         </div>
-                        <div className="col-8" id="posts-col">
+                        <div className="col-md-8 col-12" id="posts-col">
                             {(posts.length === 0) && (
                                 <p>This user has no posts!</p>
                             )}

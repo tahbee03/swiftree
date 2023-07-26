@@ -11,13 +11,17 @@
     height: 10%;
 }
 
-#search-cont > #search-form > .col-6 {
+#search-cont > #search-form > #search-input > input {
+    width: 80%;
+}
+
+#search-cont > #search-form > .col-sm-6 {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#search-cont > #search-form > .col-6 > * {
+#search-cont > #search-form > .col-sm-6 > * {
     height: 2rem;
     margin: 0;
 }

@@ -1,6 +1,5 @@
 #profile-cont {
     height: 75vh; /* Container is 75% of the viewport height */
-    margin-top: 5vh; /* Spacing between navbar and container */
 }
 
 #post-form-modal, #picture-form-modal {
@@ -21,10 +20,9 @@
 }
 
 #profile-cont #info-col, #profile-cont #posts-col {
-    background-color: rgba(255, 255, 255, 0.5);
     margin: auto;
-    height: 100%; /* Height matches the height of parent (#profile-cont .row) */
     border-radius: 15px;
+    height: 100%; /* Height matches the height of parent (#profile-cont .row) */
 }
 
 #profile-cont #info-col {
@@ -60,9 +58,8 @@
 }
 
 #profile-cont #posts-col {
-    overflow-y: hidden; /* Hide "extra" posts by default */
-}
-
-#profile-cont #posts-col:hover {
-    overflow-y: auto; /* Show and enable scrollbar if need be */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.5);
 }

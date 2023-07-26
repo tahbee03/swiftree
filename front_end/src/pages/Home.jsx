@@ -9,7 +9,6 @@ import { useErrorContext } from "../hooks/useErrorContext"; // useErrorContext()
 export default function Home() {
     const [posts, setPosts] = useState(null); // Contains posts to be passed into post tree
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
-    // const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
     const { error, dispatch } = useErrorContext(); // Stores error from back-end response (if any)
 
@@ -55,7 +54,7 @@ export default function Home() {
     return (
         <>
             <Navbar />
-            <div className="container" id="home-cont">
+            <div className="container-md" id="home-cont">
                 {error && (
                     <p className="error-msg">{error}</p>
                 )}

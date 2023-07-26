@@ -1,6 +1,6 @@
 import "./SignUp.css"; // Styles for Sign Up page
 
-import { useState } from "react"; // useState()
+import { useState, useEffect } from "react"; // useState()
 import { useSignUp } from "../hooks/useSignUp"; // useSignUp()
 import { useNavigate } from "react-router-dom"; // useNavigate()
 import { useErrorContext } from "../hooks/useErrorContext"; // useErrorContext()
@@ -30,8 +30,25 @@ export default function SignUp() {
         }
     }
 
+    useEffect(() => {
+        const adjustContainer = () => {
+            const container = document.getElementById("sign-up-main");
+
+            if (window.innerWidth < 576) container.style.width = "90vw";
+            else container.style.width = "60vw";
+        };
+
+        adjustContainer();
+
+        window.addEventListener("resize", adjustContainer);
+
+        return () => {
+            window.removeEventListener("resize", adjustContainer);
+        };
+    }, []);
+
     return (
-        <main className="sign-up-main">
+        <main id="sign-up-main">
             <div>
                 <a href="/">
                     <h1>swiftree</h1>
