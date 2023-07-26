@@ -18,6 +18,7 @@
 
 .navbar #middle {
     justify-content: center;
+    align-items: center;
 }
 
 .navbar #middle * {
