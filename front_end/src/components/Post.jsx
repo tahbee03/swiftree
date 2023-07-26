@@ -67,7 +67,7 @@ export default function Post({ post, canDelete }) {
 
     return (
         <div className="post row">
-            <div className={`col-9 info-section ${isLoading ? "loading" : ""}`}>
+            <div className={`col-lg-9 col-12 info-section ${isLoading ? "loading" : ""}`}>
                 <p className="content">{post.content}</p>
                 <a href={`/profile/${post.author}`} className="author-section">
                     <img src={(userPic === "") ? "/account_icon.png" : userPic} alt="user-pfp" />
@@ -80,7 +80,7 @@ export default function Post({ post, canDelete }) {
                     <p className="date">{`Posted on ${format(new Date(post.createdAt), "MM/dd/yyyy")} at ${format(new Date(post.createdAt), "hh:mm  a")} (${format(new Date(post.createdAt), "O")})`}</p>
                 )}
             </div>
-            <div className="col-3 icon-section">
+            <div className="col-lg-3 col-12 icon-section">
                 {canDelete && (
                     <>
                         {isLoading && (

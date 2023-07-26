@@ -121,15 +121,26 @@ export default function PostTree({ posts, page }) {
 
     // Run on mount
     useEffect(() => {
+        const adjustModal = () => {
+            const modalContent = document.querySelector("#post-modal > .modal-content");
+
+            if (window.innerWidth < 576) modalContent.style.width = "90vw";
+            else modalContent.style.width = "50vw";
+        };
+
+        adjustModal();
+
         createCanvas();
 
         // Event listeners
         document.getElementById("refresh").addEventListener("click", createCanvas);
         window.addEventListener("resize", createCanvas);
+        window.addEventListener("resize", adjustModal);
 
         // Cleans up event listeners when the component unmounts (?)
         return () => {
             window.removeEventListener("resize", createCanvas);
+            window.removeEventListener("resize", adjustModal);
         };
     }, []);
 
