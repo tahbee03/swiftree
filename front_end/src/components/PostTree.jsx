@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { useParams } from "react-router-dom"; // useParams()
 import { useEffect } from "react";
@@ -8,6 +8,70 @@ const _ = require("lodash");
 
 function randomNum(min, max) {
     return (Math.random() * (max - min)) + min;
+}
+
+function createNodeList(bounds, num) {
+    let arr = [{
+        x: (bounds.right - bounds.left) / 2,
+        y: (bounds.bottom - bounds.top) / 2,
+        depth: 0
+    }]; // Initialize with root node
+
+    let count = 0; // Depth child count
+
+    // TODO: Modify to ensure no two nodes have the same angle
+
+    for (let i = 1; i <= num; i++) {
+        let parent = arr[Math.floor((i - 1) / 2)];
+        let depth = parent.depth + 1;
+        let radius = depth * 50;
+
+        if (arr[i - 1].depth !== depth) count = 0;
+        let angle = randomNum(count * ((2 * Math.PI) / (Math.pow(2, depth))), (count + 1) * ((2 * Math.PI) / Math.pow(2, depth)));
+
+        // maximum DCC: 2^depth
+        // node partition: (2 * PI) / 2^depth
+
+        arr.push({
+            x: (radius * Math.cos(angle)) + ((bounds.right - bounds.left) / 2),
+            y: (radius * Math.sin(angle)) + ((bounds.bottom - bounds.top) / 2),
+            depth
+        });
+
+        count += 1;
+    }
+
+    return arr;
+}
+
+function createEdgeList(nodes, index) {
+    let temp = [];
+    let left = (2 * index) + 1;
+    let right = (2 * index) + 2;
+
+    if (left < nodes.length) {
+        temp.push({
+            x1: nodes[index].x,
+            y1: nodes[index].y,
+            x2: nodes[left].x,
+            y2: nodes[left].y
+        });
+
+        temp.push(...createEdgeList(nodes, left));
+    }
+
+    if (right < nodes.length) {
+        temp.push({
+            x1: nodes[index].x,
+            y1: nodes[index].y,
+            x2: nodes[right].x,
+            y2: nodes[right].y
+        });
+
+        temp.push(...createEdgeList(nodes, right));
+    }
+
+    return temp;
 }
 
 export default function PostTree({ posts, page }) {
@@ -28,48 +92,15 @@ export default function PostTree({ posts, page }) {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
 
-    const createNodeList = useCallback((num) => {
-        console.log("Function called!");
-
-        let arr = [{
-            x: (bounds.right - bounds.left) / 2,
-            y: (bounds.bottom - bounds.top) / 2,
-            depth: 0
-        }]; // Initialize with root node
-
-        let count = 0; // Depth child count
-
-        // TODO: Modify to ensure no two nodes have the same angle
-
-        for (let i = 1; i <= num; i++) {
-            let parent = arr[Math.floor((i - 1) / 2)];
-            let depth = parent.depth + 1;
-            let radius = depth * 50;
-
-            if (arr[i - 1].depth !== depth) count = 0;
-            let angle = randomNum(count * ((2 * Math.PI) / (Math.pow(2, depth))), (count + 1) * ((2 * Math.PI) / Math.pow(2, depth)));
-
-            // maximum DCC: 2^depth
-            // node partition: (2 * PI) / 2^depth
-
-            arr.push({
-                x: (radius * Math.cos(angle)) + ((bounds.right - bounds.left) / 2),
-                y: (radius * Math.sin(angle)) + ((bounds.bottom - bounds.top) / 2),
-                depth
-            });
-
-            count += 1;
-        }
-
-        return arr;
-    }, [bounds]);
-
-    // Run on mount
-    useEffect(() => {
+    const createCanvas = () => {
         const canvas = document.getElementById("tree-canvas");
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
 
-        if (window.innerWidth < 576) canvas.style.width = "100%";
-        else canvas.style.width = canvas.getBoundingClientRect().height;
+        if (window.innerWidth >= 768) {
+            if (canvas.getBoundingClientRect().height > canvas.getBoundingClientRect().width) canvas.style.height = canvas.getBoundingClientRect().width;
+            else canvas.style.width = canvas.getBoundingClientRect().height;
+        }
 
         setBounds({
             top: canvas.getBoundingClientRect().top,
@@ -80,54 +111,33 @@ export default function PostTree({ posts, page }) {
 
         if (page === "home") canvas.style.backgroundColor = "white";
         else canvas.style.backgroundColor = "rgba(255, 255, 255, 0)";
+    };
+
+    const buildTree = () => {
+        const n = createNodeList(bounds, posts.length);
+        setNodes(n);
+        setEdges(createEdgeList(n, 0));
+    };
+
+    // Run on mount
+    useEffect(() => {
+        createCanvas();
+
+        // Event listeners
+        document.getElementById("refresh").addEventListener("click", createCanvas);
+        window.addEventListener("resize", createCanvas);
+
+        // Cleans up event listeners when the component unmounts
+        return () => {
+            document.getElementById("refresh").removeEventListener("click", createCanvas);
+            window.removeEventListener("resize", createCanvas);
+        };
     }, []);
 
-    // Run when posts prop or bounds state is updated
+    // Tree is built whenever the bounds state is updated i.e. whenever createCanvas() is called
     useEffect(() => {
-        const initialBounds = {
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0
-        };
-
-        if (posts.length > 0 && !_.isEqual(bounds, initialBounds)) setNodes(createNodeList(posts.length));
-    }, [posts, bounds, createNodeList]);
-
-    // Run when nodes state is updated
-    useEffect(() => {
-        const createEdgeList = (nodes, index) => {
-            let temp = [];
-            let left = (2 * index) + 1;
-            let right = (2 * index) + 2;
-
-            if (left < nodes.length) {
-                temp.push({
-                    x1: nodes[index].x,
-                    y1: nodes[index].y,
-                    x2: nodes[left].x,
-                    y2: nodes[left].y
-                });
-
-                temp.push(...createEdgeList(nodes, left));
-            }
-
-            if (right < nodes.length) {
-                temp.push({
-                    x1: nodes[index].x,
-                    y1: nodes[index].y,
-                    x2: nodes[right].x,
-                    y2: nodes[right].y
-                });
-
-                temp.push(...createEdgeList(nodes, right));
-            }
-
-            return temp;
-        };
-
-        setEdges(createEdgeList(nodes, 0));
-    }, [nodes]);
+        buildTree();
+    }, [bounds]);
 
     function openModal(postData) {
         if (!visited.includes(postData._id)) setVisited([...visited, postData._id]);
@@ -146,13 +156,6 @@ export default function PostTree({ posts, page }) {
             postModal.style.display = "none";
         }
     }
-
-    window.addEventListener("resize", () => {
-        const canvas = document.getElementById("tree-canvas");
-
-        if (window.innerWidth < 576) canvas.style.width = "100%";
-        else canvas.style.width = canvas.getBoundingClientRect().height;
-    });
 
     return (
         <>
@@ -202,12 +205,12 @@ export default function PostTree({ posts, page }) {
                             fill="#A532FF"
                         />
                         <image
+                            id="refresh"
                             href="/refresh.png"
                             x={((bounds.right - bounds.left) / 2) - 25}
                             y={((bounds.bottom - bounds.top) / 2) - 25}
                             width="50"
                             height="50"
-                            onClick={() => setNodes(createNodeList(posts.length))}
                         />
                     </>
                 )}
