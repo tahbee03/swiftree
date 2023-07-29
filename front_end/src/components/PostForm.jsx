@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import "./PostForm.css";
-// require("dotenv").config();
 
-export default function PostForm({ closeFunc }) {
+export default function PostForm({ modalState }) {
     const [content, setContent] = useState("");
     const [error, setError] = useState(null);
     const { user, dispatch } = useAuthContext();
@@ -70,25 +69,36 @@ export default function PostForm({ closeFunc }) {
         window.location.reload();
     }
 
-    return (
-        <div className="modal-content">
-            <div className="close" onClick={() => closeFunc("post-form-modal")}>&times;</div>
-            <form className="post-form" onSubmit={handleSubmit}>
-                <h3>New Post</h3>
+    window.addEventListener("click", (e) => {
+        const classes = [...e.target.classList];
+        if (classes.includes("modal")) modalState.setModal(null);
+    });
 
-                <textarea onChange={(e) => setContent(e.target.value)} value={content}></textarea>
-                <button type="submit" disabled={isLoading}>
-                    {isLoading && (
-                        <span className="spinner-border"></span>
-                    )}
-                    {!isLoading && (
-                        <>
-                            Submit Post
-                        </>
-                    )}
-                </button>
-                {error && <div>{error}</div>}
-            </form>
+    return (
+        <div className="modal">
+            <div className="modal-content">
+                <div className="close" onClick={() => modalState.setModal(null)}>&times;</div>
+                <form className="post-form" onSubmit={handleSubmit}>
+                    <h3>New Post</h3>
+
+                    <textarea
+                        onChange={(e) => setContent(e.target.value)}
+                        value={content}
+                        required
+                    ></textarea>
+                    <button type="submit" disabled={isLoading}>
+                        {isLoading && (
+                            <span className="spinner-border"></span>
+                        )}
+                        {!isLoading && (
+                            <>
+                                Submit Post
+                            </>
+                        )}
+                    </button>
+                    {error && <div>{error}</div>}
+                </form>
+            </div>
         </div>
     );
 }
