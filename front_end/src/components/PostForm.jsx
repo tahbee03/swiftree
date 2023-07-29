@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import "./PostForm.css";
 
@@ -7,6 +7,31 @@ export default function PostForm({ modalState }) {
     const [error, setError] = useState(null);
     const { user, dispatch } = useAuthContext();
     const [isLoading, setIsLoading] = useState(false);
+
+    // Run on mount
+    useEffect(() => {
+        const adjust = () => {
+            const modalContent = document.querySelector(".modal-content");
+
+            if (window.innerWidth < 576) modalContent.style.width = "90vw";
+            else modalContent.style.width = "50vw";
+        };
+
+        const close = (e) => {
+            const classes = [...e.target.classList];
+            if (classes.includes("modal")) modalState.setModal(null);
+        };
+
+        adjust();
+
+        window.addEventListener("resize", adjust);
+        window.addEventListener("click", close);
+
+        return () => {
+            window.addEventListener("resize", adjust);
+            window.addEventListener("click", close);
+        };
+    }, []);
 
     async function handleSubmit(e) {
         e.preventDefault(); // No refresh on submit
@@ -68,11 +93,6 @@ export default function PostForm({ modalState }) {
         setIsLoading(false);
         window.location.reload();
     }
-
-    window.addEventListener("click", (e) => {
-        const classes = [...e.target.classList];
-        if (classes.includes("modal")) modalState.setModal(null);
-    });
 
     return (
         <div className="modal">

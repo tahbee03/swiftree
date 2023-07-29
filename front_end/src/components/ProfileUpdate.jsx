@@ -1,5 +1,5 @@
 import "./ProfileUpdate.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PictureForm from "./PictureForm";
 
 export default function ProfileUpdate({ modalState }) {
@@ -7,14 +7,32 @@ export default function ProfileUpdate({ modalState }) {
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-    window.addEventListener("click", (e) => {
-        const classes = [...e.target.classList];
-        if (classes.includes("modal")) modalState.setModal(null);
-    });
+    // Run on mount
+    useEffect(() => {
+        const adjust = () => {
+            const modalContent = document.querySelector(".modal-content");
 
-    window.addEventListener("resize", () => {
-        setWindowWidth(window.innerWidth);
-    });
+            if (window.innerWidth < 576) modalContent.style.width = "90vw";
+            else modalContent.style.width = "50vw";
+
+            setWindowWidth(window.innerWidth);
+        };
+
+        const close = (e) => {
+            const classes = [...e.target.classList];
+            if (classes.includes("modal")) modalState.setModal(null);
+        };
+
+        adjust();
+
+        window.addEventListener("resize", adjust);
+        window.addEventListener("click", close);
+
+        return () => {
+            window.addEventListener("resize", adjust);
+            window.addEventListener("click", close);
+        };
+    }, []);
 
     // option: email
 
