@@ -1,8 +1,7 @@
 import "./Profile.css"; // Styles for Profile page
 
 import PostForm from "../components/PostForm"; // <PostForm />
-import PictureForm from "../components/PictureForm"; // <PictureForm />
-import Post from "../components/Post"; // <Post />
+import ProfileUpdate from "../components/ProfileUpdate";
 import Navbar from "../components/Navbar"; // <Navbar />
 
 import { useState, useEffect } from "react"; // useState(), useEffect()
@@ -19,6 +18,7 @@ export default function Profile() {
     }); // Contains data for the user presented on the page
     const [posts, setPosts] = useState([]); // Contains posts to be displayed in the posts container
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
+    const [modal, setModal] = useState(null);
 
     const navigate = useNavigate(); // Needed to redirect to another page
     const { username } = useParams(); // Grabs username of the user that the page belongs to from the URL
@@ -91,57 +91,6 @@ export default function Profile() {
         }
     }, [username]);
 
-    // Removes user's picture from cloud and sets it to default
-    async function handlePictureRemoval() {
-        try {
-            setIsLoading(true);
-
-            // Gets all users from back-end
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/users`);
-            const data = await res.json();
-
-            if (!res.ok) throw Error(data.error);
-
-            // Filters users to match the one logged in
-            const match = data.filter((u) => u.username === user.username);
-
-            // Updates logged in user in back-end
-            const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
-                method: "PATCH",
-                body: JSON.stringify({
-                    mode: "IMAGE",
-                    content: {
-                        selectedFile: "",
-                        public_id: match[0].image.public_id
-                    }
-                }),
-                headers: { "Content-Type": "application/json" }
-            });
-            const userData = await userRes.json();
-
-            if (!userRes.ok) throw Error(userData.error);
-
-            // Updates logged in user in AuthContext
-            const payload = {
-                username: user.username,
-                display_name: user.display_name,
-                pfp: "/account_icon.png",
-                posts: user.posts,
-                token: user.token
-            };
-            authDispatch({ type: "UPDATE", payload });
-
-            // Updates logged in user in browser storage
-            sessionStorage.setItem("user", JSON.stringify(payload));
-
-            setIsLoading(false);
-            errorDispatch({ type: "RESET" });
-            window.location.reload(); // Reloads page
-        } catch (err) {
-            errorDispatch({ type: "SET", payload: err.message });
-        }
-    }
-
     // Logs out logged in user
     function handleLogout() {
         try {
@@ -155,35 +104,20 @@ export default function Profile() {
         }
     }
 
-    // Opens modal to show active form
-    function openModal(id) {
-        const m = document.getElementById(id);
-        m.style.display = "block";
-        m.style.zIndex = "1";
-    }
-
-    // Closes modal containing active form
-    function closeModal(id) {
-        const m = document.getElementById(id);
-        m.style.display = "none";
-        m.style.zIndex = "-1";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.addEventListener("click", (e) => {
-        if (e.target.id === "post-form-modal" || e.target.id === "picture-form-modal") closeModal(e.target.id);
-    });
+    useEffect(() => {
+        console.log(modal);
+    }, [modal]);
 
     return (
         <>
             <Navbar />
             <div className="container" id="profile-cont">
-                <div id="post-form-modal">
-                    <PostForm closeFunc={closeModal} />
-                </div>
-                <div id="picture-form-modal">
-                    <PictureForm closeFunc={closeModal} />
-                </div>
+                {(modal === "post-form") && (
+                    <PostForm modalState={{ modal, setModal }} />
+                )}
+                {(modal === "update") && (
+                    <ProfileUpdate modalState={{ modal, setModal }} />
+                )}
                 {error && (
                     <div className="error-msg">{error}</div>
                 )}
@@ -195,8 +129,8 @@ export default function Profile() {
                             <p>{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
                             {user && (user.username === username) && (
                                 <>
-                                    <button type="button" onClick={() => openModal("post-form-modal")}>Make New Post</button>
-                                    <button type="button" onClick={() => openModal("picture-form-modal")}>Change Profile Picture</button>
+                                    <button type="button" onClick={() => setModal("post-form")}>Make New Post</button>
+                                    {/* <button type="button" onClick={() => openModal("picture-form-modal")}>Change Profile Picture</button>
                                     {!(presentedUser.pfp === "/account_icon.png") && (
                                         <button
                                             type="button"
@@ -212,7 +146,8 @@ export default function Profile() {
                                                 </>
                                             )}
                                         </button>
-                                    )}
+                                    )} */}
+                                    <button type="button" onClick={() => setModal("update")}>Update Info</button>
                                     <button type="button" onClick={handleLogout}>Log Out</button>
                                 </>
                             )}
