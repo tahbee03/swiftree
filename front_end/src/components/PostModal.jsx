@@ -13,8 +13,10 @@ export default function PostModal({ modalState, content }) {
         const adjust = () => {
             const modalContent = document.querySelector(".modal-content");
 
-            if (window.innerWidth < 576) modalContent.style.width = "90vw";
-            else modalContent.style.width = "50vw";
+            if (modalContent) {
+                if (window.innerWidth < 576) modalContent.style.width = "90vw";
+                else modalContent.style.width = "50vw";
+            }
         };
 
         const close = (e) => {
