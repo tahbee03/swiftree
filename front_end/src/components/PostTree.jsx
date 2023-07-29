@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
-import { useParams } from "react-router-dom"; // useParams()
 import { useEffect } from "react";
 import "./PostTree.css";
-import Post from "../components/Post";
+import PostModal from './PostModal';
 const _ = require("lodash");
+
 
 function randomNum(min, max) {
     return (Math.random() * (max - min)) + min;
@@ -77,9 +76,6 @@ function createEdgeList(nodes, index) {
 export default function PostTree({ posts, page }) {
     // TODO: Create a separate file to handle tree logic
 
-    const { user } = useAuthContext(); // Contains data for logged in user
-    const { username } = useParams(); // Grabs username of the user that the page belongs to from the URL
-
     const [bounds, setBounds] = useState({
         top: 0,
         bottom: 0,
@@ -91,6 +87,8 @@ export default function PostTree({ posts, page }) {
 
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
+
+    const [modal, setModal] = useState(null);
 
     const createCanvas = () => {
         const canvas = document.getElementById("tree-canvas");
@@ -121,26 +119,26 @@ export default function PostTree({ posts, page }) {
 
     // Run on mount
     useEffect(() => {
-        const adjustModal = () => {
-            const modalContent = document.querySelector("#post-modal > .modal-content");
+        // const adjustModal = () => {
+        //     const modalContent = document.querySelector(".modal-content");
 
-            if (window.innerWidth < 576) modalContent.style.width = "90vw";
-            else modalContent.style.width = "50vw";
-        };
+        //     if (window.innerWidth < 576) modalContent.style.width = "90vw";
+        //     else modalContent.style.width = "50vw";
+        // };
 
-        adjustModal();
+        // adjustModal();
 
         createCanvas();
 
         // Event listeners
         document.getElementById("refresh").addEventListener("click", createCanvas);
         window.addEventListener("resize", createCanvas);
-        window.addEventListener("resize", adjustModal);
+        // window.addEventListener("resize", adjustModal);
 
         // Cleans up event listeners when the component unmounts (?)
         return () => {
             window.removeEventListener("resize", createCanvas);
-            window.removeEventListener("resize", adjustModal);
+            // window.removeEventListener("resize", adjustModal);
         };
     }, []);
 
@@ -149,34 +147,38 @@ export default function PostTree({ posts, page }) {
         buildTree();
     }, [bounds]);
 
-    function openModal(postData) {
-        if (!visited.includes(postData._id)) setVisited([...visited, postData._id]);
-        setCurrentPost(postData);
-        document.getElementById("post-modal").style.display = "block";
+    function openModal(content) {
+        if (!visited.includes(content._id)) setVisited([...visited, content._id]);
+        setCurrentPost(content);
+        setModal("post");
+        // document.getElementById("post-modal").style.display = "block";
     }
 
-    function closeModal() {
-        document.getElementById("post-modal").style.display = "none";
-    }
+    // function closeModal() {
+    //     document.getElementById("post-modal").style.display = "none";
+    // }
 
     // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function (event) {
-        const postModal = document.getElementById("post-modal");
-        if (event.target === postModal) {
-            postModal.style.display = "none";
-        }
-    }
+    // window.onclick = function (event) {
+    //     const postModal = document.getElementById("post-modal");
+    //     if (event.target === postModal) {
+    //         postModal.style.display = "none";
+    //     }
+    // }
 
     return (
         <>
-            <div id="post-modal">
+            {(modal === "post") && (
+                <PostModal modalState={{ modal, setModal }} content={currentPost} />
+            )}
+            {/* <div className="modal">
                 <div className="modal-content">
                     <div className="close" onClick={closeModal}>&times;</div>
                     {currentPost && (
                         <Post post={currentPost} canDelete={user && user.username === username} />
                     )}
                 </div>
-            </div>
+            </div> */}
             <svg id="tree-canvas">
                 {posts && (
                     <>
