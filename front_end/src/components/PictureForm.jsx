@@ -1,14 +1,13 @@
 import "./PictureForm.css";
 import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
-import { useErrorContext } from "../hooks/useErrorContext"; // useErrorContext()
 
 export default function PictureForm() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const { user, dispatch: authDispatch } = useAuthContext(); // Contains data for logged in user
-    const { error, dispatch: errorDispatch } = useErrorContext(); // Stores error from back-end response (if any)
 
     // Converts image to base64
     // TODO: Try to understand later
@@ -123,10 +122,9 @@ export default function PictureForm() {
             sessionStorage.setItem("user", JSON.stringify(payload));
 
             // setIsLoading(false);
-            errorDispatch({ type: "RESET" });
             window.location.reload(); // Reloads page
         } catch (err) {
-            errorDispatch({ type: "SET", payload: err.message });
+            setError(err.message);
         }
     }
 

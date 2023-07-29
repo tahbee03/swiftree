@@ -3,16 +3,15 @@ import "./Login.css"; // Styles for Login page
 import { useState, useEffect } from "react"; // useState()
 import { useLogin } from "../hooks/useLogin"; // useLogin()
 import { useNavigate } from "react-router-dom"; // useNavigate()
-import { useErrorContext } from "../hooks/useErrorContext"; // useErrorContext()
 
 export default function Login() {
     const [username, setUsername] = useState(""); // Stores username input
     const [password, setPassword] = useState(""); // Stores password input
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
+    const [error, setError] = useState(null);
 
     const { login } = useLogin(); // Custom hook to log in user
     const navigate = useNavigate(); // Needed to redirect to another page
-    const { error, dispatch } = useErrorContext(); // Stores error from back-end response (if any)
 
     async function handleSubmit(e) {
         e.preventDefault(); // No reload on submit
@@ -20,10 +19,10 @@ export default function Login() {
         try {
             setIsLoading(true);
             await login(username, password); // Process input with useLogin hook
-            dispatch({ type: "RESET" });
+            setError(null);
             navigate("/"); // Redirect to Home page
         } catch (err) {
-            dispatch({ type: "SET", payload: err.message });
+            setError(err.message);
             setIsLoading(false);
         }
     }

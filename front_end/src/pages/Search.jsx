@@ -5,7 +5,6 @@ import Post from "../components/Post"; // <Post />
 import User from "../components/User"; // <User />
 
 import { useState } from "react"; // useState()
-import { useErrorContext } from "../hooks/useErrorContext"; // useErrorContext()
 
 export default function Search() {
     const [dyInput, setDyInput] = useState(""); // Stores dynamic search input (form is updated)
@@ -14,9 +13,7 @@ export default function Search() {
     const [users, setUsers] = useState([]); // Stores users matching search input
     const [mode, setMode] = useState("post"); // Stores the current search mode
     const [searchProcessed, setSearchProcessed] = useState(false); // Boolean value used to show search results
-    // const [error, setError] = useState(null); // Stores error from back-end response (if any)
-
-    const { error, dispatch } = useErrorContext(); // Stores error from back-end response (if any)
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
     // Processes submitted search input
     async function handleSearch(e) {
@@ -55,9 +52,9 @@ export default function Search() {
             setDyInput("");
             setSearchProcessed(true);
 
-            dispatch({ type: "RESET" });
+            setError(null);
         } catch (err) {
-            dispatch({ type: "SET", payload: err.message });
+            setError(err.message);
         }
     }
 

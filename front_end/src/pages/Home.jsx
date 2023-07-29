@@ -4,13 +4,11 @@ import Navbar from "../components/Navbar"; // <Navbar />
 import PostTree from "../components/PostTree"; // <PostTree />
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
-import { useErrorContext } from "../hooks/useErrorContext"; // useErrorContext()
 
 export default function Home() {
     const [posts, setPosts] = useState(null); // Contains posts to be passed into post tree
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
-
-    const { error, dispatch } = useErrorContext(); // Stores error from back-end response (if any)
+    const [error, setError] = useState(null);
 
     // Runs on component render
     useEffect(() => {
@@ -44,9 +42,9 @@ export default function Home() {
 
         try {
             fetchPosts();
-            dispatch({ type: "RESET" });
+            setError(null);
         } catch (err) {
-            dispatch({ type: "SET", payload: err.message });
+            setError(err.message);
         }
     }, []);
 
