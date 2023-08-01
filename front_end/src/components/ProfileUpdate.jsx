@@ -1,13 +1,12 @@
 import "./ProfileUpdate.css";
 import { useState, useEffect } from "react";
 import PictureForm from "./PictureForm";
+import UsernameForm from "./UsernameForm";
 
 export default function ProfileUpdate({ modalState }) {
     const [option, setOption] = useState(null);
-    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-    // Run on mount
     useEffect(() => {
         const adjust = () => {
             const modalContent = document.querySelector(".modal-content");
@@ -34,11 +33,9 @@ export default function ProfileUpdate({ modalState }) {
             window.addEventListener("resize", adjust);
             window.addEventListener("click", close);
         };
-    }, []);
+    });
 
     // option: email
-
-    // option: username
 
     // option: display name
 
@@ -112,7 +109,7 @@ export default function ProfileUpdate({ modalState }) {
                                 {(windowWidth < 992) && (
                                     <hr className="divider" />
                                 )}
-                                <p>not available</p>
+                                <UsernameForm />
                             </>
                         )}
                         {(option === "display-name") && (
