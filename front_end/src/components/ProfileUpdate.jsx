@@ -2,6 +2,7 @@ import "./ProfileUpdate.css";
 import { useState, useEffect } from "react";
 import PictureForm from "./PictureForm";
 import UsernameForm from "./UsernameForm";
+import DisplayNameForm from "./DisplayNameForm";
 
 export default function ProfileUpdate({ modalState }) {
     const [option, setOption] = useState(null);
@@ -117,7 +118,7 @@ export default function ProfileUpdate({ modalState }) {
                                 {(windowWidth < 992) && (
                                     <hr className="divider" />
                                 )}
-                                <p>not available</p>
+                                <DisplayNameForm />
                             </>
                         )}
                         {(option === "password") && (
