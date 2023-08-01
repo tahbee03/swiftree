@@ -32,7 +32,7 @@
 
 #search-cont > #search-results {
     overflow-y: scroll;
-    height: 90%; /* Needed for overflow-y to work (1) */
+    height: 85%; /* Needed for overflow-y to work (1) */
 }
 
 #search-cont > #search-results > #match-text { 

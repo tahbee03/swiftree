@@ -113,7 +113,7 @@ export default function Search() {
                                 )}
                                 {!(posts.length === 0) && (
                                     <>
-                                        <p id="match-text">Posts matching "{statInput}"</p>
+                                        <p id="match-text">{posts.length} posts matching "{statInput}":</p>
                                         {posts.map((post) => (
                                             <Post key={post._id} post={post} />
                                         ))}
@@ -128,7 +128,7 @@ export default function Search() {
                                 )}
                                 {!(users.length === 0) && (
                                     <>
-                                        <p id="match-text">Users matching "{statInput}"</p>
+                                        <p id="match-text">{users.length} users matching "{statInput}":</p>
                                         {users.map((user) => (
                                             <User key={user._id} user={user} />
                                         ))}
