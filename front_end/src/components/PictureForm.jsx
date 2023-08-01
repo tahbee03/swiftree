@@ -59,7 +59,7 @@ export default function PictureForm() {
 
         if (!userRes.ok) console.log(userData.error);
         else {
-            const u = await (await fetch(`${process.env.REACT_APP_API_URL}/users/id-search/${match[0]._id}`)).json();
+            const u = await (await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`)).json();
             console.log("User updated!");
 
             const payload = {

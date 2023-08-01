@@ -3,7 +3,7 @@ const Schema = mongoose.Schema; // Create new schema
 
 // Establish schema for posts i.e. define the structure of each database entry
 const postSchema = new Schema({
-    author: {type: String, required: true},
+    author_id: {type: String, required: true},
     content: {type: String, required: true}
 }, {timestamps: true});
 

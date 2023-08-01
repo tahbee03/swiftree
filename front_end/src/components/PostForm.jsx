@@ -39,7 +39,10 @@ export default function PostForm({ modalState }) {
         e.preventDefault(); // No refresh on submit
         setIsLoading(true);
 
-        const post = { author: user.username, content };
+        const users = await (await fetch(`${process.env.REACT_APP_API_URL}/users`)).json();
+        const match = users.filter((u) => u.username === user.username)[0];
+
+        const post = { author_id: match._id, content };
 
         // Create new post
         const postRes = await fetch(`${process.env.REACT_APP_API_URL}/posts`, {
@@ -57,20 +60,12 @@ export default function PostForm({ modalState }) {
         }
 
         // Update user info
-        const users = await (await fetch(`${process.env.REACT_APP_API_URL}/users`)).json();
-
-        const match = users.filter((u) => u.username === user.username);
-
-        let userPosts = match[0].posts;
-
-        userPosts.push(postData._id);
-
-        const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
+        const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match._id}`, {
             method: "PATCH",
             body: JSON.stringify({
                 mode: "POST",
                 content: {
-                    posts: userPosts
+                    posts: [...match.posts, postData._id]
                 }
             }),
             headers: { "Content-Type": "application/json" }
@@ -85,14 +80,13 @@ export default function PostForm({ modalState }) {
                 username: user.username,
                 display_name: user.display_name,
                 pfp: user.pfp,
-                posts: userPosts,
+                posts: [...match.posts, postData._id],
                 token: user.token
             };
             dispatch({ type: "UPDATE", payload });
             sessionStorage.setItem("user", JSON.stringify(payload));
         }
 
-        setIsLoading(false);
         window.location.reload();
     }
 

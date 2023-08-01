@@ -119,26 +119,15 @@ export default function PostTree({ posts, page }) {
 
     // Run on mount
     useEffect(() => {
-        // const adjustModal = () => {
-        //     const modalContent = document.querySelector(".modal-content");
-
-        //     if (window.innerWidth < 576) modalContent.style.width = "90vw";
-        //     else modalContent.style.width = "50vw";
-        // };
-
-        // adjustModal();
-
         createCanvas();
 
         // Event listeners
         document.getElementById("refresh").addEventListener("click", createCanvas);
         window.addEventListener("resize", createCanvas);
-        // window.addEventListener("resize", adjustModal);
 
         // Cleans up event listeners when the component unmounts (?)
         return () => {
             window.removeEventListener("resize", createCanvas);
-            // window.removeEventListener("resize", adjustModal);
         };
     }, []);
 
@@ -151,34 +140,13 @@ export default function PostTree({ posts, page }) {
         if (!visited.includes(content._id)) setVisited([...visited, content._id]);
         setCurrentPost(content);
         setModal("post");
-        // document.getElementById("post-modal").style.display = "block";
     }
-
-    // function closeModal() {
-    //     document.getElementById("post-modal").style.display = "none";
-    // }
-
-    // When the user clicks anywhere outside of the modal, close it
-    // window.onclick = function (event) {
-    //     const postModal = document.getElementById("post-modal");
-    //     if (event.target === postModal) {
-    //         postModal.style.display = "none";
-    //     }
-    // }
 
     return (
         <>
             {(modal === "post") && (
                 <PostModal modalState={{ modal, setModal }} content={currentPost} />
             )}
-            {/* <div className="modal">
-                <div className="modal-content">
-                    <div className="close" onClick={closeModal}>&times;</div>
-                    {currentPost && (
-                        <Post post={currentPost} canDelete={user && user.username === username} />
-                    )}
-                </div>
-            </div> */}
             <svg id="tree-canvas">
                 {posts && (
                     <>

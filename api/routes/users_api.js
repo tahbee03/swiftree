@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/", getUsers);
 
 // Get specific user (via ID)
-router.get("/id-search/:id", getUserByID);
+router.get("/:id", getUserByID);
 
 // Get specific user (via username)
 router.get("/name-search/:username", getUserByName);

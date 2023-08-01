@@ -63,15 +63,14 @@ export default function Profile() {
                 if (!userRes.ok) throw Error(userData.error);
 
                 // Filters users to match the one in the URL
-                const match = userData.filter((u) => u.username === username);
+                const match = userData.filter((u) => u.username === username)[0];
 
-                console.log("alright...");
-                if (match.length === 0) throw Error(`The user '${username}' does not exist!`);
+                if (!match) throw Error(`The user '${username}' does not exist!`);
 
                 // Updates the presented user's information
                 setPresentedUser({
-                    displayName: match[0].display_name,
-                    pfp: match[0].image.url
+                    displayName: match.display_name,
+                    pfp: match.image.url
                 });
 
                 // Gets all posts from back-end
@@ -81,7 +80,7 @@ export default function Profile() {
                 if (!postRes.ok) throw Error(postData.error);
 
                 // Filters posts to match the one in the URL and updates the posts to be shown
-                setPosts(postData.filter((post) => post.author === username));
+                setPosts(postData.filter((post) => post.author_id === match._id));
 
                 setError(null);
             } catch (err) {
@@ -128,23 +127,6 @@ export default function Profile() {
                                 {user && (user.username === username) && (
                                     <>
                                         <button type="button" onClick={() => setModal("post-form")}>Make New Post</button>
-                                        {/* <button type="button" onClick={() => openModal("picture-form-modal")}>Change Profile Picture</button>
-                                    {!(presentedUser.pfp === "/account_icon.png") && (
-                                        <button
-                                            type="button"
-                                            onClick={handlePictureRemoval}
-                                            disabled={isLoading}
-                                        >
-                                            {isLoading && (
-                                                <span className="spinner-border"></span>
-                                            )}
-                                            {!isLoading && (
-                                                <>
-                                                    Remove Profile Picture
-                                                </>
-                                            )}
-                                        </button>
-                                    )} */}
                                         <button type="button" onClick={() => setModal("update")}>Update Info</button>
                                         <button type="button" onClick={handleLogout}>Log Out</button>
                                     </>

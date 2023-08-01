@@ -5,35 +5,28 @@ import { format, formatDistanceToNow } from "date-fns"; // format(), formatDista
 
 export default function Post({ post, canDelete }) {
     const { user, dispatch } = useAuthContext();
-    const [userPic, setUserPic] = useState("");
-    const [displayName, setDisplayName] = useState("");
+    const [author, setAuthor] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
-            const match = await (await fetch(`${process.env.REACT_APP_API_URL}/users/name-search/${post.author}`)).json();
-            setUserPic(match.image.url);
-            setDisplayName(match.display_name);
+            const match = await (await fetch(`${process.env.REACT_APP_API_URL}/users/${post.author_id}`)).json();
+            setAuthor(match);
         };
 
         fetchUser();
-    }, [post.author]);
+    }, []);
 
     async function handleClick(id) {
         setIsLoading(true);
 
         // Update user info
-        const users = await (await fetch(`${process.env.REACT_APP_API_URL}/users`)).json();
-        const match = users.filter((u) => u.username === user.username);
-        let userPosts = match[0].posts;
-        userPosts.splice(userPosts.indexOf(id), 1);
-
-        const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
+        const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${author._id}`, {
             method: "PATCH",
             body: JSON.stringify({
                 mode: "POST",
                 content: {
-                    posts: userPosts
+                    posts: author.posts.splice(author.posts.indexOf(id), 1)
                 }
             }),
             headers: { "Content-Type": "application/json" }
@@ -48,7 +41,7 @@ export default function Post({ post, canDelete }) {
                 username: user.username,
                 display_name: user.display_name,
                 pfp: user.pfp,
-                posts: userPosts,
+                posts: author.posts.splice(author.posts.indexOf(id), 1),
                 token: user.token
             };
             dispatch({ type: "UPDATE", payload });
@@ -61,7 +54,6 @@ export default function Post({ post, canDelete }) {
         if (res.ok) console.log("Post removed!");
         else console.log("Error removing post.");
 
-        setIsLoading(false);
         window.location.reload();
     }
 
@@ -69,9 +61,9 @@ export default function Post({ post, canDelete }) {
         <div className="post row">
             <div className={`col-lg-9 col-12 info-section ${isLoading ? "loading" : ""}`}>
                 <p className="content">{post.content}</p>
-                <a href={`/profile/${post.author}`} className="author-section">
-                    <img src={(userPic === "") ? "/account_icon.png" : userPic} alt="user-pfp" />
-                    <p className="author">{displayName}</p>
+                <a href={(author) ? `/profile/${author.username}` : ""} className="author-section">
+                    <img src={(author) ? author.image.url : "/account_icon.png"} alt="user-pfp" />
+                    <p className="author">{(author) ? author.display_name : ""}</p>
                 </a>
                 {window.location.pathname === "/" && (
                     <p className="date">{`Posted ${formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}`}</p>
