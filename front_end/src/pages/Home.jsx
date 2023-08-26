@@ -53,8 +53,16 @@ export default function Home() {
     return (
         <>
             <Helmet>
+                {/* Default meta tags */}
                 <title>Swiftree</title>
                 <meta name="description" content="Welcome to Swiftree!" />
+
+                {/* Open Graph meta tags */}
+                <meta property="og:title" content="Swiftree" />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:description" content="Welcome to Swiftree!" />
+                <meta property="og:image" content={`${window.location.origin}/swiftree_logo.png`} />
             </Helmet>
             <Navbar />
             <div className="container-md" id="home-cont">

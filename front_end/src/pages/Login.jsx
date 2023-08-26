@@ -48,8 +48,16 @@ export default function Login() {
     return (
         <>
             <Helmet>
+                {/* Default meta tags */}
                 <title>Swiftree &#8231; Login</title>
                 <meta name="description" content="Log into Swiftree with an existing account" />
+
+                {/* Open Graph meta tags */}
+                <meta property="og:title" content="Swiftree ‧ Login" />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:description" content="Log into Swiftree with an existing account" />
+                <meta property="og:image" content={`${window.location.origin}/swiftree_logo.png`} />
             </Helmet>
             <main id="login-main">
                 <div>

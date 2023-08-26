@@ -84,8 +84,16 @@ export default function Search() {
     return (
         <>
             <Helmet>
+                {/* Default meta tags */}
                 <title>Swiftree &#8231; Search</title>
                 <meta name="description" content="Search for posts and users on Swiftree" />
+
+                {/* Open Graph meta tags */}
+                <meta property="og:title" content="Swiftree ‧ Search" />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:description" content="Search for posts and users on Swiftree" />
+                <meta property="og:image" content={`${window.location.origin}/swiftree_logo.png`} />
             </Helmet>
             <Navbar />
             <div className="container" id="search-cont">

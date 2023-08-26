@@ -50,8 +50,16 @@ export default function SignUp() {
     return (
         <>
             <Helmet>
+                {/* Default meta tags */}
                 <title>Swiftree &#8231; Sign Up</title>
                 <meta name="description" content="Sign up for a new Swiftree account" />
+
+                {/* Open Graph meta tags */}
+                <meta property="og:title" content="Swiftree ‧ Sign Up" />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:description" content="Sign up for a new Swiftree account" />
+                <meta property="og:image" content={`${window.location.origin}/swiftree_logo.png`} />
             </Helmet>
             <main id="sign-up-main">
                 <div>
