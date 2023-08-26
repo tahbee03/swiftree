@@ -111,13 +111,6 @@ export default function Profile() {
                 {/* Default meta tags */}
                 <title>Swiftree &#8231; {(presentedUser.displayName === "") ? "User not found" : username}</title>
                 <meta name="description" content={(presentedUser.displayName === "") ? "User not found!" : `View ${username}'s profile on Swiftree`} />
-
-                {/* Open Graph meta tags */}
-                <meta property="og:title" content="Swiftree ‧ Login" />
-                <meta property="og:type" content="website" />
-                <meta property="og:url" content={window.location.href} />
-                <meta property="og:description" content="Log into Swiftree with an existing account" />
-                <meta property="og:image" content={(presentedUser.pfp === "/account_icon.png") ? `${window.location.origin}/account_icon.png` : presentedUser.pfp} />
             </Helmet>
             <Navbar />
             <div className="container" id="profile-cont">
