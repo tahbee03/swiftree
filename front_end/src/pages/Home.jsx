@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar"; // <Navbar />
 import PostTree from "../components/PostTree"; // <PostTree />
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
+import { Helmet } from "react-helmet"; // <Helmet>
 
 export default function Home() {
     const [posts, setPosts] = useState(null); // Contains posts to be passed into post tree
@@ -51,6 +52,10 @@ export default function Home() {
     // Renders elements
     return (
         <>
+            <Helmet>
+                <title>Swiftree</title>
+                <meta name="description" content="Welcome to Swiftree!" />
+            </Helmet>
             <Navbar />
             <div className="container-md" id="home-cont">
                 {error && (

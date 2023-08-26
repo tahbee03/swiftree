@@ -3,12 +3,13 @@ import "./Profile.css"; // Styles for Profile page
 import PostForm from "../components/PostForm"; // <PostForm />
 import ProfileUpdate from "../components/ProfileUpdate";
 import Navbar from "../components/Navbar"; // <Navbar />
+import PostTree from "../components/PostTree"; // <PostTree />
 
 import { useState, useEffect } from "react"; // useState(), useEffect()
 import { useNavigate, useParams } from "react-router-dom"; // useNavigate(), useParams()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { useLogout } from "../hooks/useLogout"; // useLogout()
-import PostTree from "../components/PostTree";
+import { Helmet } from "react-helmet"; // <Helmet>
 
 export default function Profile() {
     const [presentedUser, setPresentedUser] = useState({
@@ -106,6 +107,10 @@ export default function Profile() {
 
     return (
         <>
+            <Helmet>
+                <title>Swiftree &#8231; {(presentedUser.displayName === "") ? "User not found" : username}</title>
+                <meta name="description" content={(presentedUser.displayName === "") ? "User not found!" : `View ${username}'s profile on Swiftree`} />
+            </Helmet>
             <Navbar />
             <div className="container" id="profile-cont">
                 {error && (

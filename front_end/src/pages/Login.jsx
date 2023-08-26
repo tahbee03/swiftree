@@ -3,6 +3,7 @@ import "./Login.css"; // Styles for Login page
 import { useState, useEffect } from "react"; // useState()
 import { useLogin } from "../hooks/useLogin"; // useLogin()
 import { useNavigate } from "react-router-dom"; // useNavigate()
+import { Helmet } from "react-helmet"; // <Helmet>
 
 export default function Login() {
     const [username, setUsername] = useState(""); // Stores username input
@@ -45,52 +46,58 @@ export default function Login() {
     }, []);
 
     return (
-        <main id="login-main">
-            <div>
-                <a href="/">
-                    <h1>swiftree</h1>
-                </a>
-                <h2>Login</h2>
-                <form className="login-form" onSubmit={handleSubmit}>
-                    <div className="form-item">
-                        <p>Username</p>
-                        <input
-                            type="text"
-                            name="username"
-                            required
-                            onChange={(e) => setUsername(e.target.value)}
-                            value={username}
-                        />
-                    </div>
+        <>
+            <Helmet>
+                <title>Swiftree &#8231; Login</title>
+                <meta name="description" content="Log into Swiftree with an existing account" />
+            </Helmet>
+            <main id="login-main">
+                <div>
+                    <a href="/">
+                        <h1>swiftree</h1>
+                    </a>
+                    <h2>Login</h2>
+                    <form className="login-form" onSubmit={handleSubmit}>
+                        <div className="form-item">
+                            <p>Username</p>
+                            <input
+                                type="text"
+                                name="username"
+                                required
+                                onChange={(e) => setUsername(e.target.value)}
+                                value={username}
+                            />
+                        </div>
 
-                    <div className="form-item">
-                        <p>Password</p>
-                        <input
-                            type="password"
-                            name="password"
-                            required
-                            onChange={(e) => setPassword(e.target.value)}
-                            value={password}
-                        />
-                    </div>
+                        <div className="form-item">
+                            <p>Password</p>
+                            <input
+                                type="password"
+                                name="password"
+                                required
+                                onChange={(e) => setPassword(e.target.value)}
+                                value={password}
+                            />
+                        </div>
 
-                    <button disabled={isLoading}>
-                        {isLoading && (
-                            <span className="spinner-border"></span>
-                        )}
-                        {!isLoading && (
-                            <>
-                                Login
-                            </>
-                        )}
-                    </button>
-                    {error && <div className="error-msg">{error}</div>}
-                </form>
+                        <button disabled={isLoading}>
+                            {isLoading && (
+                                <span className="spinner-border"></span>
+                            )}
+                            {!isLoading && (
+                                <>
+                                    Login
+                                </>
+                            )}
+                        </button>
+                        {error && <div className="error-msg">{error}</div>}
+                    </form>
 
-                <p>
-                    Don't have an account? <a href="/sign-up">Sign Up</a>
-                </p>
-            </div>
-        </main>
+                    <p>
+                        Don't have an account? <a href="/sign-up">Sign Up</a>
+                    </p>
+                </div>
+            </main>
+        </>
     );
 }

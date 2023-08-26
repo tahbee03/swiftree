@@ -5,6 +5,7 @@ import Post from "../components/Post"; // <Post />
 import User from "../components/User"; // <User />
 
 import { useState } from "react"; // useState()
+import { Helmet } from "react-helmet"; // <Helmet>
 
 export default function Search() {
     const [dyInput, setDyInput] = useState(""); // Stores dynamic search input (form is updated)
@@ -82,6 +83,10 @@ export default function Search() {
 
     return (
         <>
+            <Helmet>
+                <title>Swiftree &#8231; Search</title>
+                <meta name="description" content="Search for posts and users on Swiftree" />
+            </Helmet>
             <Navbar />
             <div className="container" id="search-cont">
                 <form onSubmit={handleSearch} id="search-form" className="row">

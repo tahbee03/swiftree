@@ -3,6 +3,7 @@ import "./SignUp.css"; // Styles for Sign Up page
 import { useState, useEffect } from "react"; // useState()
 import { useSignUp } from "../hooks/useSignUp"; // useSignUp()
 import { useNavigate } from "react-router-dom"; // useNavigate()
+import { Helmet } from "react-helmet"; // <Helmet>
 
 export default function SignUp() {
     const [email, setEmail] = useState(""); // Stores email input
@@ -47,72 +48,78 @@ export default function SignUp() {
     }, []);
 
     return (
-        <main id="sign-up-main">
-            <div>
-                <a href="/">
-                    <h1>swiftree</h1>
-                </a>
-                <h2>Sign Up</h2>
-                <form className="sign-up-form" onSubmit={handleSubmit}>
-                    <div className="form-item">
-                        <p>Email</p>
-                        <input
-                            type="email"
-                            name="email"
-                            required
-                            onChange={(e) => setEmail(e.target.value)}
-                            value={email} />
-                    </div>
+        <>
+            <Helmet>
+                <title>Swiftree &#8231; Sign Up</title>
+                <meta name="description" content="Sign up for a new Swiftree account" />
+            </Helmet>
+            <main id="sign-up-main">
+                <div>
+                    <a href="/">
+                        <h1>swiftree</h1>
+                    </a>
+                    <h2>Sign Up</h2>
+                    <form className="sign-up-form" onSubmit={handleSubmit}>
+                        <div className="form-item">
+                            <p>Email</p>
+                            <input
+                                type="email"
+                                name="email"
+                                required
+                                onChange={(e) => setEmail(e.target.value)}
+                                value={email} />
+                        </div>
 
-                    <div className="form-item">
-                        <p>Username</p>
-                        <input
-                            type="text"
-                            name="username"
-                            required
-                            onChange={(e) => setUsername(e.target.value)}
-                            value={username}
-                        />
-                    </div>
+                        <div className="form-item">
+                            <p>Username</p>
+                            <input
+                                type="text"
+                                name="username"
+                                required
+                                onChange={(e) => setUsername(e.target.value)}
+                                value={username}
+                            />
+                        </div>
 
-                    <div className="form-item">
-                        <p>Display Name</p>
-                        <input
-                            type="text"
-                            name="display_name"
-                            required
-                            onChange={(e) => setDisplayName(e.target.value)}
-                            value={displayName} />
-                    </div>
+                        <div className="form-item">
+                            <p>Display Name</p>
+                            <input
+                                type="text"
+                                name="display_name"
+                                required
+                                onChange={(e) => setDisplayName(e.target.value)}
+                                value={displayName} />
+                        </div>
 
-                    <div className="form-item">
-                        <p>Password</p>
-                        <input
-                            type="password"
-                            name="password"
-                            required
-                            onChange={(e) => setPassword(e.target.value)}
-                            value={password}
-                        />
-                    </div>
+                        <div className="form-item">
+                            <p>Password</p>
+                            <input
+                                type="password"
+                                name="password"
+                                required
+                                onChange={(e) => setPassword(e.target.value)}
+                                value={password}
+                            />
+                        </div>
 
-                    <button disabled={isLoading}>
-                        {isLoading && (
-                            <span className="spinner-border"></span>
-                        )}
-                        {!isLoading && (
-                            <>
-                                Sign Up
-                            </>
-                        )}
-                    </button>
-                    {error && <div className="error-msg">{error}</div>}
-                </form>
+                        <button disabled={isLoading}>
+                            {isLoading && (
+                                <span className="spinner-border"></span>
+                            )}
+                            {!isLoading && (
+                                <>
+                                    Sign Up
+                                </>
+                            )}
+                        </button>
+                        {error && <div className="error-msg">{error}</div>}
+                    </form>
 
-                <p>
-                    Already have an account? <a href="/login">Login</a>
-                </p>
-            </div>
-        </main>
+                    <p>
+                        Already have an account? <a href="/login">Login</a>
+                    </p>
+                </div>
+            </main>
+        </>
     );
 }
