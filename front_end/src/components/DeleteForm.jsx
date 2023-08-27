@@ -29,8 +29,6 @@ export default function DeleteForm() {
 
             setTimeout(async () => {
                 try {
-                    // TODO:
-                    // 1) Grab all users from back-end
                     setLoadingMsg("Fetching user data...");
 
                     // Fetches all users
@@ -40,26 +38,19 @@ export default function DeleteForm() {
                     // Error with back-end
                     if (!usersRes.ok) throw Error(usersData.error);
 
-                    // 2) Filter match 
-
                     const match = usersData.filter((u) => u.username === user.username)[0];
 
-                    // 3) Grab all posts from back-end
-
-                    // Fetches all posts
                     setLoadingMsg("Fetching post data...");
 
+                    // Fetches all posts
                     const postsRes = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
                     const postsData = await postsRes.json();
 
                     // Error with back-end
                     if (!postsRes.ok) throw Error(postsData.error);
 
-                    // 4) Filter posts that contain match._id
-
                     const matchPosts = postsData.filter((p) => p.author_id === match._id);
 
-                    // 5) Delete matching posts
                     setLoadingMsg("Deleting posts...");
 
                     for (let post of matchPosts) {
@@ -75,7 +66,6 @@ export default function DeleteForm() {
                         }
                     }
 
-                    // 6) Delete user
                     setLoadingMsg("Deleting user...");
 
                     // Removes user data from browser and AuthContext
@@ -88,7 +78,6 @@ export default function DeleteForm() {
                     // Error eith back-end
                     if (!delUserRes.ok) throw Error(delUserData.error);
 
-                    // 7) Navigate to home page
                     setLoadingMsg("Wrapping up...");
 
                     setTimeout(() => {
