@@ -5,6 +5,9 @@ import EmailForm from "./EmailForm";
 import UsernameForm from "./UsernameForm";
 import DisplayNameForm from "./DisplayNameForm";
 import PasswordForm from "./PasswordForm";
+import DeleteForm from "./DeleteForm";
+
+// TODO: Disable all other buttons and functionalities if a process is being carried out
 
 export default function ProfileUpdate({ modalState }) {
     const [option, setOption] = useState(null);
@@ -37,8 +40,6 @@ export default function ProfileUpdate({ modalState }) {
             window.addEventListener("click", close);
         };
     });
-
-    // TODO option: delete
 
     return (
         <div className="modal">
@@ -130,7 +131,7 @@ export default function ProfileUpdate({ modalState }) {
                                 {(windowWidth < 992) && (
                                     <hr className="divider" />
                                 )}
-                                <p>not available</p>
+                                <DeleteForm />
                             </>
                         )}
                     </div>
