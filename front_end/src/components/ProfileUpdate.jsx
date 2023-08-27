@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import PictureForm from "./PictureForm";
 import UsernameForm from "./UsernameForm";
 import DisplayNameForm from "./DisplayNameForm";
+import PasswordForm from "./PasswordForm";
 
 export default function ProfileUpdate({ modalState }) {
     const [option, setOption] = useState(null);
@@ -36,13 +37,9 @@ export default function ProfileUpdate({ modalState }) {
         };
     });
 
-    // option: email
+    // TODO option: email
 
-    // option: display name
-
-    // option: password
-
-    // option: delete
+    // TODO option: delete
 
     return (
         <div className="modal">
@@ -126,7 +123,7 @@ export default function ProfileUpdate({ modalState }) {
                                 {(windowWidth < 992) && (
                                     <hr className="divider" />
                                 )}
-                                <p>not available</p>
+                                <PasswordForm />
                             </>
                         )}
                         {(option === "delete") && (

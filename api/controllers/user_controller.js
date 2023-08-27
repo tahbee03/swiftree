@@ -167,6 +167,11 @@ const updateUser = async (req, res) => {
 
     try {
         if(req.body.mode === "IMAGE") req.body = await updateImage(req.body.content);
+        else if(req.body.mode === "PASSWORD") {
+            const salt = await bcrypt.genSalt(10);
+            const hash = await bcrypt.hash(req.body.content.password, salt);
+            req.body = { password: hash };
+        }
         else req.body = req.body.content;
 
         const user = await User.findByIdAndUpdate({_id: id}, {...req.body});
