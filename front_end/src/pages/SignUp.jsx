@@ -30,6 +30,18 @@ export default function SignUp() {
         }
     }
 
+    function handleToggle(e) {
+        // Changes the image for the toggler accordingly
+        const toggler = e.target;
+        if (toggler.src === `${window.location.origin}/hide.png`) toggler.src = `${window.location.origin}/visible.png`;
+        else toggler.src = `${window.location.origin}/hide.png`;
+
+        // Changes the visibility of the password input accordingly
+        const passwordInput = document.getElementById("password-input");
+        if (passwordInput.type === "password") passwordInput.type = "text";
+        else passwordInput.type = "password";
+    }
+
     useEffect(() => {
         const adjustContainer = () => {
             const container = document.getElementById("sign-up-main");
@@ -100,6 +112,13 @@ export default function SignUp() {
                                 required
                                 onChange={(e) => setPassword(e.target.value)}
                                 value={password}
+                                id="password-input"
+                            />
+                            <img
+                                className="password-toggle"
+                                src="/hide.png"
+                                alt="password-toggle"
+                                onClick={handleToggle}
                             />
                         </div>
 

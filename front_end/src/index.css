@@ -58,3 +58,13 @@ body {
     text-decoration: none;
     cursor: pointer;
 }
+
+.password-toggle {
+    width: 1rem;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.password-toggle:hover {
+    opacity: 0.5;
+}

@@ -80,6 +80,27 @@ export default function PasswordForm() {
         }
     }
 
+    function handleToggle(e) {
+        // Changes the image for the toggler accordingly
+        const toggler = e.target;
+        if (toggler.src === `${window.location.origin}/hide.png`) toggler.src = `${window.location.origin}/visible.png`;
+        else toggler.src = `${window.location.origin}/hide.png`;
+
+        let passwordInput = null;
+
+        // Changes the visibility of the password input accordingly
+        if (toggler.id === "toggler-1") {
+            passwordInput = document.getElementById("password-input-1");
+            if (passwordInput.type === "password") passwordInput.type = "text";
+            else passwordInput.type = "password";
+        }
+        else {
+            passwordInput = document.getElementById("password-input-2");
+            if (passwordInput.type === "password") passwordInput.type = "text";
+            else passwordInput.type = "password";
+        }
+    }
+
     return (
         <>
             {error && <div className="error-msg">{error}</div>}
@@ -96,6 +117,14 @@ export default function PasswordForm() {
                             required
                             onChange={(e) => setOldPassword(e.target.value)}
                             value={oldPassword}
+                            id="password-input-1"
+                        />
+                        <img
+                            className="password-toggle"
+                            src="/hide.png"
+                            alt="password-toggle"
+                            onClick={handleToggle}
+                            id="toggler-1"
                         />
                     </div>
 
@@ -107,6 +136,14 @@ export default function PasswordForm() {
                             required
                             onChange={(e) => setNewPassword(e.target.value)}
                             value={newPassword}
+                            id="password-input-2"
+                        />
+                        <img
+                            className="password-toggle"
+                            src="/hide.png"
+                            alt="password-toggle"
+                            onClick={handleToggle}
+                            id="toggler-2"
                         />
                     </div>
 
