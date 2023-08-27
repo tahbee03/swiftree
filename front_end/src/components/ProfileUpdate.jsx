@@ -1,6 +1,7 @@
 import "./ProfileUpdate.css";
 import { useState, useEffect } from "react";
 import PictureForm from "./PictureForm";
+import EmailForm from "./EmailForm";
 import UsernameForm from "./UsernameForm";
 import DisplayNameForm from "./DisplayNameForm";
 import PasswordForm from "./PasswordForm";
@@ -36,8 +37,6 @@ export default function ProfileUpdate({ modalState }) {
             window.addEventListener("click", close);
         };
     });
-
-    // TODO option: email
 
     // TODO option: delete
 
@@ -99,7 +98,7 @@ export default function ProfileUpdate({ modalState }) {
                                 {(windowWidth < 992) && (
                                     <hr className="divider" />
                                 )}
-                                <p>not available</p>
+                                <EmailForm />
                             </>
                         )}
                         {(option === "username") && (
