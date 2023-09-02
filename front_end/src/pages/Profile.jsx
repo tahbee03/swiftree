@@ -133,7 +133,7 @@ export default function Profile() {
                                 {user && (user.username === username) && (
                                     <>
                                         <button type="button" onClick={() => setModal("post-form")}>Make New Post</button>
-                                        <button type="button" onClick={() => setModal("update")}>Update Info</button>
+                                        <button type="button" onClick={() => setModal("update")}>Settings</button>
                                         <button type="button" onClick={handleLogout}>Log Out</button>
                                     </>
                                 )}
@@ -156,5 +156,3 @@ export default function Profile() {
         </>
     );
 }
-
-// TODO: Modify so that users are able to update their username and display name
