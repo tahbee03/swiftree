@@ -1,10 +1,8 @@
 import "./Post.css";
-import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { useEffect, useState } from "react";
 import { format, formatDistanceToNow } from "date-fns"; // format(), formatDistanceToNow()
 
 export default function Post({ post, canDelete }) {
-    const { user, dispatch } = useAuthContext();
     const [author, setAuthor] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -19,34 +17,6 @@ export default function Post({ post, canDelete }) {
 
     async function handleClick(id) {
         setIsLoading(true);
-
-        // Update user info
-        const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${author._id}`, {
-            method: "PATCH",
-            body: JSON.stringify({
-                mode: "POST",
-                content: {
-                    posts: author.posts.splice(author.posts.indexOf(id), 1)
-                }
-            }),
-            headers: { "Content-Type": "application/json" }
-        });
-        const userData = await userRes.json();
-
-        if (!userRes.ok) console.log(userData.error);
-        else {
-            console.log("User updated!");
-
-            const payload = {
-                username: user.username,
-                display_name: user.display_name,
-                pfp: user.pfp,
-                posts: author.posts.splice(author.posts.indexOf(id), 1),
-                token: user.token
-            };
-            dispatch({ type: "UPDATE", payload });
-            sessionStorage.setItem("user", JSON.stringify(payload));
-        }
 
         // Delete post
         const res = await fetch(`${process.env.REACT_APP_API_URL}/posts/${id}`, { method: "DELETE" });

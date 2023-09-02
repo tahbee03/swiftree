@@ -5,7 +5,7 @@ import "./PostForm.css";
 export default function PostForm({ modalState }) {
     const [content, setContent] = useState("");
     const [error, setError] = useState(null);
-    const { user, dispatch } = useAuthContext();
+    const { user } = useAuthContext();
     const [isLoading, setIsLoading] = useState(false);
 
     // Run on mount
@@ -57,34 +57,6 @@ export default function PostForm({ modalState }) {
             console.log("Post added!");
             setContent("");
             setError(null);
-        }
-
-        // Update user info
-        const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match._id}`, {
-            method: "PATCH",
-            body: JSON.stringify({
-                mode: "POST",
-                content: {
-                    posts: [...match.posts, postData._id]
-                }
-            }),
-            headers: { "Content-Type": "application/json" }
-        });
-        const userData = await userRes.json();
-
-        if (!userRes.ok) setError(userData.error);
-        else {
-            console.log("User updated!");
-
-            const payload = {
-                username: user.username,
-                display_name: user.display_name,
-                pfp: user.pfp,
-                posts: [...match.posts, postData._id],
-                token: user.token
-            };
-            dispatch({ type: "UPDATE", payload });
-            sessionStorage.setItem("user", JSON.stringify(payload));
         }
 
         window.location.reload();

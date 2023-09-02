@@ -65,8 +65,7 @@ const userLogin = async (req, res) => {
         res.status(200).json({
             username: user.username, 
             display_name: user.display_name, 
-            pfp: user.image.url, 
-            posts: user.posts, 
+            pfp: user.image.url,
             token
         }); // Return data to be used in hooks
 
@@ -106,7 +105,6 @@ const userSignUp = async (req, res) => {
             username: user.username, 
             display_name: user.display_name, 
             pfp: user.image.url, 
-            posts: user.posts, 
             token
         }); // Return data to be used in hooks
     } catch(err) {
