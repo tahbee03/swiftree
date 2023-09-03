@@ -4,7 +4,6 @@ import "./PostTree.css";
 import PostModal from './PostModal';
 const _ = require("lodash");
 
-
 function randomNum(min, max) {
     return (Math.random() * (max - min)) + min;
 }
@@ -131,10 +130,10 @@ export default function PostTree({ posts, page }) {
         };
     }, []);
 
-    // Tree is built whenever the bounds state is updated i.e. whenever createCanvas() is called
+    // Tree is rebuilt whenever the bounds state is updated i.e. whenever createCanvas() is called or the posts are updated
     useEffect(() => {
         buildTree();
-    }, [bounds]);
+    }, [bounds, posts]);
 
     function openModal(content) {
         if (!visited.includes(content._id)) setVisited([...visited, content._id]);

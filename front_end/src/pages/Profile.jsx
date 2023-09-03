@@ -4,12 +4,23 @@ import PostForm from "../components/PostForm"; // <PostForm />
 import ProfileUpdate from "../components/ProfileUpdate";
 import Navbar from "../components/Navbar"; // <Navbar />
 import PostTree from "../components/PostTree"; // <PostTree />
+import Pagination from "../components/Pagination";
 
 import { useState, useEffect } from "react"; // useState(), useEffect()
 import { useNavigate, useParams } from "react-router-dom"; // useNavigate(), useParams()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { useLogout } from "../hooks/useLogout"; // useLogout()
 import { Helmet } from "react-helmet"; // <Helmet>
+
+function partition(arr, size) {
+    let p = {}; // Object to store array partitions
+    for (let i = 1; i <= size; i++) {
+        // partition size: 14
+        // [0...13], [14...27], [28...41], ...
+        p[i] = arr.slice((i - 1) * size, (i * size) - 1);
+    }
+    return p;
+}
 
 export default function Profile() {
     const [presentedUser, setPresentedUser] = useState({
@@ -20,11 +31,12 @@ export default function Profile() {
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
     const [error, setError] = useState(null);
     const [modal, setModal] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const navigate = useNavigate(); // Needed to redirect to another page
     const { username } = useParams(); // Grabs username of the user that the page belongs to from the URL
     const { logout } = useLogout(); // Custom hook to log out logged in user
-    const { user, dispatch } = useAuthContext(); // Contains data for logged in user
+    const { user } = useAuthContext(); // Contains data for logged in user
 
     useEffect(() => {
         const adjust = () => {
@@ -80,7 +92,7 @@ export default function Profile() {
 
                 if (!postRes.ok) throw Error(postData.error);
 
-                // Filters posts to match the one in the URL and updates the posts to be shown
+                // Filters posts to match the one in the URL and stores them in the state
                 setPosts(postData.filter((post) => post.author_id === match._id));
 
                 setError(null);
@@ -142,12 +154,19 @@ export default function Profile() {
                                 {(posts.length === 0) && (
                                     <p>This user has no posts!</p>
                                 )}
-                                {!(posts.length === 0) && (
+                                {(posts.length <= 14) && (
                                     <PostTree posts={posts} page={"profile"} />
                                 )}
-                                {/* {!(posts.length === 0) && posts.map((post) => (
-                                <Post key={post._id} post={post} canDelete={user && (user.username === username)} />
-                            ))} */}
+                                {(posts.length > 14) && (
+                                    <>
+                                        <PostTree posts={partition(posts, 14)[currentPage]} page={"profile"} />
+                                        <Pagination
+                                            total={Math.ceil(posts.length / 14)}
+                                            current={currentPage}
+                                            setCurrentPage={setCurrentPage}
+                                        />
+                                    </>
+                                )}
                             </div>
                         </div>
                     </>

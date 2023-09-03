@@ -68,7 +68,7 @@ export default function Home() {
                     </div>
                 )}
                 {posts && !isLoading && (
-                    <PostTree posts={posts} page={"home"} />
+                    <PostTree posts={(posts.length > 14) ? posts.slice(0, 14) : posts} page={"home"} />
                 )}
             </div>
         </>
