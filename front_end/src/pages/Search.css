@@ -39,6 +39,7 @@
     position: sticky;
     top: 0;
     background-color: #D299FF;
+    z-index: 100;
     /* backdrop-filter: blur(5px); -> might be useful for something else */
 }
 
