@@ -13,11 +13,21 @@ import { useLogout } from "../hooks/useLogout"; // useLogout()
 import { Helmet } from "react-helmet"; // <Helmet>
 
 function partition(arr, size) {
-    let p = {}; // Object to store array partitions
-    for (let i = 1; i <= size; i++) {
-        // partition size: 14
-        // [0...13], [14...27], [28...41], ...
-        p[i] = arr.slice((i - 1) * size, (i * size) - 1);
+    // arr -> array of content (posts)
+    // size -> size of partition (14)
+
+    // [0...13], [14...27], [28...41], ...
+
+    let p = {}; // Object to store array partitions as key-value pairs
+    for (let i = 1; ((i - 1) * size) < arr.length; i++) {
+
+        // For loop condition checks if ((i - 1) * size) is less than arr.length
+        // since those will already be counted for
+
+        // It is also checked if (i * size) is greater than arr.length within
+        // the for loop to avoid going out of range when slicing
+
+        p[i] = ((i * size) > arr.length) ? arr.slice((i - 1) * size) : arr.slice((i - 1) * size, (i * size));
     }
     return p;
 }
