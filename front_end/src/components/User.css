@@ -1,3 +1,7 @@
+.user-wrapper {
+    display: inline-block;
+}
+
 .user {
     background-color: #d6d6d6;
     margin: 10px;
@@ -20,4 +24,15 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.info-section p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+@media screen and (min-width: 768px) {
+    .info-section p {
+        font-size: 1.25rem;
+    }
 }

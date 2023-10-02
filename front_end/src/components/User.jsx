@@ -32,9 +32,9 @@ export default function User({ user }) {
                 <span className="spinner-border"></span>
             )}
             {!isLoading && (
-                <a href={`/profile/${user.username}`}>
+                <a href={`/profile/${user.username}`} className="user-wrapper col-md-3 col-12">
                     <div className="user row">
-                        <div className="col-3 icon-section">
+                        <div className="col-md-12 col-3 p-md-3 icon-section">
                             {(user.image.url === "") && (
                                 <img src="/account_icon.png" alt="pfp" />
                             )}
@@ -42,9 +42,9 @@ export default function User({ user }) {
                                 <img src={user.image.url} alt="pfp" />
                             )}
                         </div>
-                        <div className="col-9 info-section">
-                            <p className="name"><b>{user.display_name}</b> &#183; {user.username}</p>
-                            <p className="post-num">{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
+                        <div className="col-md-12 col-9 p-md-3 info-section">
+                            <p className="name text-md-center text-truncate"><b>{user.display_name}</b> &#183; {user.username}</p>
+                            <p className="post-num text-md-center">{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
                         </div>
                     </div>
                 </a>
