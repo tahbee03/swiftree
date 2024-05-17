@@ -7,8 +7,6 @@ import DisplayNameForm from "./DisplayNameForm";
 import PasswordForm from "./PasswordForm";
 import DeleteForm from "./DeleteForm";
 
-// TODO: Disable all other buttons and functionalities if a process is being carried out
-
 export default function ProfileUpdate({ modalState }) {
     const [option, setOption] = useState(null);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
