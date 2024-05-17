@@ -19,8 +19,7 @@ export default function EmailForm() {
 
         try {
             setIsLoading(true);
-
-            console.log(`${email}, ${password}`);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
 
             /*
             email criteria:
@@ -70,6 +69,7 @@ export default function EmailForm() {
             window.location.reload();
         } catch (err) {
             setError(err.message);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
         }
     }
 

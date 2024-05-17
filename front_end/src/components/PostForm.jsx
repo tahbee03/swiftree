@@ -38,6 +38,7 @@ export default function PostForm({ modalState }) {
     async function handleSubmit(e) {
         e.preventDefault(); // No refresh on submit
         setIsLoading(true);
+        for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
 
         const users = await (await fetch(`${process.env.REACT_APP_API_URL}/users`)).json();
         const match = users.filter((u) => u.username === user.username)[0];

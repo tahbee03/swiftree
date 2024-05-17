@@ -22,66 +22,74 @@ export default function PictureForm() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        setIsLoading(true);
 
-        const users = await (await fetch(`${process.env.REACT_APP_API_URL}/users`)).json();
-        const match = users.filter((u) => u.username === user.username);
-        let userRes = null;
+        try {
+            setIsLoading(true);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
 
-        if (match[0].image.public_id === "") { // No existing image for the user
-            userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
-                method: "PATCH",
-                body: JSON.stringify({
-                    mode: "IMAGE",
-                    content: {
-                        selectedFile,
-                        public_id: ""
-                    }
-                }),
-                headers: { "Content-Type": "application/json" }
-            });
-        } else { // An image for the user already exists
-            userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
-                method: "PATCH",
-                body: JSON.stringify({
-                    mode: "IMAGE",
-                    content: {
-                        selectedFile,
-                        public_id: match[0].image.public_id
-                    }
-                }),
-                headers: { "Content-Type": "application/json" }
-            });
+            const users = await (await fetch(`${process.env.REACT_APP_API_URL}/users`)).json();
+            const match = users.filter((u) => u.username === user.username);
+            let userRes = null;
+
+            if (match[0].image.public_id === "") { // No existing image for the user
+                userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
+                    method: "PATCH",
+                    body: JSON.stringify({
+                        mode: "IMAGE",
+                        content: {
+                            selectedFile,
+                            public_id: ""
+                        }
+                    }),
+                    headers: { "Content-Type": "application/json" }
+                });
+            } else { // An image for the user already exists
+                userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
+                    method: "PATCH",
+                    body: JSON.stringify({
+                        mode: "IMAGE",
+                        content: {
+                            selectedFile,
+                            public_id: match[0].image.public_id
+                        }
+                    }),
+                    headers: { "Content-Type": "application/json" }
+                });
+            }
+
+            const userData = await userRes.json();
+            // console.log(userData);
+
+            if (!userRes.ok) console.log(userData.error);
+            else {
+                const u = await (await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`)).json();
+                console.log("User updated!");
+
+                const payload = {
+                    username: user.username,
+                    display_name: user.display_name,
+                    pfp: u.image.url,
+                    posts: user.posts,
+                    token: user.token
+                };
+                authDispatch({ type: "UPDATE", payload });
+                sessionStorage.setItem("user", JSON.stringify(payload));
+                console.log(sessionStorage.getItem("user"));
+            }
+
+            // setIsLoading(false);
+            window.location.reload();
+        } catch (err) {
+            setError(err.message);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
         }
-
-        const userData = await userRes.json();
-        // console.log(userData);
-
-        if (!userRes.ok) console.log(userData.error);
-        else {
-            const u = await (await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`)).json();
-            console.log("User updated!");
-
-            const payload = {
-                username: user.username,
-                display_name: user.display_name,
-                pfp: u.image.url,
-                posts: user.posts,
-                token: user.token
-            };
-            authDispatch({ type: "UPDATE", payload });
-            sessionStorage.setItem("user", JSON.stringify(payload));
-            console.log(sessionStorage.getItem("user"));
-        }
-
-        // setIsLoading(false);
-        window.location.reload();
     }
 
     // Removes user's picture from cloud and sets it to default
     async function handlePictureRemoval() {
         try {
             setIsLoading(true);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
 
             // Gets all users from back-end
             const res = await fetch(`${process.env.REACT_APP_API_URL}/users`);

@@ -38,7 +38,9 @@ export default function Profile() {
         pfp: "/account_icon.png"
     }); // Contains data for the user presented on the page
     const [posts, setPosts] = useState([]); // Contains posts to be displayed in the posts container
-    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
+    const [isLoading, setIsLoading] = useState(true); // Boolean value used to render loading spinner
+    const [adjustDone, setAdjustDone] = useState(false); // Boolean value representing state of page adjustments
+    const [fetchDone, setFetchDone] = useState(false); /// Boolean value represtenting state of user data
     const [error, setError] = useState(null);
     const [modal, setModal] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -64,6 +66,8 @@ export default function Profile() {
 
                 profileCont.style.marginTop = "5vh";
             }
+
+            setAdjustDone(true);
         };
 
         adjust();
@@ -109,10 +113,16 @@ export default function Profile() {
             } catch (err) {
                 setError(err.message);
             }
+
+            setFetchDone(true);
         };
 
         fetchUser();
     }, [username]);
+
+    useEffect(() => {
+        setIsLoading(!adjustDone || !fetchDone); // Stop loading when adjustments have been made and user data has been fetched
+    }, [adjustDone, fetchDone]);
 
     // Logs out logged in user
     function handleLogout() {
@@ -149,32 +159,44 @@ export default function Profile() {
                         )}
                         <div className="row">
                             <div className="col-md-3 col-12" id="info-col">
-                                <img src={presentedUser.pfp} alt="account pic" />
-                                <p><b>{presentedUser.displayName}</b> &#183; {username}</p>
-                                <p>{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
-                                {user && (user.username === username) && (
+                                {(isLoading) ? (
+                                    <span className="spinner-border"></span>
+                                ) : (
                                     <>
-                                        <button type="button" onClick={() => setModal("post-form")}>Make New Post</button>
-                                        <button type="button" onClick={() => setModal("update")}>Settings</button>
-                                        <button type="button" onClick={handleLogout}>Log Out</button>
+                                        <img src={presentedUser.pfp} alt="account pic" />
+                                        <p><b>{presentedUser.displayName}</b> &#183; {username}</p>
+                                        <p>{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
+                                        {user && (user.username === username) && (
+                                            <>
+                                                <button type="button" onClick={() => setModal("post-form")}>Make New Post</button>
+                                                <button type="button" onClick={() => setModal("update")}>Settings</button>
+                                                <button type="button" onClick={handleLogout}>Log Out</button>
+                                            </>
+                                        )}
                                     </>
                                 )}
                             </div>
                             <div className="col-md-8 col-12" id="posts-col">
-                                {(posts.length === 0) && (
-                                    <p>This user has no posts!</p>
-                                )}
-                                {(posts.length <= 14) && (
-                                    <PostTree posts={posts} page={"profile"} />
-                                )}
-                                {(posts.length > 14) && (
+                                {(isLoading) ? (
+                                    <span className="spinner-border"></span>
+                                ) : (
                                     <>
-                                        <PostTree posts={partition(posts, 14)[currentPage]} page={"profile"} />
-                                        <Pagination
-                                            total={Math.ceil(posts.length / 14)}
-                                            current={currentPage}
-                                            setCurrentPage={setCurrentPage}
-                                        />
+                                        {(posts.length === 0) && (
+                                            <p>This user has no posts!</p>
+                                        )}
+                                        {(posts.length <= 14) && (
+                                            <PostTree posts={posts} page={"profile"} />
+                                        )}
+                                        {(posts.length > 14) && (
+                                            <>
+                                                <PostTree posts={partition(posts, 14)[currentPage]} page={"profile"} />
+                                                <Pagination
+                                                    total={Math.ceil(posts.length / 14)}
+                                                    current={currentPage}
+                                                    setCurrentPage={setCurrentPage}
+                                                />
+                                            </>
+                                        )}
                                     </>
                                 )}
                             </div>

@@ -46,6 +46,7 @@
 #profile-cont #info-col > button {
     width: 70%;
     transition: 0.25s;
+    user-select: none;
 }
 
 #profile-cont #info-col > button:hover {

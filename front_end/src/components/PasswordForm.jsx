@@ -11,7 +11,7 @@ export default function PasswordForm() {
     const [newPassword, setNewPassword] = useState(""); // Stores new password input
     const [error, setError] = useState(null);
 
-    const { user, dispatch } = useAuthContext(); // Contains data for logged in user
+    const { user } = useAuthContext(); // Contains data for logged in user
     const { login } = useLogin();
     const { logout } = useLogout();
     const navigate = useNavigate();
@@ -21,8 +21,7 @@ export default function PasswordForm() {
 
         try {
             setIsLoading(true);
-
-            console.log(`${oldPassword}, ${newPassword}`);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
 
             /*
             old password criteria:
@@ -77,6 +76,7 @@ export default function PasswordForm() {
             navigate(`/login`);
         } catch (err) {
             setError(err.message);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
         }
     }
 

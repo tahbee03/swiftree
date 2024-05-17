@@ -19,8 +19,7 @@ export default function UsernameForm() {
 
         try {
             setIsLoading(true);
-
-            console.log(`${username}, ${password}`);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
 
             /*
             username criteria:
@@ -87,6 +86,7 @@ export default function UsernameForm() {
             window.location.reload();
         } catch (err) {
             setError(err.message);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
         }
     }
 

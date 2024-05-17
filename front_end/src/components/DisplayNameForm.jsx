@@ -17,8 +17,7 @@ export default function DisplayNameForm() {
 
         try {
             setIsLoading(true);
-
-            console.log(`${displayName}, ${password}`);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
 
             /*
             password criteria:
@@ -66,6 +65,7 @@ export default function DisplayNameForm() {
             window.location.reload();
         } catch (err) {
             setError(err.message);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
         }
     }
 

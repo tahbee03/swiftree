@@ -26,6 +26,7 @@ export default function DeleteForm() {
 
             setIsLoading(true);
             setLoadingMsg("Preparing...");
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
 
             setTimeout(async () => {
                 try {
@@ -85,10 +86,12 @@ export default function DeleteForm() {
                     }, 3000);
                 } catch (err) {
                     setError(err.message);
+                    for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
                 }
             }, 3000);
         } catch (err) {
             setError(err.message);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
         }
     }
 
