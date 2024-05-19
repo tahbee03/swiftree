@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+// POST /api/users/sign_up
 export async function POST(req, { params }) {
   try {
     await connectDB(); // Connect to database
