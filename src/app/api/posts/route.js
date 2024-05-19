@@ -1,8 +1,8 @@
-import Post from "../../../models/Post";
-import connectDB from "../../../lib/mongodb";
+import Post from "@/models/Post";
+import connectDB from "@/lib/mongodb";
 
 // GET /api/posts
-export async function GET(req) {
+export async function GET(req, { params }) {
   try {
     await connectDB(); // Connect to database
 
@@ -11,7 +11,28 @@ export async function GET(req) {
       headers: { 'Content-Type': 'application/json' },
       status: 404
     });
-    else return new Response(JSON.stringify({ posts }), {
+    else return new Response(JSON.stringify(posts), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 200
+    });
+  } catch (error) {
+    console.log(error);
+    return new Response(JSON.stringify({ message: "Server error." }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 500
+    });
+  }
+}
+
+// POST /api/posts
+export async function POST(req, { params }) {
+  try {
+    await connectDB(); // Connect to database
+
+    const { author_id, content } = req.body;
+
+    const post = await Post.create({ author_id, content });
+    return new Response(JSON.stringify(post), {
       headers: { 'Content-Type': 'application/json' },
       status: 200
     });
