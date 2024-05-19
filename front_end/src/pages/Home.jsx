@@ -56,14 +56,6 @@ export default function Home() {
                 {/* Default meta tags */}
                 <title>Swiftree</title>
                 <meta name="description" content="Welcome to Swiftree!" />
-
-                {/* OG meta tags */}
-                <meta property="og:title" content="Swiftree" />
-                <meta property="og:description" content="Welcome to Swiftree!" />
-
-                {/* Twitter meta tags */}
-                <meta name="twitter:title" content="Swiftree" />
-                <meta name="twitter:description" content="Welcome to Swiftree!" />
             </Helmet>
             <Navbar />
             <div className="container-md" id="home-cont">

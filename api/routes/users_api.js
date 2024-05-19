@@ -1,5 +1,5 @@
 const express = require("express");
-const {getUsers, getUserByID, getUserByName, userLogin, userSignUp, updateUser, deleteUser} = require("../controllers/user_controller");
+const { getUsers, getUserByID, userLogin, userSignUp, updateUser, deleteUser } = require("../controllers/user_controller");
 
 const router = express.Router();
 
@@ -8,9 +8,6 @@ router.get("/", getUsers);
 
 // Get specific user (via ID)
 router.get("/:id", getUserByID);
-
-// Get specific user (via username)
-router.get("/name-search/:username", getUserByName);
 
 // Login functionality
 router.post("/login", userLogin)
