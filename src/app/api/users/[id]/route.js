@@ -21,7 +21,7 @@ export async function GET(req, { params }) {
       headers: { 'Content-Type': 'application/json' },
       status: 400
     });
-    else return new Response(JSON.stringify({ user }), {
+    else return new Response(JSON.stringify(user), {
       headers: { 'Content-Type': 'application/json' },
       status: 200
     });
@@ -59,7 +59,7 @@ export async function PATCH(req, { params }) {
       headers: { 'Content-Type': 'application/json' },
       status: 400
     });
-    else return new Response(JSON.stringify({ user }), {
+    else return new Response(JSON.stringify(user), {
       headers: { 'Content-Type': 'application/json' },
       status: 200
     });
