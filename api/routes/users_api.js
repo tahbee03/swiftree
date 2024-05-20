@@ -1,5 +1,5 @@
 const express = require("express");
-const { getUsers, getUserByID, userLogin, userSignUp, updateUser, deleteUser } = require("../controllers/user_controller");
+const { getUsers, getUser, userLogin, userSignUp, updateUser, deleteUser } = require("../controllers/user_controller");
 
 const router = express.Router();
 
@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/", getUsers);
 
 // Get specific user (via ID)
-router.get("/:id", getUserByID);
+router.get("/:id", getUser);
 
 // Login functionality
 router.post("/login", userLogin)

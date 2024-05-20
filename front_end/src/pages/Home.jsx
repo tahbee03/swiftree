@@ -17,36 +17,25 @@ export default function Home() {
         const fetchPosts = async () => {
             setIsLoading(true);
 
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
-            const data = await res.json();
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
+                const data = await response.json();
 
-            if (!res.ok) {
-                // setError(data.error);
-                setPosts(null);
-                throw Error(data.error);
-            } else {
+                if (!response.ok) throw new Error(data.message);
+
                 const now = new Date().getTime();
                 setPosts(data.filter((p) => (now - new Date(p.createdAt).getTime()) < (3600000 * 24)));
-                // setError(null);
+            } catch (error) {
+                console.log(error);
+                setPosts(null);
+                setError(error);
             }
-
-            /*
-            1 hour = 3600000 milliseconds
-            => 24 hours = (3600000 * 24) milliseconds
-            
-            new Date().getTime() -> milliseconds since Unix epoch
-            => new Date(a).getTime() - new Date(b).getTime() -> time difference between times a and b in milliseconds
-            */
 
             setIsLoading(false);
         };
 
-        try {
-            fetchPosts();
-            setError(null);
-        } catch (err) {
-            setError(err.message);
-        }
+        setError(null);
+        fetchPosts();
     }, []);
 
     // Renders elements

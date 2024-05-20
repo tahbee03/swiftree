@@ -4,9 +4,10 @@ import SignUp from "./pages/SignUp"; // <SignUp />
 import Profile from "./pages/Profile"; // <Profile />
 import Search from "./pages/Search"; // <Search />
 import NotFound from "./pages/NotFound"; // <NotFound />
-import { BrowserRouter, Routes, Route } from "react-router-dom"; // <BrowserRouter>, <Routes>, <Route>
 
-function App() {
+import { BrowserRouter, Routes, Route } from "react-router-dom"; // <BrowserRouter>, <Routes>, <Route />
+
+export default function App() {
     return (
         <div className="App">
             <BrowserRouter>
@@ -22,5 +23,3 @@ function App() {
         </div>
     );
 }
-
-export default App;

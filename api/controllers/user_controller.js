@@ -2,150 +2,99 @@ const User = require("../models/User");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const cloudinary = require("../cloudinary");
-
-const createToken = (id, email, username) => {
-    return jwt.sign({ id, email, username }, process.env.TOKEN_SECRET, { expiresIn: "1d" }); // payload | secret | options
-};
+const { updateImage } = require("../cloudinary");
 
 // Get all users
 const getUsers = async (req, res) => {
-    const users = await User.find({}).sort({ createdAt: -1 });
-
-    if (users.length == 0) res.status(400).json({ error: "There are no users!" });
-    else res.status(200).json(users);
+    try {
+        const users = await User.find({});
+        return res.status(200).json(users);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error encountered." });
+    }
 };
 
 // Get specific user
-const getUserByID = async (req, res) => {
-    const { id } = req.params;
+const getUser = async (req, res) => {
+    try {
+        const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: "No such user!" });
+        if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ message: "No such user!" });
 
-    const user = await User.findById(id);
-
-    if (!user) res.status(404).json({ error: "No such user!" });
-    else res.status(200).json(user);
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ message: "No such user!" });
+        else return res.status(200).json(user);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error encountered." });
+    }
 };
 
-/// Login functionality
+// Login functionality
 const userLogin = async (req, res) => {
-    const { username, password } = req.body;
-
-    let usernameL = username.toLowerCase();
-
     try {
-        const user = await User.findOne({
-            username: usernameL
-        });
-        if (!user) throw Error("Username not found!");
+        const { username, password } = req.body;
+
+        const user = await User.findOne({ username: username.toLowerCase() });
+        if (!user) return res.status(404).json({ message: "Username not found!" });
 
         const match = await bcrypt.compare(password, user.password);
-        if (!match) throw Error("Incorrect password!");
+        if (!match) return res.status(404).json({ message: "Incorrect password!" });
 
-        const token = createToken(user._id, user.email, user.username);
-        res.status(200).json({
+        const token = jwt.sign({ id: user._id, email: user.email, username: user.username }, process.env.TOKEN_SECRET, { expiresIn: "1d" }); // payload, secret, options
+        return res.status(200).json({
             username: user.username,
             display_name: user.display_name,
             pfp: user.image.url,
             token
-        }); // Return data to be used in hooks
-
-    } catch (err) {
-        res.status(400).json({ error: err.message });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error encountered." });
     }
-
 };
 
 // Sign up functionality
 const userSignUp = async (req, res) => {
-    const { email, username, display_name, password } = req.body;
-
-    let usernameL = username.toLowerCase();
-
-    const ematch = await User.find({ email });
-    if (ematch.length != 0) return res.status(400).json({ error: "Email already in use!" });
-
-    const umatch = await User.find({
-        username: usernameL
-    });
-    if (umatch.length != 0) return res.status(400).json({ error: "Username already in use!" })
-
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-
     try {
+        const { email, username, display_name, password } = req.body;
+
+        const ematch = await User.find({ email });
+        if (ematch.length != 0) return res.status(400).json({ message: "Email already in use!" });
+
+        const umatch = await User.find({ username: username.toLowerCase() });
+        if (umatch.length != 0) return res.status(400).json({ message: "Username already in use!" })
+
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(password, salt);
+
         const user = await User.create({
             email,
-            username: usernameL,
+            username: username.toLowerCase(),
             display_name,
             password: hash,
             image: { public_id: "", url: "/account_icon.png" }
         });
-        const token = createToken(user._id, user.email, user.username);
-        res.status(200).json({
+        const token = jwt.sign({ id: user._id, email: user.email, username: user.username }, process.env.TOKEN_SECRET, { expiresIn: "1d" }); // payload, secret, optionsconst token = createToken(user._id, user.email, user.username);
+        return res.status(200).json({
             username: user.username,
             display_name: user.display_name,
             pfp: user.image.url,
             token
-        }); // Return data to be used in hooks
-    } catch (err) {
-        console.log(err.message);
-        res.status(400).json({ error: err });
-    }
-};
-
-const updateImage = async ({ selectedFile: s, public_id: p }) => {
-    if (p === "") { // Create image
-        // Upload image to cloud
-        const res = await cloudinary.uploader.upload(s, {
-            folder: "user-pfps"
         });
-
-        return {
-            image: {
-                public_id: res.public_id,
-                url: res.secure_url
-            }
-        }
-    } else if (s === "") { // Delete image
-        // Remove image from cloud
-        await cloudinary.uploader.destroy(p, (result) => {
-            console.log(result);
-        });
-
-        return {
-            image: {
-                public_id: "",
-                url: "/account_icon.png"
-            }
-        }
-    } else { // Update image
-        // Remove image from cloud
-        await cloudinary.uploader.destroy(p, (result) => {
-            console.log(result);
-        });
-
-        // Upload image to cloud
-        const res = await cloudinary.uploader.upload(s, {
-            folder: "user-pfps"
-        });
-
-        return {
-            image: {
-                public_id: res.public_id,
-                url: res.secure_url
-            }
-        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error encountered." });
     }
 };
 
 // Update specific user
 const updateUser = async (req, res) => {
-    const { id } = req.params; // ID of user to update
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: "No such user!" });
-
     try {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ message: "No such user!" });
+
         if (req.body.mode === "IMAGE") req.body = await updateImage(req.body.content);
         else if (req.body.mode === "PASSWORD") {
             const salt = await bcrypt.genSalt(10);
@@ -155,25 +104,29 @@ const updateUser = async (req, res) => {
         else req.body = req.body.content;
 
         const user = await User.findByIdAndUpdate({ _id: id }, { ...req.body });
-        if (!user) res.status(404).json({ error: "No such user!" });
-        else res.status(200).json(user);
-    } catch (err) {
-        console.log(err.message);
-        res.status(500).json({ error: err });
+        if (!user) return res.status(404).json({ message: "No such user!" });
+        else return res.status(200).json(user);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error encountered." });
     }
 };
 
 // Delete specific user
 const deleteUser = async (req, res) => {
-    const { id } = req.params;
+    try {
+        const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: "No such user!" });
+        if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ message: "No such user!" });
 
-    const user = await User.findOneAndDelete({ _id: id });
-
-    if (!user) res.status(404).json({ error: "No such user!" });
-    else res.status(200).json(user);
+        const user = await User.findOneAndDelete({ _id: id });
+        if (!user) return res.status(404).json({ message: "No such user!" });
+        else return res.status(200).json({ message: "User successfully deleted!" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error encountered." });
+    }
 };
 
 // Export functions to be used in other modules
-module.exports = { getUsers, getUserByID, userLogin, userSignUp, updateUser, deleteUser };
+module.exports = { getUsers, getUser, userLogin, userSignUp, updateUser, deleteUser };
