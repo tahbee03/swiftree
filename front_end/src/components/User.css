@@ -20,6 +20,10 @@
     background-color: white;
 }
 
+.user .loading {
+    filter: blur(5px);
+}
+
 .info-section {
     display: flex;
     flex-direction: column;
@@ -35,4 +39,8 @@
     .info-section p {
         font-size: 1.25rem;
     }
+}
+
+.disabled-link {
+    pointer-events: none;
 }

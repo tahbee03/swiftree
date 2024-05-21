@@ -1,36 +1,72 @@
-import "./Post.css";
-import { useEffect, useState } from "react";
+import "./Post.css"; // Styles for Post component
+
+import { useEffect, useState } from "react"; // useEffect(), useState()
 import { format, formatDistanceToNow } from "date-fns"; // format(), formatDistanceToNow()
 
-export default function Post({ post, canDelete }) {
-    const [author, setAuthor] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+export default function Post({ post, canDelete, search }) {
+    const [author, setAuthor] = useState(null); // Contains data for post author
+    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
+    // Fetch data when post info is updated
     useEffect(() => {
         const fetchUser = async () => {
-            const match = await (await fetch(`${process.env.REACT_APP_API_URL}/users/${post.author_id}`)).json();
-            setAuthor(match);
+            setIsLoading(true);
+
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/users/${post.author_id}`);
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.message);
+                else setAuthor(data);
+            } catch (error) {
+                console.log(error);
+                setError(error);
+            }
+
+            setIsLoading(false);
         };
 
+        setError(null);
         fetchUser();
-    }, []);
+    }, [post]);
 
     async function handleClick(id) {
         setIsLoading(true);
 
-        // Delete post
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/posts/${id}`, { method: "DELETE" });
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/posts/${id}`, { method: "DELETE" });
+            const data = await response.json();
 
-        if (res.ok) console.log("Post removed!");
-        else console.log("Error removing post.");
-
-        window.location.reload();
+            if (!response.ok) throw new Error(data.message);
+            else window.location.reload();
+        } catch (error) {
+            setIsLoading(false);
+            console.log(error);
+            setError(error);
+        }
     }
 
     return (
         <div className="post row">
+            {error && (
+                <div className="error-msg">{error}</div>
+            )}
+            {isLoading && (
+                <span className="spinner-border"></span>
+            )}
             <div className={`col-lg-9 col-12 info-section ${isLoading ? "loading" : ""}`}>
-                <p className="content">{post.content}</p>
+                {(search) ? (
+                    <p className="content">
+                        {post.content.substring(0, search.index)}
+                        <span className="highlight">
+                            {post.content.substring(search.index, search.index + search.input.length)}
+                        </span>
+                        {post.content.substring(search.index + search.input.length)}
+                    </p>
+                ) : (
+                    <p className="content">{post.content}</p>
+                )}
                 <a href={(author) ? `/profile/${author.username}` : ""} className="author-section">
                     <img src={(author) ? author.image.url : "/account_icon.png"} alt="user-pfp" />
                     <p className="author">{(author) ? author.display_name : ""}</p>
@@ -42,16 +78,9 @@ export default function Post({ post, canDelete }) {
                     <p className="date">{`Posted on ${format(new Date(post.createdAt), "MM/dd/yyyy")} at ${format(new Date(post.createdAt), "hh:mm  a")} (${format(new Date(post.createdAt), "O")})`}</p>
                 )}
             </div>
-            <div className="col-lg-3 col-12 icon-section">
+            <div className={`col-lg-3 col-12 icon-section ${isLoading ? "loading" : ""}`}>
                 {canDelete && (
-                    <>
-                        {isLoading && (
-                            <span className="spinner-border"></span>
-                        )}
-                        {!isLoading && (
-                            <img src="/delete_icon.png" alt="delete" onClick={() => handleClick(post._id)} id="delete-icon" />
-                        )}
-                    </>
+                    <img src="/delete_icon.png" alt="delete" onClick={() => handleClick(post._id)} id="delete-icon" />
                 )}
             </div>
         </div>

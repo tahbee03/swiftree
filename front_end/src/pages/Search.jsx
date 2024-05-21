@@ -8,77 +8,75 @@ import { useState } from "react"; // useState()
 import { Helmet } from "react-helmet"; // <Helmet>
 
 export default function Search() {
-    const [dyInput, setDyInput] = useState(""); // Stores dynamic search input (form is updated)
-    const [statInput, setStatInput] = useState(""); // Stores static search input (visible for comparison)
     const [posts, setPosts] = useState([]); // Stores posts matching search input
     const [users, setUsers] = useState([]); // Stores users matching search input
     const [mode, setMode] = useState("post"); // Stores the current search mode
-    const [searchProcessed, setSearchProcessed] = useState(false); // Boolean value used to show search results
+    const [input, setInput] = useState("");
+    const [output, setOutput] = useState(""); // Stores text to be shown once search is done
+    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
     const [error, setError] = useState(null); // Stores error from back-end response (if any)
+
+    // Processes changing search input
+    function handleChange(value) {
+        if (output !== "") {
+            setOutput("");
+            setPosts([]);
+            setUsers([]);
+        }
+
+        setInput(value);
+    }
 
     // Processes submitted search input
     async function handleSearch(e) {
         e.preventDefault(); // No reload on submit
+        setIsLoading(true);
 
         try {
-            setSearchProcessed(false);
-
             if (mode === "post") { // Post search mode
                 // Gets all posts from back-end
-                const res = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
-                const data = await res.json();
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
+                const data = await response.json();
 
-                if (!res.ok) throw Error(data.error);
+                if (!response.ok) throw new Error(data.message);
 
-                // Filters posts to find the ones whose content matches the search input
-                setPosts(data.filter((post) => post.content.search(dyInput) !== -1));
+                const matches = data.filter((p) => p.content.indexOf(input) !== -1); // Filters posts to find the ones whose content matches the search input
+                if (matches.length === 0) setOutput("No posts match your search!");
+                else setOutput(`${matches.length} post${(matches.length === 1) ? "" : "s"} matching "${input}":`);
+                setPosts(matches);
             } else { // User search mode
                 // Gets all users from back-end
-                const res = await fetch(`${process.env.REACT_APP_API_URL}/users`);
-                const data = await res.json();
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/users`);
+                const data = await response.json();
 
-                if (!res.ok) throw Error(data.error);
+                if (!response.ok) throw new Error(data.message);
 
-                // Filters users to find the ones whose username matches the search input
-                const usernameMatch = data.filter((u) => u.username.search(dyInput) !== -1);
-
-                // Filters users to find the ones whose display name matches the search input
-                const displayNameMatch = data.filter((u) => u.display_name.search(dyInput) !== -1);
-
-                // Creates a combined list of unique matches
-                setUsers(Array.from(new Set([].concat(usernameMatch, displayNameMatch))));
+                const usernameMatch = data.filter((u) => u.username.indexOf(input) !== -1); // Filters users to find the ones whose username matches the search input
+                const displayNameMatch = data.filter((u) => u.display_name.indexOf(input) !== -1); // Filters users to find the ones whose display name matches the search input
+                const matches = Array.from(new Set([].concat(usernameMatch, displayNameMatch))); // Creates a combined list of unique matches
+                if (matches.length === 0) setOutput("No users match your search!");
+                else setOutput(`${matches.length} user${(matches.length === 1) ? "" : "s"} matching "${input}":`);
+                setUsers(matches);
             }
 
-            setStatInput(dyInput);
-            setDyInput("");
-            setSearchProcessed(true);
-
+            // setInput("");
             setError(null);
-        } catch (err) {
-            setError(err.message);
+        } catch (error) {
+            console.log(error);
+            setError(error);
         }
+
+        setIsLoading(false);
     }
 
     // Changes search functionality and applies appropriate text color to buttons
-    function switchMode() {
-        const postButton = document.getElementById("toggle-post-mode");
-        const userButton = document.getElementById("toggle-user-mode");
+    function switchMode(newMode) {
+        if (mode !== newMode) setMode(newMode);
 
-        if (mode === "post") {
-            setMode("user");
-            postButton.classList.remove("active-button");
-            userButton.classList.add("active-button");
-        } else {
-            setMode("post");
-            userButton.classList.remove("active-button");
-            postButton.classList.add("active-button");
-        }
-
-        setDyInput("");
-        setStatInput("");
         setPosts([]);
         setUsers([]);
-        setSearchProcessed(false);
+        setInput("");
+        setOutput("");
     }
 
     return (
@@ -95,33 +93,63 @@ export default function Search() {
                         <input
                             type="text"
                             name="search-input"
-                            onChange={(e) => setDyInput(e.target.value)}
-                            value={dyInput}
+                            value={input}
+                            onChange={(e) => handleChange(e.target.value)}
+                            placeholder="Search here..."
+                            autoComplete="off"
                             required
                         />
-                        <button type="submit">Search</button>
+                        <button type="submit" disabled={isLoading}>Search</button>
                     </div>
                     <div id="search-options" className="col-sm-6 col-12">
-                        <button type="button" id="toggle-post-mode" onClick={switchMode} className="active-button">Post Search</button>
-                        <button type="button" id="toggle-user-mode" onClick={switchMode}>User Search</button>
+                        <button
+                            type="button"
+                            id="toggle-post-mode"
+                            onClick={() => switchMode("post")}
+                            className={(mode === "post") ? "active-button" : ""}
+                            disabled={isLoading}
+                        >
+                            Post Search
+                        </button>
+                        <button
+                            type="button"
+                            id="toggle-user-mode"
+                            onClick={() => switchMode("user")}
+                            className={(mode === "user") ? "active-button" : ""}
+                            disabled={isLoading}
+                        >
+                            User Search
+                        </button>
                     </div>
                 </form>
                 <hr />
                 {error && (
                     <div className="error-msg">{error}</div>
                 )}
-                {!error && (
+                {isLoading && (
+                    <div className="spinner-cont">
+                        <span className="spinner-border"></span>
+                    </div>
+                )}
+                {!error && !isLoading && (
                     <div id="search-results">
                         {(mode === "post") && (
                             <>
-                                {searchProcessed && (posts.length === 0) && (
-                                    <p>No posts match your search!</p>
+                                {(posts.length === 0) && (
+                                    <p>{output}</p>
                                 )}
                                 {!(posts.length === 0) && (
                                     <>
-                                        <p id="match-text">{posts.length} posts matching "{statInput}":</p>
+                                        <p id="match-text">{output}</p>
                                         {posts.map((post) => (
-                                            <Post key={post._id} post={post} />
+                                            <Post
+                                                key={post._id}
+                                                post={post}
+                                                search={{
+                                                    index: post.content.indexOf(input),
+                                                    input
+                                                }}
+                                            />
                                         ))}
                                     </>
                                 )}
@@ -129,12 +157,12 @@ export default function Search() {
                         )}
                         {(mode === "user") && (
                             <>
-                                {searchProcessed && (users.length === 0) && (
-                                    <p>No users match your search!</p>
+                                {(users.length === 0) && (
+                                    <p>{output}</p>
                                 )}
                                 {!(users.length === 0) && (
                                     <>
-                                        <p id="match-text">{users.length} users matching "{statInput}":</p>
+                                        <p id="match-text">{output}</p>
                                         {users.map((user) => (
                                             <User key={user._id} user={user} />
                                         ))}

@@ -34,8 +34,7 @@ Personal Tree has the same functionalities as the Universal Tree, with the addit
 
 ### Post and User Search
 Lost? Find your way back on track with the search page! There, you will be able to look for specific posts and/or users with
-keywords. You can even perform more detailed searches with regular expressions (regex) as they are supported by the search 
-functionality. (Disclaimer: Search results do not appear as trees.) 
+keywords. (Disclaimer: Search results do not appear as trees.) 
 
 <p align="center">
   <img src="https://github.com/tahbee03/swiftree/assets/65676639/f4f2c492-99d7-4a6c-ac0d-bb33fd9454b2" alt="post-search"/>

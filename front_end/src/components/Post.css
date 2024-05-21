@@ -52,7 +52,7 @@
     filter: invert(21%) sepia(100%) saturate(10000%) brightness(75%);
 }
 
-.loading {
+.post .loading {
     filter: blur(5px);
 }
 

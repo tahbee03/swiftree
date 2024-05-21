@@ -68,3 +68,7 @@ body {
 .password-toggle:hover {
     opacity: 0.5;
 }
+
+.highlight {
+    background-color: yellow;
+}
