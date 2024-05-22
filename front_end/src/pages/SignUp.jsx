@@ -4,32 +4,46 @@ import { useState, useEffect } from "react"; // useState()
 import { useSignUp } from "../hooks/useSignUp"; // useSignUp()
 import { useNavigate } from "react-router-dom"; // useNavigate()
 import { Helmet } from "react-helmet"; // <Helmet>
+import { handleError } from "../utils"; // handleError()
 
 export default function SignUp() {
     const [email, setEmail] = useState(""); // Stores email input
     const [username, setUsername] = useState(""); // Stores username input
     const [displayName, setDisplayName] = useState(""); // Stores display name input
     const [password, setPassword] = useState(""); // Stores password input
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Contains the browser window width
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
-    const { signUp } = useSignUp(); // Custom hook to create new user
+    const signUp = useSignUp(); // Custom hook to create new user
     const navigate = useNavigate(); // Needed to redirect to another page
 
+    // Runs on mount
+    useEffect(() => {
+        // Add event listener to window for this specific component 
+        window.addEventListener("resize", () => setWindowWidth(window.innerWidth));
+
+        // Remove event listener from window when component unmounts
+        return () => window.removeEventListener("resize", () => setWindowWidth(window.innerWidth));
+    }, []);
+
+    // Processes sign up input
     async function handleSubmit(e) {
         e.preventDefault(); // No reload on submit
 
+        setIsLoading(true);
+
         try {
-            setIsLoading(true);
-            await signUp(email, username, displayName, password); // Process input with useSignUp hook
             setError(null);
+            await signUp(email, username, displayName, password); // Process input with useSignUp hook
             navigate("/"); // Redirect to Home page
-        } catch (err) {
-            setError(err.message);
+        } catch (error) {
+            setError(handleError(error));
             setIsLoading(false);
         }
     }
 
+    // Toggles password visibility
     function handleToggle(e) {
         // Changes the image for the toggler accordingly
         const toggler = e.target;
@@ -42,23 +56,6 @@ export default function SignUp() {
         else passwordInput.type = "password";
     }
 
-    useEffect(() => {
-        const adjustContainer = () => {
-            const container = document.getElementById("sign-up-main");
-
-            if (window.innerWidth < 576) container.style.width = "90vw";
-            else container.style.width = "60vw";
-        };
-
-        adjustContainer();
-
-        window.addEventListener("resize", adjustContainer);
-
-        return () => {
-            window.removeEventListener("resize", adjustContainer);
-        };
-    }, []);
-
     return (
         <>
             <Helmet>
@@ -66,7 +63,7 @@ export default function SignUp() {
                 <title>Swiftree &#8231; Sign Up</title>
                 <meta name="description" content="Sign up for a new Swiftree account" />
             </Helmet>
-            <main id="sign-up-main">
+            <main id="sign-up-main" className={`${(windowWidth < 768) ? "mini" : ""}`}>
                 <div>
                     <a href="/">
                         <h1>swiftree</h1>
@@ -119,6 +116,7 @@ export default function SignUp() {
                                 src="/hide.png"
                                 alt="password-toggle"
                                 onClick={handleToggle}
+                                draggable="false"
                             />
                         </div>
 

@@ -3,6 +3,10 @@
     display: block;
 }
 
+.navbar * {
+    user-select: none;
+}
+
 .navbar .row {
     width: 100%;
     margin: 0;
@@ -36,15 +40,6 @@
 .navbar #pfp {
     border: 2px solid gray;
     border-radius: 50%;
-}
-
-a {
-    text-decoration: none;
-    color: black;
-    transition: 0.25s;
-}
-a:hover {
-    transform: scale(0.9);
 }
 
 .navbar #profile-link {

@@ -10,6 +10,16 @@ body {
     height: 100vh;
 }
 
+a {
+    text-decoration: none;
+    color: black;
+    transition: 0.25s;
+}
+
+a:hover {
+    transform: scale(0.9);
+}
+
 .error-msg {
     color: red;
     background-color: rgb(64, 64, 64);

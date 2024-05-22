@@ -1,21 +1,23 @@
-import "./Navbar.css";
-import { useState } from "react";
+import "./Navbar.css"; // Styles for Navbar component
+
+import { useState, useEffect } from "react"; // useState()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // useNavigate()
 
 export default function Navbar() {
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Contains the browser window width
 
-    const { user } = useAuthContext();
-    const navigate = useNavigate();
+    const { user } = useAuthContext(); // Contains data for logged in user
+    const navigate = useNavigate(); // Needed to redirect to another page
 
-    function handleLogin() {
-        navigate("/login");
-    }
+    // Runs on mount
+    useEffect(() => {
+        // Add event listener to window for this specific component 
+        window.addEventListener("resize", () => setWindowWidth(window.innerWidth));
 
-    window.addEventListener("resize", () => {
-        setWindowWidth(window.innerWidth);
-    });
+        // Remove event listener from window when component unmounts
+        return () => window.removeEventListener("resize", () => setWindowWidth(window.innerWidth));
+    }, []);
 
     return (
         <nav className="navbar">
@@ -37,12 +39,18 @@ export default function Navbar() {
                                 {(windowWidth >= 576) && (
                                     <p>{user.display_name}</p>
                                 )}
-                                <img src={user.pfp} alt="account" className="nav-icon" id="pfp" />
+                                <img
+                                    src={user.pfp}
+                                    alt="account"
+                                    className="nav-icon"
+                                    id="pfp"
+                                    draggable="false"
+                                />
                             </div>
                         </a>
                     )}
                     {!user && (
-                        <button onClick={handleLogin}>Log In</button>
+                        <button onClick={() => navigate("/login")}>Log In</button>
                     )}
                 </div>
             </div>

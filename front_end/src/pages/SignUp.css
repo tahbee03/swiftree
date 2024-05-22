@@ -13,8 +13,25 @@
     border-radius: 25px;
 
     color: #e1efe6;
+
+    width: 60vw;
 }
 
+#sign-up-main.mini {
+    width: 90vw;
+}
+
+#sign-up-main img, 
+#sign-up-main h1, 
+#sign-up-main h2, 
+#sign-up-main p, 
+#sign-up-main button {
+    user-select: none;
+}
+
+#sign-up-main a {
+    display: inline-block;
+}
 .form-item {
     margin-bottom: 10px;
 }

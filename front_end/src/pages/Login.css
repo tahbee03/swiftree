@@ -14,6 +14,24 @@
     border-radius: 25px;
 
     color: #e1efe6;
+
+    width: 60vw;
+}
+
+#login-main.mini {
+    width: 90vw;
+}
+
+#login-main img, 
+#login-main h1, 
+#login-main h2, 
+#login-main p, 
+#login-main button {
+    user-select: none;
+}
+
+#login-main a {
+    display: inline-block;
 }
 
 .form-item {

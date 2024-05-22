@@ -4,30 +4,44 @@ import { useState, useEffect } from "react"; // useState()
 import { useLogin } from "../hooks/useLogin"; // useLogin()
 import { useNavigate } from "react-router-dom"; // useNavigate()
 import { Helmet } from "react-helmet"; // <Helmet>
+import { handleError } from "../utils"; // handleError()
 
 export default function Login() {
     const [username, setUsername] = useState(""); // Stores username input
     const [password, setPassword] = useState(""); // Stores password input
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Contains the browser window width
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
-    const { login } = useLogin(); // Custom hook to log in user
+    const login = useLogin(); // Custom hook to log in user
     const navigate = useNavigate(); // Needed to redirect to another page
 
+    // Runs on mount
+    useEffect(() => {
+        // Add event listener to window for this specific component 
+        window.addEventListener("resize", () => setWindowWidth(window.innerWidth));
+
+        // Remove event listener from window when component unmounts
+        return () => window.removeEventListener("resize", () => setWindowWidth(window.innerWidth));
+    }, []);
+
+    // Processes login input
     async function handleSubmit(e) {
         e.preventDefault(); // No reload on submit
 
+        setIsLoading(true);
+
         try {
-            setIsLoading(true);
-            await login(username, password); // Process input with useLogin hook
             setError(null);
+            await login(username, password); // Process input with useLogin hook
             navigate("/"); // Redirect to Home page
-        } catch (err) {
-            setError(err.message);
+        } catch (error) {
+            setError(handleError(error));
             setIsLoading(false);
         }
     }
 
+    // Toggles password visibility
     function handleToggle(e) {
         // Changes the image for the toggler accordingly
         const toggler = e.target;
@@ -40,23 +54,6 @@ export default function Login() {
         else passwordInput.type = "password";
     }
 
-    useEffect(() => {
-        const adjustContainer = () => {
-            const container = document.getElementById("login-main");
-
-            if (window.innerWidth < 576) container.style.width = "90vw";
-            else container.style.width = "60vw";
-        };
-
-        adjustContainer();
-
-        window.addEventListener("resize", adjustContainer);
-
-        return () => {
-            window.removeEventListener("resize", adjustContainer);
-        };
-    }, []);
-
     return (
         <>
             <Helmet>
@@ -64,7 +61,7 @@ export default function Login() {
                 <title>Swiftree &#8231; Login</title>
                 <meta name="description" content="Log into Swiftree with an existing account" />
             </Helmet>
-            <main id="login-main">
+            <main id="login-main" className={`${(windowWidth < 768) ? "mini" : ""}`}>
                 <div>
                     <a href="/">
                         <h1>swiftree</h1>
@@ -97,6 +94,7 @@ export default function Login() {
                                 src="/hide.png"
                                 alt="password-toggle"
                                 onClick={handleToggle}
+                                draggable="false"
                             />
                         </div>
 
