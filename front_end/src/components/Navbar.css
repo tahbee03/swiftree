@@ -1,6 +1,8 @@
 .navbar {
     width: 100%;
     display: block;
+    height: 15vh; /* Container is 15% of the viewport height */
+    padding: 0;
 }
 
 .navbar * {
@@ -9,7 +11,9 @@
 
 .navbar .row {
     width: 100%;
+    height: 100%;
     margin: 0;
+    align-items: center;
 }
 
 .navbar .col-4 {
@@ -22,7 +26,6 @@
 
 .navbar #middle {
     justify-content: center;
-    align-items: center;
 }
 
 .navbar #middle * {

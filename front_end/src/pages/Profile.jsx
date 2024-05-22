@@ -3,6 +3,7 @@ import "./Profile.css"; // Styles for Profile page
 import PostForm from "../components/PostForm"; // <PostForm />
 import ProfileUpdate from "../components/ProfileUpdate";
 import Navbar from "../components/Navbar"; // <Navbar />
+import Footer from "../components/Footer"; // <Footer />
 import PostTree from "../components/PostTree"; // <PostTree />
 import Pagination from "../components/Pagination"; // <Pagination />
 
@@ -127,7 +128,7 @@ export default function Profile() {
                                     </>
                                 )}
                             </div>
-                            <div className="col-md-8 col-12" id="posts-col">
+                            <div className={`col-md-8 col-12 ${(windowWidth < 768) ? "mini" : ""}`} id="posts-col">
                                 {(posts.length === 0) && (
                                     <p>This user has no posts!</p>
                                 )}
@@ -149,6 +150,7 @@ export default function Profile() {
                     </>
                 )}
             </div>
+            <Footer />
         </>
     );
 }

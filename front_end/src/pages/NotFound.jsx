@@ -1,6 +1,7 @@
 import "./NotFound.css"; // Styles for Not Found page
 
 import Navbar from "../components/Navbar"; // <Navbar />
+import Footer from "../components/Footer";
 
 import { Helmet } from "react-helmet"; // <Helmet>
 
@@ -13,9 +14,10 @@ export default function NotFound() {
                 <meta name="description" content="Please enter a valid URL." />
             </Helmet>
             <Navbar />
-            <main id="not-found-main" className="col-md-8 col-12">
+            <div id="not-found-cont" className="container">
                 <h1>Page not found!</h1>
-            </main>
+            </div>
+            <Footer />
         </>
     );
 }

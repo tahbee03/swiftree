@@ -1,6 +1,7 @@
 import "./Home.css"; // Styles for Home page
 
 import Navbar from "../components/Navbar"; // <Navbar />
+import Footer from "../components/Footer"; // <Footer />
 import PostTree from "../components/PostTree"; // <PostTree />
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
@@ -60,6 +61,7 @@ export default function Home() {
                     <PostTree posts={(posts.length > 14) ? posts.slice(0, 14) : posts} page={"home"} />
                 )}
             </div>
+            <Footer />
         </>
     );
 }

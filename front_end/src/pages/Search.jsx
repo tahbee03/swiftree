@@ -1,6 +1,7 @@
 import "./Search.css"; // Styles for Search page
 
 import Navbar from "../components/Navbar"; // <Navbar />
+import Footer from "../components/Footer"; // <Footer />
 import Post from "../components/Post"; // <Post />
 import User from "../components/User"; // <User />
 
@@ -173,6 +174,7 @@ export default function Search() {
                     </div>
                 )}
             </div>
+            <Footer />
         </>
     );
 }
