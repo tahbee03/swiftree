@@ -5,6 +5,7 @@ import PostTree from "../components/PostTree"; // <PostTree />
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
 import { Helmet } from "react-helmet"; // <Helmet>
+import { handleError } from "../utils";
 
 export default function Home() {
     const [posts, setPosts] = useState(null); // Contains posts to be passed into post tree
@@ -26,9 +27,8 @@ export default function Home() {
                 const now = new Date().getTime();
                 setPosts(data.filter((p) => (now - new Date(p.createdAt).getTime()) < (3600000 * 24)));
             } catch (error) {
-                console.log(error);
+                setError(handleError(error));
                 setPosts(null);
-                setError(error);
             }
 
             setIsLoading(false);

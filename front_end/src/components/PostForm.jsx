@@ -1,80 +1,75 @@
-import { useState, useEffect } from "react";
+import "./PostForm.css"; // Styles for PostForm component
+
+import { useState, useEffect } from "react"; // useState(), useEffect()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
-import "./PostForm.css";
+import { sleep, handleError } from "../utils"; // sleep()
 
-export default function PostForm({ modalState }) {
-    const [content, setContent] = useState("");
-    const [error, setError] = useState(null);
-    const { user } = useAuthContext();
-    const [isLoading, setIsLoading] = useState(false);
+export default function PostForm({ setModal }) {
+    const [content, setContent] = useState(""); // Contains data to put into post
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Contains the browser window width
+    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
-    // Run on mount
+    const { user } = useAuthContext(); // Contains data for logged in user
+
+    // Runs when setModal() is loaded
     useEffect(() => {
-        const adjust = () => {
-            const modalContent = document.querySelector(".modal-content");
-
-            if (modalContent) {
-                if (window.innerWidth < 576) modalContent.style.width = "90vw";
-                else modalContent.style.width = "50vw";
-            }
-        };
-
         const close = (e) => {
-            const classes = [...e.target.classList];
-            if (classes.includes("modal")) modalState.setModal(null);
+            const classes = [...e.target.classList]; // Grab the list of classes that are detected
+            if (classes.includes("modal")) setModal(null);
         };
 
-        adjust();
-
-        window.addEventListener("resize", adjust);
+        // Add event listeners to window for this specific component 
+        window.addEventListener("resize", () => setWindowWidth(window.innerWidth));
         window.addEventListener("click", close);
 
+        // Remove event listeners from window when component unmounts
         return () => {
-            window.addEventListener("resize", adjust);
-            window.addEventListener("click", close);
-        };
-    }, []);
+            window.removeEventListener("resize", () => setWindowWidth(window.innerWidth));
+            window.removeEventListener("click", close);
+        }
+    }, [setModal]);
 
     async function handleSubmit(e) {
         e.preventDefault(); // No refresh on submit
+
         setIsLoading(true);
-        for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
 
-        const users = await (await fetch(`${process.env.REACT_APP_API_URL}/users`)).json();
-        const match = users.filter((u) => u.username === user.username)[0];
+        try {
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none"; // Disable mouse
 
-        const post = { author_id: match._id, content };
+            const postResponse = await fetch(`${process.env.REACT_APP_API_URL}/posts`, {
+                method: "POST",
+                body: JSON.stringify({ author_id: user.id, content }),
+                headers: { "Content-Type": "application/json" }
+            });
+            const postData = await postResponse.json();
 
-        // Create new post
-        const postRes = await fetch(`${process.env.REACT_APP_API_URL}/posts`, {
-            method: "POST",
-            body: JSON.stringify(post),
-            headers: { "Content-Type": "application/json" }
-        });
-        const postData = await postRes.json();
+            if (!postResponse.ok) throw new Error(postData.message);
 
-        if (!postRes.ok) setError(postData.error);
-        else {
-            console.log("Post added!");
             setContent("");
             setError(null);
+            await sleep(1);
+            window.location.reload();
+        } catch (error) {
+            setError(handleError(error));
+            setIsLoading(false);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto"; // Enable mouse
         }
-
-        window.location.reload();
     }
 
     return (
         <div className="modal">
-            <div className="modal-content">
-                <div className="close" onClick={() => modalState.setModal(null)}>&times;</div>
+            <div className={`modal-content ${(windowWidth < 768) ? "mini" : ""}`}>
+                <div className="close" onClick={() => setModal(null)}>&times;</div>
                 <form className="post-form" onSubmit={handleSubmit}>
                     <h3>New Post</h3>
-
                     <textarea
                         onChange={(e) => setContent(e.target.value)}
                         value={content}
                         required
-                    ></textarea>
+                    >
+                    </textarea>
                     <button type="submit" disabled={isLoading}>
                         {isLoading && (
                             <span className="spinner-border"></span>
@@ -85,7 +80,9 @@ export default function PostForm({ modalState }) {
                             </>
                         )}
                     </button>
-                    {error && <div>{error}</div>}
+                    {error && (
+                        <div className="error-msg">{(typeof error === "string") ? error : error.message}</div>
+                    )}
                 </form>
             </div>
         </div>

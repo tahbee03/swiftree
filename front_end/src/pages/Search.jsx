@@ -6,6 +6,7 @@ import User from "../components/User"; // <User />
 
 import { useState } from "react"; // useState()
 import { Helmet } from "react-helmet"; // <Helmet>
+import { handleError } from "../utils";
 
 export default function Search() {
     const [posts, setPosts] = useState([]); // Stores posts matching search input
@@ -62,8 +63,7 @@ export default function Search() {
             // setInput("");
             setError(null);
         } catch (error) {
-            console.log(error);
-            setError(error);
+            setError(handleError(error));
         }
 
         setIsLoading(false);

@@ -12,6 +12,10 @@ body {
 
 .error-msg {
     color: red;
+    background-color: rgb(64, 64, 64);
+    width: fit-content;
+    padding: 5px;
+    border-radius: 5px;
 }
 
 .active-button {

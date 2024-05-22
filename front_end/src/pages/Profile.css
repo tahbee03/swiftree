@@ -1,5 +1,10 @@
 #profile-cont {
     height: 75vh; /* Container is 75% of the viewport height */
+    margin-top: 5vh;
+}
+
+#profile-cont.mini {
+    margin-top: 0;
 }
 
 #post-form-modal, #picture-form-modal {
@@ -30,6 +35,14 @@
     flex-direction: column;
     padding: 15px;
     align-items: center; /* Horizontally center items */
+
+    background-color: rgba(255, 255, 255, 0.5);
+    height: 100%;
+}
+
+#profile-cont #info-col.mini {
+    background-color: rgba(255, 255, 255, 0);
+    height: fit-content;
 }
 
 #profile-cont #info-col p {

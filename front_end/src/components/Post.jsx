@@ -2,6 +2,7 @@ import "./Post.css"; // Styles for Post component
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
 import { format, formatDistanceToNow } from "date-fns"; // format(), formatDistanceToNow()
+import { handleError } from "../utils";
 
 export default function Post({ post, canDelete, search }) {
     const [author, setAuthor] = useState(null); // Contains data for post author
@@ -20,8 +21,7 @@ export default function Post({ post, canDelete, search }) {
                 if (!response.ok) throw new Error(data.message);
                 else setAuthor(data);
             } catch (error) {
-                console.log(error);
-                setError(error);
+                setError(handleError(error));
             }
 
             setIsLoading(false);
@@ -86,3 +86,5 @@ export default function Post({ post, canDelete, search }) {
         </div>
     );
 }
+
+// TODO: Fix so that posts containing newline characters are more responsive

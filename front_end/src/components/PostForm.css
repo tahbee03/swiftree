@@ -7,3 +7,11 @@
     border: 3px solid black;
     border-radius: 5px;
 }
+
+.modal-content {
+    width: 50vw;
+}
+
+.modal-content.mini {
+    width: 90vw;
+}

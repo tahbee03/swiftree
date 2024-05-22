@@ -1,4 +1,4 @@
-import "./Pagination.css";
+import "./Pagination.css"; // Styles for Pagination component
 
 export default function Pagination({ total, current, setCurrentPage }) {
     return (

@@ -1,6 +1,7 @@
 import "./User.css"; // Styles for User component
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
+import { handleError } from "../utils";
 
 export default function User({ user }) {
     const [posts, setPosts] = useState(0); // Contains number of posts for the specific user
@@ -19,8 +20,7 @@ export default function User({ user }) {
                 if (!response.ok) throw new Error(data.message);
                 else setPosts(data.filter((post) => post.author_id === user._id).length);
             } catch (error) {
-                console.log(error);
-                setError(error);
+                setError(handleError(error));
             }
 
             setIsLoading(false);
