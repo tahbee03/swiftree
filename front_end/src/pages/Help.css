@@ -1,0 +1,29 @@
+#help-cont {
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    padding: 15px;
+}
+
+#help-cont .section {
+    margin-bottom: 5vh;
+}
+
+.visual {
+    max-width: 100%;
+    display: block; /* Needed for 'margin: auto' to work for images */
+    margin: auto;
+    user-select: none;
+    border-radius: 5px;
+    outline: 5px black solid;
+}
+
+.help-link {
+    text-decoration: underline;
+    color: blue;
+}
+
+.help-link:hover {
+    color: rgb(128, 128, 255);
+}

@@ -26,8 +26,9 @@ a:hover {
     border-radius: 5px;
 }
 
-.active-button {
+.active-button, .keyword {
     color: #A532FF;
+    font-weight: bold;
 }
 
 .modal {

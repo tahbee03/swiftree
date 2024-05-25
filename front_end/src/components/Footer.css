@@ -20,8 +20,12 @@
     justify-content: center;
 }
 
-.footer .col-md-6.col-12 > * {
+.footer #left > * { 
     margin: 5px;
+}
+
+.footer #right > * {
+    margin: 10px;
 }
 
 .footer .image-wrapper {

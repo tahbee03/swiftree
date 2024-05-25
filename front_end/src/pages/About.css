@@ -1,0 +1,27 @@
+#about-cont {
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    padding: 15px;
+}
+
+#about-cont .row {
+    width: 100%;
+    margin: auto; /* Center row in parent element */
+}
+
+#about-cont .col-sm-3 {
+    padding: 5px;
+    text-align: center;
+}
+
+#about-cont .col-sm-3 img {
+    height: 200px;
+    object-fit: contain; /* Key to making the images the "same size" */
+}
+
+#about-cont .col-sm-3 p {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
