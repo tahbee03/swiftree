@@ -28,7 +28,7 @@ export default function Profile() {
 
     const navigate = useNavigate(); // Needed to redirect to another page
     const { username } = useParams(); // Grabs username of the user that the page belongs to from the URL
-    const { logout } = useLogout(); // Custom hook to log out logged in user
+    const logout = useLogout(); // Custom hook to log out logged in user
     const { user } = useAuthContext(); // Contains data for logged in user
 
     // Runs on mount

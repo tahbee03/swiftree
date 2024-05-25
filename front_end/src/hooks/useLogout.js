@@ -5,9 +5,8 @@ export function useLogout() {
 
     function logout() {
         sessionStorage.removeItem("user"); // Removes user from browser local storage
-        dispatch({type: "LOGOUT"}); // Dispatches logout action and updates AuthContext
+        dispatch({ type: "LOGOUT" }); // Dispatches logout action and updates AuthContext
     }
 
-    return { logout };
-
+    return logout;
 }
