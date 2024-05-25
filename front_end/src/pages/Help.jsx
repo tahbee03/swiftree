@@ -38,7 +38,7 @@ export default function Help() {
                 <div className="section">
                     <h2>Profile Page</h2>
                     <p>
-                        Your very own profile page! Here, you can customize your profile with the available settings and view all the posts you have made in your &nbsp;
+                        Your very own profile page! Here, you can customize your profile with the available settings and view all the posts you have made in your&nbsp;
                         <span className="keyword">Personal Tree</span>
                         . You can also create new posts to be shared and delete existing posts.
                     </p>
