@@ -69,7 +69,7 @@ export default function Post({ post, canDelete, search }) {
                 )}
                 <a href={(author) ? `/profile/${author.username}` : ""} className="author-section">
                     <img src={(author) ? author.image.url : "/account_icon.png"} alt="user-pfp" />
-                    <p className="author">{(author) ? author.display_name : ""}</p>
+                    <p>{(author) ? author.display_name : ""}</p>
                 </a>
                 {window.location.pathname === "/" && (
                     <p className="date">{`Posted ${formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}`}</p>

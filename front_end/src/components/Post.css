@@ -5,39 +5,39 @@
     border-radius: 10px;
 }
 
-.info-section {
+.post .info-section {
     display: flex;
     flex-direction: column;
     justify-content: center;
     word-wrap: break-word;
 }
 
-.info-section > .content {
+.post .info-section > .content {
     margin-bottom: 0.5rem;
     font-size: 1.25rem;
     white-space: pre-line; 
 }
 
-.info-section > .date {
+.post .info-section > .date {
     margin-top: 0.5rem;
     margin-bottom: 0;
 }
 
-.author-section {
+.post .author-section {
     width: fit-content;
 }
 
-.author-section img {
-    width: 1rem;
+.post .author-section img {
+    height: 1rem;
     border-radius: 50%;
 }
 
-.author-section p {
+.post .author-section p {
     display: inline;
     margin-left: 5px;
 }
 
-.icon-section {
+.post .icon-section {
     display: flex;
     justify-content: center;
     align-items: center;

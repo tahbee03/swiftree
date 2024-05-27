@@ -24,19 +24,19 @@
     filter: blur(5px);
 }
 
-.info-section {
+.user .info-section {
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-.info-section p {
+.user .info-section p {
     margin: 0;
     font-size: 1rem;
 }
 
 @media screen and (min-width: 768px) {
-    .info-section p {
+    .user .info-section p {
         font-size: 1.25rem;
     }
 }
