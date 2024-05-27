@@ -20,7 +20,7 @@ export default function Profile() {
         pfp: "/account_icon.png"
     }); // Contains data for the user presented on the page
     const [posts, setPosts] = useState([]); // Contains posts to be displayed in the posts container
-    const [modal, setModal] = useState(null); // Container to show post data
+    const [modal, setModal] = useState(null); // Pop-up container to show forms
     const [currentPage, setCurrentPage] = useState(1); // Keeps track of current post tree page
     const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Contains the browser window width
     const [isLoading, setIsLoading] = useState(true); // Boolean value used to render loading spinner
@@ -113,7 +113,7 @@ export default function Profile() {
                             <PostForm setModal={setModal} />
                         )}
                         {(modal === "update") && (
-                            <ProfileUpdate modalState={{ modal, setModal }} />
+                            <ProfileUpdate setModal={setModal} />
                         )}
                         <div className="row">
                             <div className={`col-md-3 col-12 ${(windowWidth < 768) ? "mini" : ""}`} id="info-col">
@@ -132,7 +132,7 @@ export default function Profile() {
                                 {(posts.length === 0) && (
                                     <p>This user has no posts!</p>
                                 )}
-                                {(posts.length <= 14) && (
+                                {(posts.length > 0 && posts.length <= 14) && (
                                     <PostTree posts={posts} page={"profile"} />
                                 )}
                                 {(posts.length > 14) && (

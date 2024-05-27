@@ -1,138 +1,115 @@
-import "./PictureForm.css";
-import { useState } from "react";
+import { useState } from "react"; // useState()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
+import { sleep, handleError } from "../utils"; // sleep(), handleError()
 
 export default function PictureForm() {
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null); // Contains selected image
+    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
-    const { user, dispatch: authDispatch } = useAuthContext(); // Contains data for logged in user
+    const { user } = useAuthContext(); // Contains data for logged in user
 
     // Converts image to base64
-    // TODO: Try to understand later
     function processImage(e) {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = () => {
-            setSelectedFile(reader.result);
+        try {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = () => {
+                setSelectedFile(reader.result);
+            }
+        } catch (error) {
+            setError(handleError(error));
         }
     }
 
+    // Adds or replaces user profile picture
     async function handleSubmit(e) {
-        e.preventDefault();
+        e.preventDefault(); // No refresh on submit
+
+        setIsLoading(true);
 
         try {
-            setIsLoading(true);
-            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none"; // Disable mouse
 
-            const users = await (await fetch(`${process.env.REACT_APP_API_URL}/users`)).json();
-            const match = users.filter((u) => u.username === user.username);
-            let userRes = null;
+            // FETCH 1: Get user data, since the image public ID is not sent to the front-end
+            const response1 = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`);
+            const data1 = await response1.json();
 
-            if (match[0].image.public_id === "") { // No existing image for the user
-                userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
-                    method: "PATCH",
-                    body: JSON.stringify({
-                        mode: "IMAGE",
-                        content: {
-                            selectedFile,
-                            public_id: ""
-                        }
-                    }),
-                    headers: { "Content-Type": "application/json" }
-                });
-            } else { // An image for the user already exists
-                userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
-                    method: "PATCH",
-                    body: JSON.stringify({
-                        mode: "IMAGE",
-                        content: {
-                            selectedFile,
-                            public_id: match[0].image.public_id
-                        }
-                    }),
-                    headers: { "Content-Type": "application/json" }
-                });
-            }
+            if (!response1.ok) throw new Error(data1.message);
 
-            const userData = await userRes.json();
-            // console.log(userData);
+            // FETCH 2: Update user data with new profile picture
+            const response2 = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`, {
+                method: "PATCH",
+                body: JSON.stringify({
+                    mode: "IMAGE",
+                    content: {
+                        selectedFile,
+                        public_id: (user.pfp === "/account_icon.png") ? "" : data1.image.public_id
+                    }
+                }),
+                headers: { "Content-Type": "application/json" }
+            });
+            const data2 = await response2.json();
 
-            if (!userRes.ok) console.log(userData.error);
-            else {
-                const u = await (await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`)).json();
-                console.log("User updated!");
+            if (!response2.ok) throw new Error(data2.message);
 
-                const payload = {
-                    username: user.username,
-                    display_name: user.display_name,
-                    pfp: u.image.url,
-                    posts: user.posts,
-                    token: user.token
-                };
-                authDispatch({ type: "UPDATE", payload });
-                sessionStorage.setItem("user", JSON.stringify(payload));
-                console.log(sessionStorage.getItem("user"));
-            }
-
-            // setIsLoading(false);
+            sessionStorage.setItem("user", JSON.stringify({
+                ...user,
+                pfp: data2.image.url
+            }));
+            await sleep(1);
             window.location.reload();
-        } catch (err) {
-            setError(err.message);
-            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
+        } catch (error) {
+            setError(handleError(error));
+            setIsLoading(false);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto"; // Enable mouse
         }
     }
 
-    // Removes user's picture from cloud and sets it to default
+    // Removes user profile picture
     async function handlePictureRemoval() {
+        setIsLoading(true);
+
         try {
-            setIsLoading(true);
-            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none"; // Disable mouse
 
-            // Gets all users from back-end
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/users`);
-            const data = await res.json();
+            // FETCH 1: Get user data for back-end, since the image public ID is not sent to the front-end
+            const response1 = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`);
+            const data1 = await response1.json();
 
-            if (!res.ok) throw Error(data.error);
+            if (!response1.ok) throw new Error(data1.message);
 
-            // Filters users to match the one logged in
-            const match = data.filter((u) => u.username === user.username);
-
-            // Updates logged in user in back-end
-            const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match[0]._id}`, {
+            // FETCH 2: Update user data to have default profile picture
+            const response2 = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`, {
                 method: "PATCH",
                 body: JSON.stringify({
                     mode: "IMAGE",
                     content: {
                         selectedFile: "",
-                        public_id: match[0].image.public_id
+                        public_id: data1.image.public_id
                     }
                 }),
                 headers: { "Content-Type": "application/json" }
             });
-            const userData = await userRes.json();
+            const data2 = await response2.json();
 
-            if (!userRes.ok) throw Error(userData.error);
+            if (!response2.ok) throw new Error(data2.message);
 
-            // Updates logged in user in AuthContext
-            const payload = {
+            sessionStorage.setItem("user", JSON.stringify({
+                id: user.id,
+                email: user.email,
                 username: user.username,
                 display_name: user.display_name,
                 pfp: "/account_icon.png",
-                posts: user.posts,
                 token: user.token
-            };
-            authDispatch({ type: "UPDATE", payload });
-
-            // Updates logged in user in browser storage
-            sessionStorage.setItem("user", JSON.stringify(payload));
-
-            // setIsLoading(false);
-            window.location.reload(); // Reloads page
-        } catch (err) {
-            setError(err.message);
+            }));
+            await sleep(1);
+            window.location.reload();
+        } catch (error) {
+            setError(handleError(error));
+            setIsLoading(false);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto"; // Enable mouse
         }
     }
 
@@ -146,10 +123,11 @@ export default function PictureForm() {
             )}
             {!isLoading && (
                 <>
-                    <form className="pfp-form" onSubmit={handleSubmit}>
+                    <form className="pfp-form" onSubmit={handleSubmit} style={{ width: "100%" }}>
                         <input
                             type="file"
                             onChange={processImage}
+                            accept="image/*"
                             required
                         />
                         <button

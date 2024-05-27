@@ -1,10 +1,10 @@
 import "./SignUp.css"; // Styles for Sign Up page
 
-import { useState, useEffect } from "react"; // useState()
+import { useState, useEffect } from "react"; // useState(), useEffect()
 import { useSignUp } from "../hooks/useSignUp"; // useSignUp()
 import { useNavigate } from "react-router-dom"; // useNavigate()
 import { Helmet } from "react-helmet"; // <Helmet>
-import { handleError } from "../utils"; // handleError()
+import { handleError, handlePasswordToggle } from "../utils"; // handleError(), handlePasswordToggle()
 
 export default function SignUp() {
     const [email, setEmail] = useState(""); // Stores email input
@@ -41,19 +41,6 @@ export default function SignUp() {
             setError(handleError(error));
             setIsLoading(false);
         }
-    }
-
-    // Toggles password visibility
-    function handleToggle(e) {
-        // Changes the image for the toggler accordingly
-        const toggler = e.target;
-        if (toggler.src === `${window.location.origin}/hide.png`) toggler.src = `${window.location.origin}/visible.png`;
-        else toggler.src = `${window.location.origin}/hide.png`;
-
-        // Changes the visibility of the password input accordingly
-        const passwordInput = document.getElementById("password-input");
-        if (passwordInput.type === "password") passwordInput.type = "text";
-        else passwordInput.type = "password";
     }
 
     return (
@@ -115,7 +102,7 @@ export default function SignUp() {
                                 className="password-toggle"
                                 src="/hide.png"
                                 alt="password-toggle"
-                                onClick={handleToggle}
+                                onClick={(e) => handlePasswordToggle(e, "password-input")}
                                 draggable="false"
                             />
                         </div>

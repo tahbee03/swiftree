@@ -7,11 +7,15 @@ cloudinary.config({
 });
 
 const updateImage = async ({ selectedFile: s, public_id: p }) => {
+    /*
+    NOTE:
+    public_id -> image location in cloud filesystem
+    url -> image location on the web
+    */
+
     if (p === "") { // Create image
         // Upload image to cloud
-        const res = await cloudinary.uploader.upload(s, {
-            folder: "user-pfps"
-        });
+        const res = await cloudinary.uploader.upload(s, { folder: "user-pfps" });
 
         return {
             image: {
@@ -21,9 +25,7 @@ const updateImage = async ({ selectedFile: s, public_id: p }) => {
         }
     } else if (s === "") { // Delete image
         // Remove image from cloud
-        await cloudinary.uploader.destroy(p, (result) => {
-            console.log(result);
-        });
+        await cloudinary.uploader.destroy(p);
 
         return {
             image: {
@@ -33,14 +35,10 @@ const updateImage = async ({ selectedFile: s, public_id: p }) => {
         }
     } else { // Update image
         // Remove image from cloud
-        await cloudinary.uploader.destroy(p, (result) => {
-            console.log(result);
-        });
+        await cloudinary.uploader.destroy(p);
 
         // Upload image to cloud
-        const res = await cloudinary.uploader.upload(s, {
-            folder: "user-pfps"
-        });
+        const res = await cloudinary.uploader.upload(s, { folder: "user-pfps" });
 
         return {
             image: {

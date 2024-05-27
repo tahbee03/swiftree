@@ -45,6 +45,7 @@ const userLogin = async (req, res) => {
         const token = jwt.sign({ id: user._id, email: user.email, username: user.username }, process.env.TOKEN_SECRET, { expiresIn: "1d" }); // payload, secret, options
         return res.status(200).json({
             id: user._id,
+            email: user.email,
             username: user.username,
             display_name: user.display_name,
             pfp: user.image.url,
@@ -80,6 +81,7 @@ const userSignUp = async (req, res) => {
         const token = jwt.sign({ id: user._id, email: user.email, username: user.username }, process.env.TOKEN_SECRET, { expiresIn: "1d" }); // payload, secret, optionsconst token = createToken(user._id, user.email, user.username);
         return res.status(200).json({
             id: user._id,
+            email: user.email,
             username: user.username,
             display_name: user.display_name,
             pfp: user.image.url,
@@ -105,7 +107,7 @@ const updateUser = async (req, res) => {
         }
         else req.body = req.body.content;
 
-        const user = await User.findByIdAndUpdate({ _id: id }, { ...req.body });
+        const user = await User.findByIdAndUpdate({ _id: id }, { ...req.body }, { new: true });
         if (!user) return res.status(404).json({ message: "No such user!" });
         else return res.status(200).json(user);
     } catch (error) {

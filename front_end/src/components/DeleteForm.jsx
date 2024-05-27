@@ -1,116 +1,122 @@
-import "./DeleteForm.css";
-import { useState } from "react"; // useState()
+import { useEffect, useState } from "react"; // useState(), useEffect()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { useLogin } from "../hooks/useLogin"; // useLogin()
 import { useLogout } from "../hooks/useLogout"; // useLogout()
-import { useNavigate } from "react-router-dom"; // useNavigate()
+import { sleep, handleError, handlePasswordToggle } from "../utils"; // sleep(), handleError(), handlePasswordToggle()
 
 export default function DeleteForm() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [loadingMsg, setLoadingMsg] = useState("");
-    const [option, setOption] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
+    const [loadingMsg, setLoadingMsg] = useState(""); // Loading message to show the steps of every process
+    const [option, setOption] = useState(""); // Stores selected option
+    const [password, setPassword] = useState(""); // Stores password input
+    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
     const { user } = useAuthContext(); // Contains data for logged in user
-    const { login } = useLogin();
-    const { logout } = useLogout();
-    const navigate = useNavigate();
+    const login = useLogin(); // Custom hook to log in user
+    const logout = useLogout(); // Custom hook to log out user
 
+    // Runs when the value of isLoading is changed
+    useEffect(() => {
+        const modal = document.querySelector(".modal");
+
+        if (isLoading) modal.style.backgroundColor = "rgba(0,0,0)";
+        else modal.style.backgroundColor = "rgba(0,0,0,0.5)";
+    }, [isLoading]);
+
+    // Deletes user data
     async function handleSubmit(e) {
-        e.preventDefault();
+        e.preventDefault(); // No reload on submit
+
+        setIsLoading(true);
+        setError(null);
 
         try {
-            // Checks if the password is correct
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none"; // Disable mouse
+
+            // STEP 1: Check if entered password is correct
             await login(user.username, password);
 
-            setIsLoading(true);
             setLoadingMsg("Preparing...");
-            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
+            await sleep(3);
 
-            setTimeout(async () => {
-                try {
-                    setLoadingMsg("Fetching user data...");
+            // STEP 2: Gather and delete all posts made by user
+            setLoadingMsg("Fetching post data...");
 
-                    // Fetches all users
-                    const usersRes = await fetch(`${process.env.REACT_APP_API_URL}/users`);
-                    const usersData = await usersRes.json();
+            const postGetResponse = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
+            const postGetData = await postGetResponse.json();
 
-                    // Error with back-end
-                    if (!usersRes.ok) throw Error(usersData.error);
+            if (!postGetResponse.ok) throw new Error(postGetData.message);
 
-                    const match = usersData.filter((u) => u.username === user.username)[0];
+            const posts = postGetData.filter((p) => p.author_id === user.id);
+            await sleep(3);
 
-                    setLoadingMsg("Fetching post data...");
+            setLoadingMsg("Deleting posts...");
 
-                    // Fetches all posts
-                    const postsRes = await fetch(`${process.env.REACT_APP_API_URL}/posts`);
-                    const postsData = await postsRes.json();
+            for (let post of posts) {
+                const postDeleteResponse = await fetch(`${process.env.REACT_APP_API_URL}/posts/${post._id}`, { method: "DELETE" });
+                const postDeleteData = await postDeleteResponse.json();
 
-                    // Error with back-end
-                    if (!postsRes.ok) throw Error(postsData.error);
+                if (!postDeleteResponse.ok) throw new Error(postDeleteData.message);
+            }
 
-                    const matchPosts = postsData.filter((p) => p.author_id === match._id);
+            await sleep(3);
 
-                    setLoadingMsg("Deleting posts...");
+            // STEP 3: Remove profile picture from cloud (if any)
+            if (user.pfp !== "/account_icon.png") {
+                setLoadingMsg("Removing profile picture from cloud...");
 
-                    for (let post of matchPosts) {
-                        try {
-                            // Deletes post
-                            const delPostRes = await fetch(`${process.env.REACT_APP_API_URL}/posts/${post._id}`, { method: "DELETE" });
-                            const delPostData = await delPostRes.json();
+                const userGetResponse = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`);
+                const userGetData = await userGetResponse.json();
 
-                            // Error eith back-end
-                            if (!delPostRes.ok) throw Error(delPostData.error);
-                        } catch (err) {
-                            setError(err.message);
+                if (!userGetResponse.ok) throw new Error(userGetData.message);
+
+                const userUpdateResponse = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`, {
+                    method: "PATCH",
+                    body: JSON.stringify({
+                        mode: "IMAGE",
+                        content: {
+                            selectedFile: "",
+                            public_id: userGetData.image.public_id
                         }
-                    }
+                    }),
+                    headers: { "Content-Type": "application/json" }
+                });
+                const userUpdateData = await userUpdateResponse.json();
 
-                    setLoadingMsg("Deleting user...");
+                if (!userUpdateResponse.ok) throw new Error(userUpdateData.message);
 
-                    // Removes user data from browser and AuthContext
-                    logout();
+                await sleep(3);
+            }
 
-                    // Deletes user
-                    const delUserRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match._id}`, { method: "DELETE" });
-                    const delUserData = await delUserRes.json();
+            // STEP 4: Delete user data
+            setLoadingMsg("Deleting user...");
 
-                    // Error eith back-end
-                    if (!delUserRes.ok) throw Error(delUserData.error);
+            logout(); // Remove user data from browser and context
 
-                    setLoadingMsg("Wrapping up...");
+            const userDeleteResponse = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`, { method: "DELETE" });
+            const userDeleteData = await userDeleteResponse.json();
 
-                    setTimeout(() => {
-                        navigate("/");
-                    }, 3000);
-                } catch (err) {
-                    setError(err.message);
-                    for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
-                }
-            }, 3000);
-        } catch (err) {
-            setError(err.message);
-            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
+            if (!userDeleteResponse.ok) throw new Error(userDeleteData.error);
+
+            await sleep(3);
+
+            setLoadingMsg("Wrapping up...");
+            await sleep(3);
+
+            window.location.href = "/";
+        } catch (error) {
+            setError(handleError(error));
+            setIsLoading(false);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto"; // Enable mouse
         }
-    }
-
-    function handleToggle(e) {
-        // Changes the image for the toggler accordingly
-        const toggler = e.target;
-        if (toggler.src === `${window.location.origin}/hide.png`) toggler.src = `${window.location.origin}/visible.png`;
-        else toggler.src = `${window.location.origin}/hide.png`;
-
-        // Changes the visibility of the password input accordingly
-        const passwordInput = document.getElementById("password-input");
-        if (passwordInput.type === "password") passwordInput.type = "text";
-        else passwordInput.type = "password";
     }
 
     return (
         <>
-            {error && <div className="error-msg">{error}</div>}
-            {!error && isLoading && (
+            {error && (
+                <div className="error-msg">{error}</div>
+            )}
+            {isLoading && (
                 <>
                     <p>{loadingMsg}</p>
                     <span className="spinner-border"></span>
@@ -119,9 +125,9 @@ export default function DeleteForm() {
             {!error && !isLoading && (
                 <>
                     <div className="form-item">
-                        <p className="warning">Are you sure? This action is irreversible!</p>
-                        <button onClick={() => setOption("yes")}>Yes</button>
-                        <button onClick={() => setOption("no")}>No</button>
+                        <p style={{ color: "red" }}>Are you sure? This action is irreversible!</p>
+                        <button className={(option === "yes") ? "active-button" : ""} onClick={() => setOption("yes")}>Yes</button>
+                        <button className={(option === "no") ? "active-button" : ""} onClick={() => setOption("no")}>No</button>
                     </div>
                     {(option === "yes") && (
                         <form onSubmit={handleSubmit}>
@@ -139,10 +145,9 @@ export default function DeleteForm() {
                                     className="password-toggle"
                                     src="/hide.png"
                                     alt="password-toggle"
-                                    onClick={handleToggle}
+                                    onClick={(e) => handlePasswordToggle(e, "password-input")}
                                 />
                             </div>
-
                             <button type="submit">Submit</button>
                         </form>
                     )}

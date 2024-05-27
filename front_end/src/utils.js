@@ -49,3 +49,22 @@ export function handleError(error) {
     console.log(error);
     return ((error.message === "Failed to fetch") ? "Failed to connect to server. Please try again later." : error.message);
 }
+
+/**
+ * Function to change password visibility and icon image
+ * 
+ * @function
+ * @param {Event} e - Detected event
+ * @param {string} id - ID of element to toggle
+ */
+export function handlePasswordToggle(e, id) {
+    // Changes the image for the toggler accordingly
+    const toggler = e.target;
+    if (toggler.src === `${window.location.origin}/hide.png`) toggler.src = `${window.location.origin}/visible.png`;
+    else toggler.src = `${window.location.origin}/hide.png`;
+
+    // Changes the visibility of the password input accordingly
+    const passwordInput = document.getElementById(id);
+    if (passwordInput.type === "password") passwordInput.type = "text";
+    else passwordInput.type = "password";
+}

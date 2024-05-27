@@ -12,6 +12,14 @@
     width: 85%;
 }
 
+.modal-content {
+    width: 50vw;
+} 
+
+.modal-content.mini {
+    width: 90vw;
+}
+
 .divider {
     border: 5px solid black;
 }

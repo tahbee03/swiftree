@@ -2,7 +2,7 @@ import "./PostForm.css"; // Styles for PostForm component
 
 import { useState, useEffect } from "react"; // useState(), useEffect()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
-import { sleep, handleError } from "../utils"; // sleep()
+import { sleep, handleError } from "../utils"; // sleep(), handleError()
 
 export default function PostForm({ setModal }) {
     const [content, setContent] = useState(""); // Contains data to put into post
@@ -81,7 +81,7 @@ export default function PostForm({ setModal }) {
                         )}
                     </button>
                     {error && (
-                        <div className="error-msg">{(typeof error === "string") ? error : error.message}</div>
+                        <div className="error-msg">{error}</div>
                     )}
                 </form>
             </div>

@@ -1,62 +1,44 @@
-import "./PasswordForm.css";
 import { useState } from "react"; // useState()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { useLogin } from "../hooks/useLogin"; // useLogin()
 import { useLogout } from "../hooks/useLogout"; // useLogout()
-import { useNavigate } from "react-router-dom"; // useNavigate()
+import { sleep, handleError, handlePasswordToggle } from "../utils"; // sleep(), handleError(), handlePasswordToggle()
 
 export default function PasswordForm() {
-    const [isLoading, setIsLoading] = useState(false);
     const [oldPassword, setOldPassword] = useState(""); // Stores old password input
     const [newPassword, setNewPassword] = useState(""); // Stores new password input
-    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
     const { user } = useAuthContext(); // Contains data for logged in user
-    const { login } = useLogin();
-    const { logout } = useLogout();
-    const navigate = useNavigate();
+    const login = useLogin(); // Custom hook to log in user
+    const logout = useLogout(); // Custom hook to log out user
 
+    // Updates user password
     async function handleSubmit(e) {
-        e.preventDefault();
+        e.preventDefault(); // No reload on submit
+
+        setIsLoading(true);
+        setError(null);
 
         try {
-            setIsLoading(true);
-            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none"; // Disable mouse
 
             /*
             old password criteria:
-            - contains only lowercase letters, numbers, ., and/or _
             - correct authentication
 
             new password criteria:
-            - contains only lowercase letters, numbers, ., and/or _
             - not the same as old password
             */
 
-            const pattern = /^[a-zA-Z0-9._]+$/;
-
-            // Old password contains invalid characters
-            if (!pattern.test(oldPassword)) throw Error("Invalid characters in your current password!");
-
-            // New password contains invalid characters
-            if (!pattern.test(newPassword)) throw Error("Invalid characters in your new password!");
-
-            // Checks if old password is correct
+            // Verify credentials
             await login(user.username, oldPassword);
 
             // Checks if new password is the same as current password
             if (newPassword === oldPassword) throw Error("You already have that password!");
 
-            const usersRes = await fetch(`${process.env.REACT_APP_API_URL}/users`);
-            const usersData = await usersRes.json();
-
-            // Error with back-end
-            if (!usersRes.ok) throw Error(usersData.error);
-
-            const match = usersData.filter((u) => u.username === user.username)[0];
-
-            // Updates logged in user in back-end
-            const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match._id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -66,48 +48,29 @@ export default function PasswordForm() {
                     }
                 })
             });
-            const userData = await userRes.json();
+            const data = await response.json();
 
-            // Error with back-end
-            if (!userRes.ok) throw Error(userData.error);
+            if (!response.ok) throw Error(data.message);
 
-            // Logs the user out
             logout();
-            navigate(`/login`);
-        } catch (err) {
-            setError(err.message);
-            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
-        }
-    }
-
-    function handleToggle(e) {
-        // Changes the image for the toggler accordingly
-        const toggler = e.target;
-        if (toggler.src === `${window.location.origin}/hide.png`) toggler.src = `${window.location.origin}/visible.png`;
-        else toggler.src = `${window.location.origin}/hide.png`;
-
-        let passwordInput = null;
-
-        // Changes the visibility of the password input accordingly
-        if (toggler.id === "toggler-1") {
-            passwordInput = document.getElementById("password-input-1");
-            if (passwordInput.type === "password") passwordInput.type = "text";
-            else passwordInput.type = "password";
-        }
-        else {
-            passwordInput = document.getElementById("password-input-2");
-            if (passwordInput.type === "password") passwordInput.type = "text";
-            else passwordInput.type = "password";
+            await sleep(1);
+            window.location.href = "/login";
+        } catch (error) {
+            setError(handleError(error));
+            setIsLoading(false);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto"; // Enable mouse
         }
     }
 
     return (
         <>
-            {error && <div className="error-msg">{error}</div>}
-            {!error && isLoading && (
+            {error && (
+                <div className="error-msg">{error}</div>
+            )}
+            {isLoading && (
                 <span className="spinner-border"></span>
             )}
-            {!error && !isLoading && (
+            {!isLoading && (
                 <form onSubmit={handleSubmit}>
                     <div className="form-item">
                         <p>Current Password</p>
@@ -123,11 +86,10 @@ export default function PasswordForm() {
                             className="password-toggle"
                             src="/hide.png"
                             alt="password-toggle"
-                            onClick={handleToggle}
+                            onClick={(e) => handlePasswordToggle(e, "password-input-1")}
                             id="toggler-1"
                         />
                     </div>
-
                     <div className="form-item">
                         <p>New Password</p>
                         <input
@@ -142,15 +104,13 @@ export default function PasswordForm() {
                             className="password-toggle"
                             src="/hide.png"
                             alt="password-toggle"
-                            onClick={handleToggle}
+                            onClick={(e) => handlePasswordToggle(e, "password-input-2")}
                             id="toggler-2"
                         />
                     </div>
-
                     <button type="submit">Save Changes</button>
                 </form>
             )}
         </>
     );
-
 }

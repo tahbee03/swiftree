@@ -1,29 +1,31 @@
-import "./UsernameForm.css";
-import { useState } from "react";
+import { useState } from "react"; // useState()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
-import { useLogin } from "../hooks/useLogin";
-import { useNavigate } from "react-router-dom";
+import { useLogin } from "../hooks/useLogin"; // useLogin()
+import { sleep, handleError, handlePasswordToggle } from "../utils"; // sleep(), handleError(), handlePasswordToggle()
 
 export default function UsernameForm() {
-    const [isLoading, setIsLoading] = useState(false);
     const [username, setUsername] = useState(""); // Stores username input
     const [password, setPassword] = useState(""); // Stores password input
-    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
-    const { user, dispatch } = useAuthContext(); // Contains data for logged in user
-    const { login } = useLogin();
-    const navigate = useNavigate();
+    const { user } = useAuthContext(); // Contains data for logged in user
+    const login = useLogin(); // Custom hook to log in user
 
+    // Updates user username
     async function handleSubmit(e) {
-        e.preventDefault();
+        e.preventDefault(); // No refresh on submit
+
+        setIsLoading(true);
+        setError(null);
 
         try {
-            setIsLoading(true);
-            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none"; // Disable mouse
 
             /*
             username criteria:
-            - doesn't already exist
+            - not the same as current username
+            - not used by another user
             - contains only lowercase letters, numbers, ., and/or _
 
             password criteria:
@@ -33,28 +35,23 @@ export default function UsernameForm() {
             const pattern = /^[a-zA-Z0-9._]+$/;
 
             // Username contains invalid characters
-            if (!pattern.test(username)) throw Error("Invalid characters!");
+            if (!pattern.test(username)) throw new Error("Invalid characters!");
 
             // New username is the same as the current username
-            if (user.username === username) throw Error("You already have that username!");
+            if (username === user.username) throw new Error("You already have that username!");
 
-            const usersRes = await fetch(`${process.env.REACT_APP_API_URL}/users`);
-            const usersData = await usersRes.json();
+            const matchResponse = await fetch(`${process.env.REACT_APP_API_URL}/users`);
+            const matchData = await matchResponse.json();
 
-            // Error with back-end
-            if (!usersRes.ok) throw Error(usersData.error);
-
-            const existingMatch = usersData.filter((u) => u.username === username);
+            if (!matchResponse.ok) throw new Error(matchData.message);
 
             // Username already exists
-            if (!(existingMatch.length === 0)) throw Error("That username already exists!");
+            if (matchData.filter((u) => u.username === username).length !== 0) throw new Error("That username already exists!");
 
+            // Verify credentials
             await login(user.username, password);
 
-            const match = usersData.filter((u) => u.username === user.username)[0];
-
-            // Updates logged in user in back-end
-            const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match._id}`, {
+            const userResponse = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -64,51 +61,32 @@ export default function UsernameForm() {
                     }
                 })
             });
-            const userData = await userRes.json();
+            const userData = await userResponse.json();
 
-            // Error with back-end
-            if (!userRes.ok) throw Error(userData.error);
+            if (!userResponse.ok) throw new Error(userData.message);
 
-            // Updates logged in user in AuthContext
-            const payload = {
-                username,
-                display_name: user.display_name,
-                pfp: user.pfp,
-                posts: user.posts,
-                token: user.token
-            };
-            dispatch({ type: "UPDATE", payload });
-
-            // Updates logged in user in browser storage
-            sessionStorage.setItem("user", JSON.stringify(payload));
-
-            navigate(`/profile/${username}`);
-            window.location.reload();
-        } catch (err) {
-            setError(err.message);
-            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
+            sessionStorage.setItem("user", JSON.stringify({
+                ...user,
+                username
+            }));
+            await sleep(1);
+            window.location.href = `/profile/${username}`;
+        } catch (error) {
+            setError(handleError(error));
+            setIsLoading(false);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto"; // Enable mouse
         }
-    }
-
-    function handleToggle(e) {
-        // Changes the image for the toggler accordingly
-        const toggler = e.target;
-        if (toggler.src === `${window.location.origin}/hide.png`) toggler.src = `${window.location.origin}/visible.png`;
-        else toggler.src = `${window.location.origin}/hide.png`;
-
-        // Changes the visibility of the password input accordingly
-        const passwordInput = document.getElementById("password-input");
-        if (passwordInput.type === "password") passwordInput.type = "text";
-        else passwordInput.type = "password";
     }
 
     return (
         <>
-            {error && <div className="error-msg">{error}</div>}
-            {!error && isLoading && (
+            {error && (
+                <div className="error-msg">{error}</div>
+            )}
+            {isLoading && (
                 <span className="spinner-border"></span>
             )}
-            {!error && !isLoading && (
+            {!isLoading && (
                 <form onSubmit={handleSubmit}>
                     <div className="form-item">
                         <p>New Username</p>
@@ -120,7 +98,6 @@ export default function UsernameForm() {
                             value={username}
                         />
                     </div>
-
                     <div className="form-item">
                         <p>Current Password</p>
                         <input
@@ -135,10 +112,9 @@ export default function UsernameForm() {
                             className="password-toggle"
                             src="/hide.png"
                             alt="password-toggle"
-                            onClick={handleToggle}
+                            onClick={(e) => handlePasswordToggle(e, "password-input")}
                         />
                     </div>
-
                     <button type="submit">Save Changes</button>
                 </form>
             )}

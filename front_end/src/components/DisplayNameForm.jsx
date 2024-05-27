@@ -1,40 +1,42 @@
-import "./DisplayNameForm.css";
-import { useState } from "react";
+import { useState } from "react"; // useState()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
-import { useLogin } from "../hooks/useLogin";
+import { useLogin } from "../hooks/useLogin"; // useLogin()
+import { sleep, handleError, handlePasswordToggle } from "../utils"; // sleep(), handleError(), handlePasswordToggle()
 
 export default function DisplayNameForm() {
-    const [isLoading, setIsLoading] = useState(false);
     const [displayName, setDisplayName] = useState(""); // Stores display name input
     const [password, setPassword] = useState(""); // Stores password input
-    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
-    const { user, dispatch } = useAuthContext(); // Contains data for logged in user
-    const { login } = useLogin();
+    const { user } = useAuthContext(); // Contains data for logged in user
+    const login = useLogin(); // Custom hook to log in user
 
+    // Updates user display name
     async function handleSubmit(e) {
-        e.preventDefault();
+        e.preventDefault(); // No refresh on submit
+
+        setIsLoading(true);
+        setError(null);
 
         try {
-            setIsLoading(true);
-            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none";
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "none"; // Disable mouse
 
             /*
+            display name criteria:
+            - not the same as current display name
+
             password criteria:
             - matches the one for the currently logged in user
             */
 
-            const usersRes = await fetch(`${process.env.REACT_APP_API_URL}/users`);
-            const usersData = await usersRes.json();
+            // New display is the same as the current username
+            if (displayName === user.display_name) throw new Error("You already have that display name!");
 
-            // Error with back-end
-            if (!usersRes.ok) throw Error(usersData.error);
-
+            // Verify credentials
             await login(user.username, password);
-            const match = usersData.filter((u) => u.username === user.username)[0];
 
-            // Updates logged in user in back-end
-            const userRes = await fetch(`${process.env.REACT_APP_API_URL}/users/${match._id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -44,50 +46,32 @@ export default function DisplayNameForm() {
                     }
                 })
             });
-            const userData = await userRes.json();
+            const data = await response.json();
 
-            // Error with back-end
-            if (!userRes.ok) throw Error(userData.error);
+            if (!response.ok) throw Error(data.message);
 
-            // Updates logged in user in AuthContext
-            const payload = {
-                username: user.username,
-                display_name: displayName,
-                pfp: user.pfp,
-                posts: user.posts,
-                token: user.token
-            };
-            dispatch({ type: "UPDATE", payload });
-
-            // Updates logged in user in browser storage
-            sessionStorage.setItem("user", JSON.stringify(payload));
-
+            sessionStorage.setItem("user", JSON.stringify({
+                ...user,
+                display_name: displayName
+            }));
+            await sleep(1);
             window.location.reload();
-        } catch (err) {
-            setError(err.message);
-            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto";
+        } catch (error) {
+            setError(handleError(error));
+            setIsLoading(false);
+            for (let element of document.querySelectorAll("*")) element.style.pointerEvents = "auto"; // Enable mouse
         }
-    }
-
-    function handleToggle(e) {
-        // Changes the image for the toggler accordingly
-        const toggler = e.target;
-        if (toggler.src === `${window.location.origin}/hide.png`) toggler.src = `${window.location.origin}/visible.png`;
-        else toggler.src = `${window.location.origin}/hide.png`;
-
-        // Changes the visibility of the password input accordingly
-        const passwordInput = document.getElementById("password-input");
-        if (passwordInput.type === "password") passwordInput.type = "text";
-        else passwordInput.type = "password";
     }
 
     return (
         <>
-            {error && <div className="error-msg">{error}</div>}
-            {!error && isLoading && (
+            {error && (
+                <div className="error-msg">{error}</div>
+            )}
+            {isLoading && (
                 <span className="spinner-border"></span>
             )}
-            {!error && !isLoading && (
+            {!isLoading && (
                 <form onSubmit={handleSubmit}>
                     <div className="form-item">
                         <p>New Display Name</p>
@@ -99,7 +83,6 @@ export default function DisplayNameForm() {
                             value={displayName}
                         />
                     </div>
-
                     <div className="form-item">
                         <p>Current Password</p>
                         <input
@@ -114,10 +97,9 @@ export default function DisplayNameForm() {
                             className="password-toggle"
                             src="/hide.png"
                             alt="password-toggle"
-                            onClick={handleToggle}
+                            onClick={(e) => handlePasswordToggle(e, "password-input")}
                         />
                     </div>
-
                     <button type="submit">Save Changes</button>
                 </form>
             )}
