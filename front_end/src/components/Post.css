@@ -12,7 +12,7 @@
     word-wrap: break-word;
 }
 
-.post .info-section > .content {
+.post .info-section .content {
     margin-bottom: 0.5rem;
     font-size: 1.25rem;
     white-space: pre-line; 
@@ -55,6 +55,15 @@
 
 .post .loading {
     filter: blur(5px);
+}
+
+.post .link {
+    color: blue;
+    text-decoration: underline;
+}
+
+.post .link:hover {
+    color: rgb(128, 128, 255);
 }
 
 /* https://stackoverflow.com/questions/64476753/how-to-convert-black-image-to-red-color-image-using-css3-filter */

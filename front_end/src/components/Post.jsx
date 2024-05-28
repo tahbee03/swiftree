@@ -2,12 +2,37 @@ import "./Post.css"; // Styles for Post component
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
 import { format, formatDistanceToNow } from "date-fns"; // format(), formatDistanceToNow()
-import { handleError } from "../utils";
+import { handleError } from "../utils"; // handleError()
 
 export default function Post({ post, canDelete, search }) {
     const [author, setAuthor] = useState(null); // Contains data for post author
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
     const [error, setError] = useState(null); // Stores error from back-end response (if any)
+
+    function linkable(text) {
+        const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi;
+        const pseudoUrlPattern = /(^|[^/])(www\.[\S]+(\b|$))/gi;
+
+        return (urlPattern.test(text) || pseudoUrlPattern.test(text));
+    }
+
+    function processContent(text) {
+        function innerJoin(array, char) {
+            let result = [];
+
+            for (let i = 0; i < array.length; i++) {
+                result.push(array[i]);
+                if (i !== array.length - 1) result.push(char);
+            }
+
+            return result;
+        }
+
+        const newlineSplit = text.split("\n");
+        for (let i = 0; i < newlineSplit.length; i++) newlineSplit[i] = newlineSplit[i].split(" ");
+        for (let i = 0; i < newlineSplit.length; i++) newlineSplit[i] = innerJoin(newlineSplit[i], " ");
+        return innerJoin(newlineSplit, "\n").flat(1);
+    }
 
     // Fetch data when post info is updated
     useEffect(() => {
@@ -56,17 +81,35 @@ export default function Post({ post, canDelete, search }) {
                 <span className="spinner-border"></span>
             )}
             <div className={`col-lg-9 col-12 info-section ${isLoading ? "loading" : ""}`}>
-                {(search) ? (
-                    <p className="content">
-                        {post.content.substring(0, search.index)}
-                        <span className="highlight">
-                            {post.content.substring(search.index, search.index + search.input.length)}
-                        </span>
-                        {post.content.substring(search.index + search.input.length)}
-                    </p>
-                ) : (
-                    <p className="content">{post.content}</p>
-                )}
+                <p className="content">
+                    {(search) ? (
+                        <>
+                            {post.content.substring(0, search.index)}
+                            <span className="highlight">
+                                {post.content.substring(search.index, search.index + search.input.length)}
+                            </span>
+                            {post.content.substring(search.index + search.input.length)}
+                        </>
+                    ) : (
+                        <>
+                            {processContent(post.content).map((s, i) => (
+                                (linkable(s)) ? (
+                                    <a
+                                        key={i}
+                                        href={s}
+                                        className="link"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        {s}
+                                    </a>
+                                ) : (
+                                    <span key={i}>{s}</span>
+                                )
+                            ))}
+                        </>
+                    )}
+                </p>
                 <a href={(author) ? `/profile/${author.username}` : ""} className="author-section">
                     <img src={(author) ? author.image.url : "/account_icon.png"} alt="user-pfp" />
                     <p>{(author) ? author.display_name : ""}</p>
