@@ -1,6 +1,8 @@
-import "./PostModal.css";
+import "./PostModal.css"; // Styles for Post Modal component
+
 import Post from "./Post"; // <Post />
-import { useEffect } from "react";
+
+import { useEffect } from "react"; // useEffect()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { useParams } from "react-router-dom"; // useParams()
 
@@ -39,7 +41,7 @@ export default function PostModal({ modalState, content }) {
         <div className="modal">
             <div className="modal-content">
                 <div className="close" onClick={() => modalState.setModal(null)}>&times;</div>
-                <Post post={content} canDelete={user && user.username === username} />
+                <Post post={content} isAuthor={user && user.username === username} />
             </div>
         </div>
     );

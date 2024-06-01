@@ -37,20 +37,38 @@
     margin-left: 5px;
 }
 
+.post .icon-section p {
+    margin: 0;
+}
+
 .post .icon-section {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-#delete-icon {
-    transition: 0.25s;
-    height: 50%;
-}
-#delete-icon:hover {
-    transform: scale(0.75);
+.post .icon-section .icon {
     cursor: pointer;
-    filter: invert(21%) sepia(100%) saturate(10000%) brightness(75%);
+    transition: 0.25s;
+    width: 75px;
+    padding: 10px;
+}
+
+.post .icon-section .icon:hover {
+    transform: scale(0.75);
+}
+
+#share-icon:hover {
+    filter: invert(50%) sepia(100%) saturate(10000%) brightness(100%) hue-rotate(-60deg);
+}
+
+#edit-icon:hover {
+    filter: invert(50%) sepia(100%) saturate(10000%) brightness(100%) hue-rotate(120deg);
+}
+
+#delete-icon:hover {
+    filter: invert(50%) sepia(100%) saturate(10000%) brightness(100%) hue-rotate(0deg);
 }
 
 .post .loading {
