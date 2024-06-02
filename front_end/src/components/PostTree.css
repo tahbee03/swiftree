@@ -1,8 +1,12 @@
 #tree-canvas {
     border-radius: 15px;
-
     display: block;
     margin: auto;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+#tree-canvas.home {
+    background-color: white;
 }
 
 .tree-node {

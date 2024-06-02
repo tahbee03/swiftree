@@ -7,7 +7,7 @@ import Footer from "../components/Footer"; // <Footer />
 import PostTree from "../components/PostTree"; // <PostTree />
 import Pagination from "../components/Pagination"; // <Pagination />
 
-import { sleep, partition, handleError } from "../utils"; // sleep(), partition()
+import { sleep, partition, handleError } from "../utils"; // sleep(), partition(), handleError()
 import { useState, useEffect } from "react"; // useState(), useEffect()
 import { useNavigate, useParams } from "react-router-dom"; // useNavigate(), useParams()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()

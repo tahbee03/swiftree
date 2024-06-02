@@ -1,6 +1,8 @@
 #home-cont {
-    height: 85vh; /* Container is 85% of the viewport height */
-    padding: 25px;
+    height: 75vh; /* Container is 75% of the viewport height */
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    padding: 0;
 }
 
 .spinner-cont {

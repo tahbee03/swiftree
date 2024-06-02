@@ -5,13 +5,13 @@ import Footer from "../components/Footer"; // <Footer />
 import PostTree from "../components/PostTree"; // <PostTree />
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
-import { Helmet } from "react-helmet"; // <Helmet>
-import { handleError } from "../utils";
+import { Helmet } from "react-helmet"; // <Helmet />
+import { handleError } from "../utils"; // handleError()
 
 export default function Home() {
     const [posts, setPosts] = useState(null); // Contains posts to be passed into post tree
     const [isLoading, setIsLoading] = useState(false); // Boolean value used to render loading spinner
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
     // Runs on component render
     useEffect(() => {
@@ -48,7 +48,7 @@ export default function Home() {
                 <meta name="description" content="Welcome to Swiftree!" />
             </Helmet>
             <Navbar />
-            <div className="container-md" id="home-cont">
+            <div className="container" id="home-cont">
                 {error && (
                     <p className="error-msg">{error}</p>
                 )}

@@ -1,140 +1,64 @@
-import { useState } from 'react';
-import { useEffect } from "react";
-import "./PostTree.css";
-import PostModal from './PostModal';
-const _ = require("lodash");
+import "./PostTree.css"; // Styles for Post Tree component
 
-function randomNum(min, max) {
-    return (Math.random() * (max - min)) + min;
-}
+import PostModal from "./PostModal"; // <PostModal />
 
-function createNodeList(bounds, num) {
-    let arr = [{
-        x: (bounds.right - bounds.left) / 2,
-        y: (bounds.bottom - bounds.top) / 2,
-        depth: 0
-    }]; // Initialize with root node
-
-    let count = 0; // Depth child count
-
-    // TODO: Modify to ensure no two nodes have the same angle
-
-    for (let i = 1; i <= num; i++) {
-        let parent = arr[Math.floor((i - 1) / 2)];
-        let depth = parent.depth + 1;
-        let radius = depth * 50;
-
-        if (arr[i - 1].depth !== depth) count = 0;
-        let angle = randomNum(count * ((2 * Math.PI) / (Math.pow(2, depth))), (count + 1) * ((2 * Math.PI) / Math.pow(2, depth)));
-
-        // maximum DCC: 2^depth
-        // node partition: (2 * PI) / 2^depth
-
-        arr.push({
-            x: (radius * Math.cos(angle)) + ((bounds.right - bounds.left) / 2),
-            y: (radius * Math.sin(angle)) + ((bounds.bottom - bounds.top) / 2),
-            depth
-        });
-
-        count += 1;
-    }
-
-    return arr;
-}
-
-function createEdgeList(nodes, index) {
-    let temp = [];
-    let left = (2 * index) + 1;
-    let right = (2 * index) + 2;
-
-    if (left < nodes.length) {
-        temp.push({
-            x1: nodes[index].x,
-            y1: nodes[index].y,
-            x2: nodes[left].x,
-            y2: nodes[left].y
-        });
-
-        temp.push(...createEdgeList(nodes, left));
-    }
-
-    if (right < nodes.length) {
-        temp.push({
-            x1: nodes[index].x,
-            y1: nodes[index].y,
-            x2: nodes[right].x,
-            y2: nodes[right].y
-        });
-
-        temp.push(...createEdgeList(nodes, right));
-    }
-
-    return temp;
-}
+import { useState, useEffect } from "react"; // useState(), useEffect()
+import { createNodeList, createEdgeList } from "../utils"; // createNodeList(), createEdgeList()
 
 export default function PostTree({ posts, page }) {
-    // TODO: Create a separate file to handle tree logic
+    const [bounds, setBounds] = useState({ top: 0, bottom: 0, left: 0, right: 0 }); // Bounding coordinates of the canvas
+    const [currentPost, setCurrentPost] = useState(null); // Contains the data for the selected post
+    const [visited, setVisited] = useState([]); // State that keeps track of the nodes that were opened
+    const [nodes, setNodes] = useState([]); // State that stores the list of nodes to be rendered
+    const [edges, setEdges] = useState([]); // State that stores the list of edges to be rendered
+    const [modal, setModal] = useState(null); // Used to determine when the modal should be displayed
 
-    const [bounds, setBounds] = useState({
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0
-    });
-    const [currentPost, setCurrentPost] = useState(null);
-    const [visited, setVisited] = useState([]);
-
-    const [nodes, setNodes] = useState([]);
-    const [edges, setEdges] = useState([]);
-
-    const [modal, setModal] = useState(null);
-
-    const createCanvas = () => {
-        const canvas = document.getElementById("tree-canvas");
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-
-        if (window.innerWidth >= 768) {
-            if (canvas.getBoundingClientRect().height > canvas.getBoundingClientRect().width) canvas.style.height = canvas.getBoundingClientRect().width;
-            else canvas.style.width = canvas.getBoundingClientRect().height;
-        }
-
-        setBounds({
-            top: canvas.getBoundingClientRect().top,
-            bottom: canvas.getBoundingClientRect().bottom,
-            left: canvas.getBoundingClientRect().left,
-            right: canvas.getBoundingClientRect().right
-        });
-
-        if (page === "home") canvas.style.backgroundColor = "white";
-        else canvas.style.backgroundColor = "rgba(255, 255, 255, 0)";
-    };
-
-    const buildTree = () => {
-        const n = createNodeList(bounds, posts.length);
-        setNodes(n);
-        setEdges(createEdgeList(n, 0));
-    };
-
-    // Run on mount
+    // Runs when posts are updated
     useEffect(() => {
+        const createCanvas = () => {
+            const canvas = document.getElementById("tree-canvas");
+
+            // STEP 1: Set the width and height of the canvas to match that of the parent element
+            canvas.style.width = "100%";
+            canvas.style.height = "100%";
+
+            // STEP 2: If the window width is greater than or equal to 768 px (Bootstrap md breakpoint), clip the larger length so that the canvas forms a square
+            if (window.innerWidth >= 768) {
+                if (canvas.getBoundingClientRect().height > canvas.getBoundingClientRect().width) canvas.style.height = canvas.getBoundingClientRect().width;
+                else canvas.style.width = canvas.getBoundingClientRect().height;
+            }
+
+            const b = {
+                top: canvas.getBoundingClientRect().top,
+                bottom: canvas.getBoundingClientRect().bottom,
+                left: canvas.getBoundingClientRect().left,
+                right: canvas.getBoundingClientRect().right
+            };
+
+            // STEP 3: Store the bounding coordinates in the state
+            setBounds(b);
+
+            // STEP 4: Use the bounds to create the tree nodes and edges
+            const n = createNodeList(b, posts.length);
+            setNodes(n);
+            const e = createEdgeList(n, 0);
+            setEdges(e);
+        };
+
         createCanvas();
 
         // Event listeners
         document.getElementById("refresh").addEventListener("click", createCanvas);
         window.addEventListener("resize", createCanvas);
 
-        // Cleans up event listeners when the component unmounts (?)
+        // Cleans up event listeners when the component unmounts
         return () => {
+            // NOTE: The element with ID '#refresh' doesn't need to be included since it gets removed from the DOM
             window.removeEventListener("resize", createCanvas);
         };
-    }, []);
+    }, [posts]);
 
-    // Tree is rebuilt whenever the bounds state is updated i.e. whenever createCanvas() is called or the posts are updated
-    useEffect(() => {
-        buildTree();
-    }, [bounds, posts]);
-
+    // Helper function that updates the list of visited nodes and opens the post modal
     function openModal(content) {
         if (!visited.includes(content._id)) setVisited([...visited, content._id]);
         setCurrentPost(content);
@@ -144,9 +68,9 @@ export default function PostTree({ posts, page }) {
     return (
         <>
             {(modal === "post") && (
-                <PostModal modalState={{ modal, setModal }} content={currentPost} />
+                <PostModal setModal={setModal} content={currentPost} />
             )}
-            <svg id="tree-canvas">
+            <svg id="tree-canvas" className={(page === "home") ? "home" : undefined}>
                 {posts && (
                     <>
                         {edges && edges.map((e, i) => (

@@ -59,6 +59,10 @@ a:hover {
     border-radius: 15px;
 }
 
+.modal-content.mini {
+    width: 90vw;
+}
+
 .modal .close {
     color: #aaa;
     font-size: 28px;
