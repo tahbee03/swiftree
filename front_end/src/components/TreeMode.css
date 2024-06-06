@@ -1,0 +1,7 @@
+.tree-mode {
+    margin-top: 10px;
+}
+
+.tree-mode button {
+    user-select: none;
+}

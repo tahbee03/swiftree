@@ -65,10 +65,27 @@ export default function PostTree({ posts, page }) {
         setModal("post");
     }
 
+    // Checks if a post contains a tag so that it can be conditionally colored
+    function hasTag(post) {
+        /*
+        criteria:
+        - the post needs to exist
+        - the tag needs to be in a specific format -> tagPattern.test(post.content)
+        - has to be on the profile page -> pathPattern.test(path)
+        - tag needs to be specific to the user currently being displayed -> post.content.match(tagPattern).includes(`@${path.substring(9)}`)
+        */
+
+        const tagPattern = /@[a-z0-9._]+/g;
+        const pathPattern = /\/profile\/.+/g;
+        const path = window.location.pathname;
+
+        if (post) return tagPattern.test(post.content) && pathPattern.test(path) && post.content.match(tagPattern).includes(`@${path.substring(9)}`);
+    }
+
     return (
         <>
             {(modal === "post") && (
-                <PostModal setModal={setModal} content={currentPost} />
+                <PostModal setModal={setModal} post={currentPost} />
             )}
             <svg id="tree-canvas" className={(page === "home") ? "home" : undefined}>
                 {posts && (
@@ -90,7 +107,7 @@ export default function PostTree({ posts, page }) {
                                 cx={n.x}
                                 cy={n.y}
                                 r="10"
-                                stroke="black"
+                                stroke={(hasTag(posts[i])) ? "#fce762" : "black"}
                                 strokeWidth="3"
                                 fill={(posts[i] && visited.includes(posts[i]._id)) ? "#A532FF" : "white"}
                                 onMouseEnter={(e) => { e.target.setAttribute("r", "20") }}

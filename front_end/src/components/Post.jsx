@@ -38,12 +38,18 @@ export default function Post({ post, isAuthor, search }) {
         if (!isEditMode) setNewContent(post.content);
     }, [isEditMode, post.content]);
 
-    // Helper function that checks if there are links in a string
+    // Helper function that checks if there are links in a post
     function linkable(text) {
         const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi;
         const pseudoUrlPattern = /(^|[^/])(www\.[\S]+(\b|$))/gi;
 
         return (urlPattern.test(text) || pseudoUrlPattern.test(text));
+    }
+
+    // Helper function that checks if there are tags in a post
+    function taggable(text) {
+        const tagPattern = /@[a-z0-9._]+/g;
+        return tagPattern.test(text);
     }
 
     // Helper function that splits a string into an array of substrings (including whitespace characters)
@@ -63,6 +69,31 @@ export default function Post({ post, isAuthor, search }) {
         for (let i = 0; i < newlineSplit.length; i++) newlineSplit[i] = newlineSplit[i].split(" ");
         for (let i = 0; i < newlineSplit.length; i++) newlineSplit[i] = innerJoin(newlineSplit[i], " ");
         return innerJoin(newlineSplit, "\n").flat(1);
+    }
+
+    // Helper function that returns the corresponding element based on the substring of text
+    function convertContent(text, index) {
+        if (linkable(text)) {
+            return <a
+                key={index}
+                href={text}
+                className="link"
+                target="_blank"
+                rel="noreferrer"
+            >
+                {text}
+            </a>;
+        } else if (taggable(text)) {
+            return <a
+                key={index}
+                href={`/profile/${text.substring(1)}`}
+                className="tag"
+            >
+                {text}
+            </a>;
+        } else {
+            return <span key={index}>{text}</span>;
+        }
     }
 
     // Copies post link to clipboard
@@ -134,21 +165,7 @@ export default function Post({ post, isAuthor, search }) {
                             </>
                         ) : (
                             <>
-                                {processContent(post.content).map((s, i) => (
-                                    (linkable(s)) ? (
-                                        <a
-                                            key={i}
-                                            href={s}
-                                            className="link"
-                                            target="_blank"
-                                            rel="noreferrer"
-                                        >
-                                            {s}
-                                        </a>
-                                    ) : (
-                                        <span key={i}>{s}</span>
-                                    )
-                                ))}
+                                {processContent(post.content).map((s, i) => convertContent(s, i))}
                             </>
                         )}
                     </p>

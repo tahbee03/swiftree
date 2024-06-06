@@ -5,6 +5,7 @@ import ProfileUpdate from "../components/ProfileUpdate";
 import Navbar from "../components/Navbar"; // <Navbar />
 import Footer from "../components/Footer"; // <Footer />
 import PostTree from "../components/PostTree"; // <PostTree />
+import TreeMode from "../components/TreeMode"; // <TreeMode />
 import Pagination from "../components/Pagination"; // <Pagination />
 
 import { sleep, partition, handleError } from "../utils"; // sleep(), partition(), handleError()
@@ -17,12 +18,16 @@ import { Helmet } from "react-helmet"; // <Helmet>
 export default function Profile() {
     const [presentedUser, setPresentedUser] = useState({
         displayName: "",
-        pfp: "/account_icon.png"
+        pfp: "/account_icon.png",
+        id: "",
+        username: ""
     }); // Contains data for the user presented on the page
-    const [posts, setPosts] = useState([]); // Contains posts to be displayed in the posts container
+    const [filteredPosts, setFilteredPosts] = useState([]); // Contains posts to be displayed in the posts container
+    const [allPosts, setAllPosts] = useState([]); // Contains all posts related to user
     const [modal, setModal] = useState(null); // Pop-up container to show forms
     const [currentPage, setCurrentPage] = useState(1); // Keeps track of current post tree page
     const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Contains the browser window width
+    const [mode, setMode] = useState("all"); // Sets tree display mode
     const [isLoading, setIsLoading] = useState(true); // Boolean value used to render loading spinner
     const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
@@ -56,7 +61,9 @@ export default function Profile() {
                 // Updates the presented user's information
                 setPresentedUser({
                     displayName: match.display_name,
-                    pfp: match.image.url
+                    username: match.username,
+                    pfp: match.image.url,
+                    id: match._id
                 });
 
                 // Gets all posts from back-end
@@ -65,7 +72,9 @@ export default function Profile() {
                 if (!postResponse.ok) throw new Error(postData.message);
 
                 // Filters posts to match the one in the URL and stores them in the state
-                setPosts(postData.filter((post) => post.author_id === match._id));
+                const p = postData.filter((post) => (post.author_id === match._id || post.content.includes(`@${match.username}`)));
+                setAllPosts(p);
+                setFilteredPosts(p);
             } catch (error) {
                 setError(handleError(error));
             }
@@ -92,12 +101,21 @@ export default function Profile() {
         }
     }
 
+    // Changes post tree display and applies appropriate text color to buttons
+    function switchMode(newMode) {
+        if (mode !== newMode) setMode(newMode);
+
+        if (newMode === "owned") setFilteredPosts(allPosts.filter((post) => post.author_id === presentedUser.id)); // Only show posts the user created themselves
+        else if (newMode === "tagged") setFilteredPosts(allPosts.filter((post) => post.content.includes(`@${presentedUser.username}`))); // Only show posts the user is tagged in
+        else setFilteredPosts(allPosts); // Show all related posts
+    }
+
     return (
         <>
             <Helmet>
                 {/* Default meta tags */}
-                <title>Swiftree &#8231; {(presentedUser.displayName === "") ? "User not found" : username}</title>
-                <meta name="description" content={(presentedUser.displayName === "") ? "User not found!" : `View ${username}'s profile on Swiftree`} />
+                <title>Swiftree &#8231; {(presentedUser.username === "") ? "User not found" : presentedUser.username}</title>
+                <meta name="description" content={(presentedUser.username === "") ? "User not found!" : `View ${presentedUser.username}'s profile on Swiftree`} />
             </Helmet>
             <Navbar />
             <div className={`container ${(windowWidth < 768) ? "mini" : ""}`} id="profile-cont">
@@ -118,9 +136,9 @@ export default function Profile() {
                         <div className="row">
                             <div className={`col-md-3 col-12 ${(windowWidth < 768) ? "mini" : ""}`} id="info-col">
                                 <img src={presentedUser.pfp} alt="account pic" />
-                                <p><b>{presentedUser.displayName}</b> &#183; {username}</p>
-                                <p>{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
-                                {user && (user.username === username) && (
+                                <p><b>{presentedUser.displayName}</b> &#183; {presentedUser.username}</p>
+                                <p>{filteredPosts.length} {filteredPosts.length === 1 ? "post" : "posts"}</p>
+                                {user && (user.username === presentedUser.username) && (
                                     <>
                                         <button type="button" onClick={() => setModal("post-form")}>Make New Post</button>
                                         <button type="button" onClick={() => setModal("update")}>Settings</button>
@@ -129,20 +147,30 @@ export default function Profile() {
                                 )}
                             </div>
                             <div className={`col-md-8 col-12 ${(windowWidth < 768) ? "mini" : ""}`} id="posts-col">
-                                {(posts.length === 0) && (
+                                {(allPosts.length === 0) ? (
                                     <p>This user has no posts!</p>
-                                )}
-                                {(posts.length > 0 && posts.length <= 14) && (
-                                    <PostTree posts={posts} page={"profile"} />
-                                )}
-                                {(posts.length > 14) && (
+                                ) : (
                                     <>
-                                        <PostTree posts={partition(posts, 14)[currentPage]} page={"profile"} />
-                                        <Pagination
-                                            total={Math.ceil(posts.length / 14)}
-                                            current={currentPage}
-                                            setCurrentPage={setCurrentPage}
-                                        />
+                                        <TreeMode mode={mode} switchMode={switchMode} />
+                                        {(filteredPosts.length === 0) && (mode === "owned") && (
+                                            <p>This user has not created any posts!</p>
+                                        )}
+                                        {(filteredPosts.length === 0) && (mode === "tagged") && (
+                                            <p>This user is not tagged in any posts!</p>
+                                        )}
+                                        {(filteredPosts.length > 0 && filteredPosts.length <= 14) && (
+                                            <PostTree posts={filteredPosts} page={"profile"} />
+                                        )}
+                                        {(filteredPosts.length > 14) && (
+                                            <>
+                                                <PostTree posts={partition(filteredPosts, 14)[currentPage]} page={"profile"} />
+                                                <Pagination
+                                                    total={Math.ceil(filteredPosts.length / 14)}
+                                                    current={currentPage}
+                                                    setCurrentPage={setCurrentPage}
+                                                />
+                                            </>
+                                        )}
                                     </>
                                 )}
                             </div>

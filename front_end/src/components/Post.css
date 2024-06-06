@@ -84,4 +84,12 @@
     color: rgb(128, 128, 255);
 }
 
+.post .tag {
+    color: #a532ff;
+}
+
+.post .tag:hover {
+    color: #d299ff;
+}
+
 /* https://stackoverflow.com/questions/64476753/how-to-convert-black-image-to-red-color-image-using-css3-filter */

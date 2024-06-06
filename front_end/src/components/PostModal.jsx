@@ -4,13 +4,11 @@ import Post from "./Post"; // <Post />
 
 import { useEffect, useState } from "react"; // useEffect(), useState()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
-import { useParams } from "react-router-dom"; // useParams()
 
-export default function PostModal({ setModal, content }) {
+export default function PostModal({ setModal, post }) {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Contains the browser window width
 
     const { user } = useAuthContext(); // Contains data for logged in user
-    const { username } = useParams(); // Grabs username of the user that the page belongs to from the URL
 
     // Runs when setModal() is loaded
     useEffect(() => {
@@ -30,11 +28,27 @@ export default function PostModal({ setModal, content }) {
         };
     }, [setModal]);
 
+    // Checks if the available credentials allow the post to be manipulated (edit and delete)
+    function checkAuthor() {
+        /* 
+        criteria:
+        - user needs to be logged in
+        - has to be on the Profile page -> pathPattern.test(path)
+        - the ID of the author of the post needs to match the ID of the authenticated user -> post.author_id === user.id
+        */
+
+        const pathPattern = /\/profile\/.+/g;
+        const path = window.location.pathname;
+
+        if (user) return pathPattern.test(path) && post.author_id === user.id;
+        else return false;
+    }
+
     return (
         <div className="modal">
             <div className={`modal-content ${(windowWidth < 768) ? "mini" : ""}`}>
                 <div className="close" onClick={() => setModal(null)}>&times;</div>
-                <Post post={content} isAuthor={user && user.username === username} />
+                <Post post={post} isAuthor={checkAuthor()} />
             </div>
         </div>
     );
