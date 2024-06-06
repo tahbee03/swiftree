@@ -13,18 +13,19 @@
 }
 
 .post .info-section .content {
-    margin-bottom: 0.5rem;
     font-size: 1.25rem;
     white-space: pre-line; 
+    margin: 0;
 }
 
 .post .info-section > .date {
-    margin-top: 0.5rem;
-    margin-bottom: 0;
+    margin: 0;
 }
 
 .post .author-section {
     width: fit-content;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .post .author-section img {
@@ -90,6 +91,11 @@
 
 .post .tag:hover {
     color: #d299ff;
+}
+
+.post .edited {
+    color: gray;
+    margin: 0;
 }
 
 /* https://stackoverflow.com/questions/64476753/how-to-convert-black-image-to-red-color-image-using-css3-filter */

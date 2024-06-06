@@ -154,21 +154,26 @@ export default function Post({ post, isAuthor, search }) {
                         <button onClick={handleEdit} disabled={post.content === newContent}>Save</button>
                     </>
                 ) : (
-                    <p className="content">
-                        {(search) ? (
-                            <>
-                                {post.content.substring(0, search.index)}
-                                <span className="highlight">
-                                    {post.content.substring(search.index, search.index + search.input.length)}
-                                </span>
-                                {post.content.substring(search.index + search.input.length)}
-                            </>
-                        ) : (
-                            <>
-                                {processContent(post.content).map((s, i) => convertContent(s, i))}
-                            </>
+                    <>
+                        <p className="content">
+                            {(search) ? (
+                                <>
+                                    {post.content.substring(0, search.index)}
+                                    <span className="highlight">
+                                        {post.content.substring(search.index, search.index + search.input.length)}
+                                    </span>
+                                    {post.content.substring(search.index + search.input.length)}
+                                </>
+                            ) : (
+                                <>
+                                    {processContent(post.content).map((s, i) => convertContent(s, i))}
+                                </>
+                            )}
+                        </p>
+                        {(post.createdAt !== post.updatedAt) && (
+                            <p className="edited">(edited)</p>
                         )}
-                    </p>
+                    </>
                 )}
                 <a href={(author) ? `/profile/${author.username}` : ""} className="author-section">
                     <img src={(author) ? author.image.url : "/account_icon.png"} alt="user-pfp" />
