@@ -1,0 +1,11 @@
+.modal-content.notifs {
+    height: 75vh;
+}
+
+.notif-cont {
+    overflow-y: auto;
+}
+
+h4.unread { 
+    color: gray;
+}

@@ -1,7 +1,7 @@
 import "./Profile.css"; // Styles for Profile page
 
 import PostForm from "../components/PostForm"; // <PostForm />
-import Notifs from "../components/Notifs"; // <Notifs />
+import NotifModal from "../components/NotifModal"; // <NotifModal />
 import ProfileUpdate from "../components/ProfileUpdate"; // <ProfileUpdate />
 import Navbar from "../components/Navbar"; // <Navbar />
 import Footer from "../components/Footer"; // <Footer />
@@ -15,6 +15,7 @@ import { useNavigate, useParams } from "react-router-dom"; // useNavigate(), use
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { useLogout } from "../hooks/useLogout"; // useLogout()
 import { Helmet } from "react-helmet"; // <Helmet>
+import { useNotifContext } from "../hooks/useNotifContext"; // useNotifContext()
 
 export default function Profile() {
     const [presentedUser, setPresentedUser] = useState({
@@ -25,7 +26,6 @@ export default function Profile() {
     }); // Contains data for the user presented on the page
     const [filteredPosts, setFilteredPosts] = useState([]); // Contains posts to be displayed in the posts container
     const [allPosts, setAllPosts] = useState([]); // Contains all posts related to user
-    const [notifs, setNotifs] = useState([]); // Contains all notifications related to the signed in user
     const [modal, setModal] = useState(null); // Pop-up container to show forms
     const [currentPage, setCurrentPage] = useState(1); // Keeps track of current post tree page
     const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Contains the browser window width
@@ -37,6 +37,7 @@ export default function Profile() {
     const { username } = useParams(); // Grabs username of the user that the page belongs to from the URL
     const logout = useLogout(); // Custom hook to log out logged in user
     const { user } = useAuthContext(); // Contains data for logged in user
+    const { notifications } = useNotifContext(); // Contains notifications for logged in user
 
     // Runs on mount
     useEffect(() => {
@@ -77,15 +78,6 @@ export default function Profile() {
                 const p = postData.filter((post) => (post.author_id === match._id || post.content.includes(`@${match.username}`)));
                 setAllPosts(p);
                 setFilteredPosts(p);
-
-                if (user && user.username === match.username) {
-                    const notifResponse = await fetch(`${process.env.REACT_APP_API_URL}/notifications`);
-                    const notifData = await notifResponse.json();
-                    if (!notifResponse.ok) throw new Error(notifData.message);
-
-                    const n = notifData.filter((notif) => (notif.user_id = user.id));
-                    setNotifs(n);
-                }
             } catch (error) {
                 setError(handleError(error));
             }
@@ -121,6 +113,12 @@ export default function Profile() {
         else setFilteredPosts(allPosts); // Show all related posts
     }
 
+    // Counts the number of unread notifications
+    function unreadCheck() {
+        if (notifications && notifications.length > 0) return notifications.filter(n => !n.read).length;
+        else return 0;
+    }
+
     return (
         <>
             <Helmet>
@@ -142,7 +140,7 @@ export default function Profile() {
                             <PostForm setModal={setModal} />
                         )}
                         {(modal === "notifs") && (
-                            <Notifs setModal={setModal} notifications={notifs} />
+                            <NotifModal setModal={setModal} />
                         )}
                         {(modal === "update") && (
                             <ProfileUpdate setModal={setModal} />
@@ -155,7 +153,7 @@ export default function Profile() {
                                 {user && (user.username === presentedUser.username) && (
                                     <>
                                         <button type="button" onClick={() => setModal("post-form")}>Make New Post</button>
-                                        <button type="button" onClick={() => setModal("notifs")}>Notifications</button>
+                                        <button type="button" onClick={() => setModal("notifs")} className={`${(unreadCheck() > 0) ? "flash" : undefined}`}>Notifications</button>
                                         <button type="button" onClick={() => setModal("update")}>Settings</button>
                                         <button type="button" onClick={handleLogout}>Log Out</button>
                                     </>

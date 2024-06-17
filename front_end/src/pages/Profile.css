@@ -84,3 +84,15 @@
 #profile-cont #posts-col.mini {
     height: 75vh;
 }
+
+@keyframes flash {
+    0% {background-color: #f0f0f0;}
+    50% {background-color: #A532FF;}
+    100% {background-color: #f0f0f0;}
+}
+
+#profile-cont .flash {
+    animation-name: flash;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+}

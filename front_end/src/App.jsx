@@ -7,6 +7,7 @@ import Search from "./pages/Search"; // <Search />
 import About from "./pages/About"; // <About />
 import Help from "./pages/Help"; // <Help />
 import NotFound from "./pages/NotFound"; // <NotFound />
+import NotifContextProvider from "./components/NotifContextProvider"; // <NotifContextProvider>
 
 import { BrowserRouter, Routes, Route } from "react-router-dom"; // <BrowserRouter>, <Routes>, <Route />
 
@@ -17,7 +18,7 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/sign-up" element={<SignUp />} />
-                <Route path="/profile/:username" element={<Profile />} />
+                <Route path="/profile/:username" element={<NotifContextProvider><Profile /></NotifContextProvider>} />
                 <Route path="/post/:id" element={<Highlight />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/about" element={<About />} />

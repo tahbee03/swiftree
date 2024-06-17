@@ -31,9 +31,25 @@ const getNotification = async (req, res) => {
 // Create new notification
 const createNotification = async (req, res) => {
     try {
-        const { user_id, message } = req.body;
-        const notif = await Notification.create({ user_id, message });
+        const { user_id, message, icon } = req.body;
+        const notif = await Notification.create({ user_id, message, icon });
         return res.status(200).json(notif);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error encountered." });
+    }
+};
+
+// Update specific notification
+const updateNotification = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ message: "No such notification!" });
+
+        const notif = await Notification.findByIdAndUpdate({ _id: id }, { ...req.body });
+        if (!notif) return res.status(404).json({ message: "No such notification!" });
+        else return res.status(200).json(notif);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Server error encountered." });
@@ -56,4 +72,4 @@ const deleteNotification = async (req, res) => {
     }
 };
 
-module.exports = { getNotifications, getNotification, createNotification, deleteNotification };
+module.exports = { getNotifications, getNotification, createNotification, updateNotification, deleteNotification };

@@ -1,0 +1,46 @@
+.notification {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.notification.read {
+    background-color: #d6d6d6;
+    border: none;
+}
+
+.notification.unread {
+    background-color: white;
+    border: 2px solid #A532FF;
+}
+
+.notification.unread p {
+    font-weight: bold;
+}
+
+.notification .icon-section {
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.notification .icon-section img {
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 50%;
+}
+
+.notification .content-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+}
+
+.notification .content-section p {
+    margin: 0;
+}
+
+.notification .ctrl-section button {
+    width: 100%;
+}
