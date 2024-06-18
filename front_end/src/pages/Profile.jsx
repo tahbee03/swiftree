@@ -48,7 +48,7 @@ export default function Profile() {
         return () => window.removeEventListener("resize", () => setWindowWidth(window.innerWidth));
     }, []);
 
-    // Runs when user and username values are updated
+    // Runs when username value is updated
     useEffect(() => {
         const fetchUser = async () => {
             try {
@@ -87,7 +87,7 @@ export default function Profile() {
 
         setError(null);
         fetchUser();
-    }, [user, username]);
+    }, [username]);
 
     // Logs out logged in user
     async function handleLogout() {
@@ -95,7 +95,7 @@ export default function Profile() {
             setIsLoading(true);
             logout();
             setError(null);
-            await sleep(1); // Wait one second
+            await sleep(1);
             navigate("/login"); // Redirect to Login page
         } catch (error) {
             console.log(error);

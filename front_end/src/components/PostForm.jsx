@@ -3,6 +3,7 @@ import "./PostForm.css"; // Styles for PostForm component
 import { useState, useEffect } from "react"; // useState(), useEffect()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { sleep, handleError } from "../utils"; // sleep(), handleError()
+import { useNotify } from "../hooks/useNotify"; // useNotify()
 
 export default function PostForm({ setModal }) {
     const [content, setContent] = useState(""); // Contains data to put into post
@@ -11,6 +12,7 @@ export default function PostForm({ setModal }) {
     const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
     const { user } = useAuthContext(); // Contains data for logged in user
+    const notify = useNotify(); // Custom hook to create a new notification
 
     // Runs when setModal() is loaded
     useEffect(() => {
@@ -31,6 +33,12 @@ export default function PostForm({ setModal }) {
     }, [setModal]);
 
     async function handleSubmit(e) {
+        // Helper function that checks if there are tags in a post
+        function taggable(text) {
+            const tagPattern = /@[a-z0-9._]+/g;
+            return tagPattern.test(text);
+        }
+
         e.preventDefault(); // No refresh on submit
 
         setIsLoading(true);
@@ -49,6 +57,20 @@ export default function PostForm({ setModal }) {
 
             setContent("");
             setError(null);
+
+            if (taggable(content)) {
+                let iterator = [...content.matchAll(/@[a-z0-9._]+/g)]; // Detailed list of matches
+                let tags = [...iterator.map(i => i[0])]; // Matching tags
+
+                const userResponse = await fetch(`${process.env.REACT_APP_API_URL}/users`);
+                const userData = await userResponse.json(); // Users stored in back-end
+
+                let matches = userData.filter(u => tags.includes(`@${u.username}`)); // Filter users based on matching tags
+
+                // Create a notification for each matching user that exists
+                for (let m of matches) notify(m._id, `${user.username} tagged you in a post.`, user.pfp);
+            }
+
             await sleep(1);
             window.location.reload();
         } catch (error) {
