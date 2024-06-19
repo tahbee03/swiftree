@@ -75,7 +75,7 @@ export default function Profile() {
                 if (!postResponse.ok) throw new Error(postData.message);
 
                 // Filters posts to match the one in the URL and stores them in the state
-                const p = postData.filter((post) => (post.author_id === match._id || post.content.includes(`@${match.username}`)));
+                const p = postData.filter((post) => (post.author_id === match._id || post.content.match(new RegExp(`\\B@${match.username}\\b`, "g"))));
                 setAllPosts(p);
                 setFilteredPosts(p);
             } catch (error) {
@@ -109,7 +109,7 @@ export default function Profile() {
         if (mode !== newMode) setMode(newMode);
 
         if (newMode === "owned") setFilteredPosts(allPosts.filter((post) => post.author_id === presentedUser.id)); // Only show posts the user created themselves
-        else if (newMode === "tagged") setFilteredPosts(allPosts.filter((post) => post.content.includes(`@${presentedUser.username}`))); // Only show posts the user is tagged in
+        else if (newMode === "tagged") setFilteredPosts(allPosts.filter(post => post.content.match(new RegExp(`\\B@${presentedUser.username}\\b`, "g")))); // Only show posts the user is tagged in
         else setFilteredPosts(allPosts); // Show all related posts
     }
 

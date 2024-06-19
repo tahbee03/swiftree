@@ -59,8 +59,7 @@ export default function PostForm({ setModal }) {
             setError(null);
 
             if (taggable(content)) {
-                let iterator = [...content.matchAll(/@[a-z0-9._]+/g)]; // Detailed list of matches
-                let tags = [...iterator.map(i => i[0])]; // Matching tags
+                let tags = [...content.match(/@[a-z0-9._]+/g)]; // Matching tags
 
                 const userResponse = await fetch(`${process.env.REACT_APP_API_URL}/users`);
                 const userData = await userResponse.json(); // Users stored in back-end
