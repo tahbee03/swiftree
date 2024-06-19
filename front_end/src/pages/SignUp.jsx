@@ -35,6 +35,48 @@ export default function SignUp() {
 
         try {
             setError(null);
+
+            /*
+            STEP 1: Validate email
+
+            Criteria:
+            - not used by another user -> validated in back-end
+            - in the format a@b.c
+            */
+            const emailPattern = /^.+@.+\..+$/;
+            if (!emailPattern.test(email)) throw new Error("Invalid email format!");
+
+            /*
+            STEP 2: Validate username
+
+            Criteria:
+            - not used by another user -> validated in back-end
+            - contains only lowercase letters, numbers, ., and/or _
+            - no longer than 20 characters
+            */
+            const usernamePattern = /^[a-z0-9._]+$/;
+            console.log(username.length);
+            if (!usernamePattern.test(username)) throw new Error("Invalid username characters!");
+            if (username.length > 20) throw new Error("Username cannot be longer than 20 characters!");
+
+            /*
+            STEP 3: Validate display name
+
+            Criteria:
+            - no longer than 20 characters
+            */
+            console.log(displayName.length);
+            if (displayName.length > 20) throw new Error("Display name cannot be longer than 20 characters!");
+
+            /*
+            STEP 4: Validate password
+
+            Criteria:
+            - contains only keyboard characters
+            */
+            const passwordPattern = /^[a-zA-Z0-9~`!@#$%^&*()\-_=+[{\]}\\|;:'",<.>/?]+$/g;
+            if (!passwordPattern.test(password)) throw new Error("Invalid password characters!");
+
             await signUp(email, username, displayName, password); // Process input with useSignUp hook
             navigate("/"); // Redirect to Home page
         } catch (error) {
@@ -60,7 +102,7 @@ export default function SignUp() {
                         <div className="form-item">
                             <p>Email</p>
                             <input
-                                type="email"
+                                type="text"
                                 name="email"
                                 required
                                 onChange={(e) => setEmail(e.target.value)}

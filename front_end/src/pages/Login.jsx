@@ -33,6 +33,29 @@ export default function Login() {
 
         try {
             setError(null);
+
+            /*
+            STEP 1: Validate username
+
+            Criteria:
+            - not used by another user -> validated in back-end
+            - contains only lowercase letters, numbers, ., and/or _
+            - no longer than 20 characters
+            */
+            const usernamePattern = /^[a-z0-9._]+$/;
+            console.log(username.length);
+            if (!usernamePattern.test(username)) throw new Error("Invalid username characters!");
+            if (username.length > 20) throw new Error("Username cannot be longer than 20 characters!");
+
+            /*
+            STEP 2: Validate password
+
+            Criteria:
+            - contains only keyboard characters
+            */
+            const passwordPattern = /^[a-zA-Z0-9~`!@#$%^&*()\-_=+[{\]}\\|;:'",<.>/?]+$/g;
+            if (!passwordPattern.test(password)) throw new Error("Invalid password characters!");
+
             await login(username, password); // Process input with useLogin hook
             navigate("/"); // Redirect to Home page
         } catch (error) {
