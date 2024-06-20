@@ -3,6 +3,15 @@
     margin: 10px;
     padding: 10px;
     border-radius: 10px;
+    height: 90%;
+}
+
+.post.mini {
+    height: 50%;
+}
+
+.post .info-section, .post .icon-section {
+    height: 100%;
 }
 
 .post .info-section {
@@ -12,8 +21,35 @@
     word-wrap: break-word;
 }
 
-.post .info-section .content {
+.post .info-section.mini {
+    height: 75%;
+    border-bottom: 1px solid black;
+    padding: 5px;
+}
+
+.post .info-section .content-cont {
     font-size: 1.25rem;
+    overflow-y: auto;
+}
+
+.post .info-section.mini .content-cont {
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.post .info-section .data-cont {
+    font-size: 1rem;
+}
+
+.post .info-section.mini .data-cont {
+    font-size: 0.75rem;
+}
+
+.post .info-section .content-cont, .post .info-section .data-cont {
+    max-height: 50%;
+}
+
+.post .info-section .content {
     white-space: pre-line; 
     margin: 0;
 }
@@ -38,15 +74,20 @@
     margin-left: 5px;
 }
 
-.post .icon-section p {
-    margin: 0;
-}
-
 .post .icon-section {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.post .icon-section.mini {
+    height: 25%;
+    flex-direction: row;
+}
+
+.post .icon-section p {
+    margin: 0;
 }
 
 .post .icon-section .icon {
@@ -58,6 +99,11 @@
 
 .post .icon-section .icon:hover {
     transform: scale(0.75);
+}
+
+.post .icon-section.mini .icon {
+    width: 35px;
+    padding: 5px;
 }
 
 #share-icon:hover {

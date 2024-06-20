@@ -46,7 +46,7 @@ export default function PostModal({ setModal, post }) {
 
     return (
         <div className="modal">
-            <div className={`modal-content ${(windowWidth < 768) ? "mini" : ""}`}>
+            <div className={`modal-content post-modal ${(windowWidth < 768) ? "mini" : ""}`}>
                 <div className="close" onClick={() => setModal(null)}>&times;</div>
                 <Post post={post} isAuthor={checkAuthor()} />
             </div>

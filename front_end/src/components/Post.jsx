@@ -12,6 +12,9 @@ export default function Post({ post, isAuthor, search }) {
     const [newContent, setNewContent] = useState(post.content); // Contains data to put into post
     const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
+    // NOTE: It is fine to use the window.innerWidth constant here since the parent component has a state for the window width,
+    // which automatically re-renders this component when it updates. Otherwise, the window width value would not change.
+
     // Fetch data when post info is updated
     useEffect(() => {
         const fetchUser = async () => {
@@ -140,21 +143,21 @@ export default function Post({ post, isAuthor, search }) {
     }
 
     return (
-        <div className="post row">
+        <div className={`post row${window.location.pathname === "/search" ? " mini" : ""}`}>
             {error && (
                 <div className="error-msg">{error}</div>
             )}
             {isLoading && (
                 <span className="spinner-border"></span>
             )}
-            <div className={`col-lg-9 col-12 info-section ${isLoading ? "loading" : ""}`}>
+            <div className={`col-md-9 col-12 info-section${isLoading ? " loading" : ""}${window.innerWidth < 768 ? " mini" : ""}`}>
                 {(isEditMode) ? (
                     <>
                         <textarea onChange={(e) => setNewContent(e.target.value)} value={newContent}></textarea>
                         <button onClick={handleEdit} disabled={post.content === newContent}>Save</button>
                     </>
                 ) : (
-                    <>
+                    <div className="content-cont">
                         <p className="content">
                             {(search) ? (
                                 <>
@@ -173,20 +176,22 @@ export default function Post({ post, isAuthor, search }) {
                         {(post.createdAt !== post.updatedAt) && (
                             <p className="edited">(edited)</p>
                         )}
-                    </>
+                    </div>
                 )}
-                <a href={(author) ? `/profile/${author.username}` : ""} className="author-section">
-                    <img src={(author) ? author.image.url : "/account_icon.png"} alt="user-pfp" />
-                    <p>{(author) ? author.display_name : ""}</p>
-                </a>
-                {window.location.pathname === "/" && (
-                    <p className="date">{`Posted ${formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}`}</p>
-                )}
-                {!(window.location.pathname === "/") && (
-                    <p className="date">{`Posted on ${format(new Date(post.createdAt), "MM/dd/yyyy")} at ${format(new Date(post.createdAt), "hh:mm  a")} (${format(new Date(post.createdAt), "O")})`}</p>
-                )}
+                <div className="data-cont">
+                    <a href={(author) ? `/profile/${author.username}` : ""} className="author-section">
+                        <img src={(author) ? author.image.url : "/account_icon.png"} alt="user-pfp" />
+                        <p>{(author) ? author.display_name : ""}</p>
+                    </a>
+                    {window.location.pathname === "/" && (
+                        <p className="date">{`Posted ${formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}`}</p>
+                    )}
+                    {!(window.location.pathname === "/") && (
+                        <p className="date">{`Posted on ${format(new Date(post.createdAt), "MM/dd/yyyy")} at ${format(new Date(post.createdAt), "hh:mm  a")} (${format(new Date(post.createdAt), "O")})`}</p>
+                    )}
+                </div>
             </div>
-            <div className={`col-lg-3 col-12 icon-section ${isLoading ? "loading" : ""}`}>
+            <div className={`col-md-3 col-12 icon-section${isLoading ? " loading" : ""}${window.innerWidth < 768 ? " mini" : ""}`}>
                 {(isCopied) ? (
                     <p>Copied!</p>
                 ) : (
@@ -202,5 +207,3 @@ export default function Post({ post, isAuthor, search }) {
         </div>
     );
 }
-
-// TODO: Fix so that posts containing newline characters are more responsive
