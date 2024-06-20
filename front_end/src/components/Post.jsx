@@ -187,7 +187,7 @@ export default function Post({ post, isAuthor, search }) {
                         <p className="date">{`Posted ${formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}`}</p>
                     )}
                     {!(window.location.pathname === "/") && (
-                        <p className="date">{`Posted on ${format(new Date(post.createdAt), "MM/dd/yyyy")} at ${format(new Date(post.createdAt), "hh:mm  a")} (${format(new Date(post.createdAt), "O")})`}</p>
+                        <p className="date">{`Posted on ${format(new Date(post.createdAt), "MM/dd/yyyy")} at ${format(new Date(post.createdAt), "hh:mm  a")}`}</p>
                     )}
                 </div>
             </div>
