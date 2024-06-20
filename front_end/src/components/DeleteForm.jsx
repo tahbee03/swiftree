@@ -61,7 +61,29 @@ export default function DeleteForm() {
 
             await sleep(3);
 
-            // STEP 3: Remove profile picture from cloud (if any)
+            // STEP 3: Gather and delete all notifications associated with the user
+            setLoadingMsg("Fetching notification data...");
+
+            const notifGetResponse = await fetch(`${process.env.REACT_APP_API_URL}/notifications`);
+            const notifGetData = await notifGetResponse.json();
+
+            if (!notifGetResponse.ok) throw new Error(notifGetData.message);
+
+            const notifs = notifGetData.filter((n) => n.user_id === user.id);
+            await sleep(3);
+
+            setLoadingMsg("Deleting notifications...");
+
+            for (let notif of notifs) {
+                const notifDeleteResponse = await fetch(`${process.env.REACT_APP_API_URL}/notifications/${notif._id}`, { method: "DELETE" });
+                const notifDeleteData = await notifDeleteResponse.json();
+
+                if (!notifDeleteResponse.ok) throw new Error(notifDeleteData.message);
+            }
+
+            await sleep(3);
+
+            // STEP 4: Remove profile picture from cloud (if any)
             if (user.pfp !== "/account_icon.png") {
                 setLoadingMsg("Removing profile picture from cloud...");
 
@@ -88,7 +110,7 @@ export default function DeleteForm() {
                 await sleep(3);
             }
 
-            // STEP 4: Delete user data
+            // STEP 5: Delete user data
             setLoadingMsg("Deleting user...");
 
             logout(); // Remove user data from browser and context
