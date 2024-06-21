@@ -98,8 +98,7 @@ export default function Profile() {
             await sleep(1);
             navigate("/login"); // Redirect to Login page
         } catch (error) {
-            console.log(error);
-            setError(error);
+            setError(handleError(error));
             setIsLoading(false);
         }
     }

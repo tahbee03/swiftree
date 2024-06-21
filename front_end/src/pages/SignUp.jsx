@@ -55,7 +55,6 @@ export default function SignUp() {
             - no longer than 20 characters
             */
             const usernamePattern = /^[a-z0-9._]+$/;
-            console.log(username.length);
             if (!usernamePattern.test(username)) throw new Error("Invalid username characters!");
             if (username.length > 20) throw new Error("Username cannot be longer than 20 characters!");
 
@@ -65,7 +64,6 @@ export default function SignUp() {
             Criteria:
             - no longer than 20 characters
             */
-            console.log(displayName.length);
             if (displayName.length > 20) throw new Error("Display name cannot be longer than 20 characters!");
 
             /*

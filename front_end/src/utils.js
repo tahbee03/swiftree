@@ -46,7 +46,7 @@ export function partition(arr, size) {
  * @returns {string} Error message
  */
 export function handleError(error) {
-    console.log(error);
+    // console.log(error);
     return ((error.message === "Failed to fetch") ? "Failed to connect to server. Please try again later." : error.message);
 }
 
