@@ -93,6 +93,167 @@ const userSignUp = async (req, res) => {
     }
 };
 
+const friendControl = async (req, res) => {
+    const getMatchID = (list, key, value) => { // Return index of object in array
+        for (let i in list) {
+            if (list[i][key] === value) return Number(i);
+        }
+
+        return -1;
+    }
+
+    const send = async (s, r) => { // Send friend request
+        const match = getMatchID(r.friends, "user_id", s._id.toString());
+
+        if (match === -1) { // The sender is not in the receiver's friend list
+            s.friends.push({
+                user_id: r._id,
+                code: "SR"
+            });
+            await s.save();
+
+            r.friends.push({
+                user_id: s._id,
+                code: "RR"
+            });
+            await r.save();
+
+            return res.status(200).json({ message: "Friend request sent." });
+        } else { // The sender is in the receiver's friend list
+            switch (r.friends[match].code) {
+                case "SR":
+                    return res.status(400).json({ message: "You have already a pending friend request from this user." });
+                case "RR":
+                    return res.status(400).json({ message: "You have already sent a friend request to this user." });
+                case "CR":
+                    return res.status(400).json({ message: "You are already friends with this user." });
+            }
+        }
+    };
+
+    const revoke = async (s, r) => { // Remove friend request
+        const match = getMatchID(r.friends, "user_id", s._id.toString());
+
+        if (match === -1) { // The sender is not in the receiver's friend list
+            return res.status(400).json({ message: "You have not sent a request to this user." });
+        } else { // The sender is in the receiver's friend list
+            switch (r.friends[match].code) {
+                case "SR":
+                    return res.status(400).json({ message: "You have a pending request from this user." });
+                case "RR":
+                    s.friends = s.friends.filter(f => f.user_id !== r._id);
+                    await s.save();
+
+                    r.friends = r.friends.filter(f => f.user_id !== s._id);
+                    await r.save();
+
+                    return res.status(200).json({ message: "Friend request removed." });
+                case "CR":
+                    return res.status(400).json({ message: "You are already friends with this user." });
+            }
+        }
+    };
+
+    const accept = async (s, r) => { // Accept friend request
+        const matchS = getMatchID(r.friends, "user_id", s._id.toString());
+
+        if (matchS === -1) { // The sender is not in the receiver's friend list
+            return res.status(400).json({ message: "The user has not sent you a friend request." });
+        } else { // The sender is in the receiver's friend list
+            switch (r.friends[matchS].code) {
+                case "SR":
+                    const matchR = getMatchID(s.friends, "user_id", r._id.toString());
+                    s.friends[matchR].code = "CR";
+                    await s.save();
+
+                    r.friends[matchS].code = "CR";
+                    await r.save();
+
+                    return res.status(200).json({ message: "Friend request accepted." });
+                case "RR":
+                    return res.status(400).json({ message: "The user already has a pending request from you." });
+                case "CR":
+                    return res.status(400).json({ message: "You are already friends with this user." });
+            }
+        }
+    };
+
+    const decline = async (s, r) => { // Decline friend request
+        const match = getMatchID(r.friends, "user_id", s._id.toString());
+
+        if (match === -1) { // The sender is not in the receiver's friend list
+            return res.status(400).json({ message: "The user has not sent you a friend request." });
+        } else { // The sender is in the receiver's friend list
+            switch (r.friends[match].code) {
+                case "SR":
+                    s.friends = s.friends.filter(f => f.user_id !== r._id);
+                    await s.save();
+
+                    r.friends = r.friends.filter(f => f.user_id !== s._id);
+                    await r.save();
+
+                    return res.status(200).json({ message: "Friend request declined." });
+                case "RR":
+                    return res.status(400).json({ message: "The user already has a pending request from you." });
+                case "CR":
+                    return res.status(400).json({ message: "You are already friends with this user." });
+            }
+        }
+    };
+
+    const remove = async (s, r) => { // Remove friend
+        const match = getMatchID(r.friends, "user_id", s._id.toString());
+
+        if (match === -1) { // The sender is not in the receiver's friend list
+            return res.status(400).json({ message: "You are not friends with this user." });
+        } else { // The sender is in the receiver's friend list
+            switch (r.friends[match].code) {
+                case "SR":
+                    return res.status(400).json({ message: "You have a pending request from this user." });
+                case "RR":
+                    return res.status(400).json({ message: "The user already has a pending request from you." });
+                case "CR":
+                    s.friends = s.friends.filter(f => f.user_id !== r._id);
+                    await s.save();
+
+                    r.friends = r.friends.filter(f => f.user_id !== s._id);
+                    await r.save();
+
+                    return res.status(200).json({ message: "Friend removed." });
+            }
+        }
+    };
+
+    try {
+        const fromID = req.body.from;
+        const toID = req.body.to;
+
+        const sender = await User.findById(fromID); // User carrying out specific action
+        if (!sender) return res.status(404).json({ message: "Unknown sender ID!" });
+
+        const receiver = await User.findById(toID); // User waiting on response
+        if (!receiver) return res.status(404).json({ message: "Unknown receiver ID!" });
+
+        switch (req.body.action) {
+            case "send":
+                return send(sender, receiver);
+            case "revoke":
+                return revoke(sender, receiver);
+            case "accept":
+                return accept(sender, receiver);
+            case "decline":
+                return decline(sender, receiver);
+            case "remove":
+                return remove(sender, receiver);
+            default:
+                return res.status(400).json({ message: "Unknown friend action!" });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error encountered." });
+    }
+};
+
 // Update specific user
 const updateUser = async (req, res) => {
     try {
@@ -133,4 +294,4 @@ const deleteUser = async (req, res) => {
 };
 
 // Export functions to be used in other modules
-module.exports = { getUsers, getUser, userLogin, userSignUp, updateUser, deleteUser };
+module.exports = { getUsers, getUser, userLogin, userSignUp, friendControl, updateUser, deleteUser };

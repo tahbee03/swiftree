@@ -9,7 +9,11 @@ const userSchema = new Schema({
     image: {
         public_id: { type: String },
         url: { type: String }
-    }
+    },
+    friends: [{
+        user_id: { type: String },
+        code: { type: String }
+    }]
 });
 
 module.exports = mongoose.model("User", userSchema);

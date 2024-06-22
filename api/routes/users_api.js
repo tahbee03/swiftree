@@ -1,5 +1,5 @@
 const express = require("express");
-const { getUsers, getUser, userLogin, userSignUp, updateUser, deleteUser } = require("../controllers/user_controller");
+const { getUsers, getUser, userLogin, userSignUp, friendControl, updateUser, deleteUser } = require("../controllers/user_controller");
 
 const router = express.Router();
 
@@ -14,6 +14,9 @@ router.post("/login", userLogin)
 
 // Sign up functionality
 router.post("/sign-up", userSignUp);
+
+// Route to manage friends
+router.post("/friends", friendControl);
 
 // Update specific user
 router.patch("/:id", updateUser);
