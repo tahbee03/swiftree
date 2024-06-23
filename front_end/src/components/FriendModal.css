@@ -1,0 +1,11 @@
+.modal-content.friends {
+    height: 75vh;
+}
+
+.friend-cont {
+    overflow-y: auto;
+}
+
+h4.count { 
+    color: gray;
+}

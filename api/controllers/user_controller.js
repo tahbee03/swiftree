@@ -49,6 +49,7 @@ const userLogin = async (req, res) => {
             username: user.username,
             display_name: user.display_name,
             pfp: user.image.url,
+            friends: user.friends,
             token
         });
     } catch (error) {
@@ -85,6 +86,7 @@ const userSignUp = async (req, res) => {
             username: user.username,
             display_name: user.display_name,
             pfp: user.image.url,
+            friends: user.friends,
             token
         });
     } catch (error) {

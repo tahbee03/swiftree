@@ -1,5 +1,6 @@
 import "./Profile.css"; // Styles for Profile page
 
+import FriendModal from "../components/FriendModal"; // <FriendModal />
 import PostForm from "../components/PostForm"; // <PostForm />
 import NotifModal from "../components/NotifModal"; // <NotifModal />
 import ProfileUpdate from "../components/ProfileUpdate"; // <ProfileUpdate />
@@ -22,7 +23,8 @@ export default function Profile() {
         displayName: "",
         pfp: "/account_icon.png",
         id: "",
-        username: ""
+        username: "",
+        friends: []
     }); // Contains data for the user presented on the page
     const [filteredPosts, setFilteredPosts] = useState([]); // Contains posts to be displayed in the posts container
     const [allPosts, setAllPosts] = useState([]); // Contains all posts related to user
@@ -66,7 +68,8 @@ export default function Profile() {
                     displayName: match.display_name,
                     username: match.username,
                     pfp: match.image.url,
-                    id: match._id
+                    id: match._id,
+                    friends: match.friends
                 });
 
                 // Gets all posts from back-end
@@ -135,6 +138,9 @@ export default function Profile() {
                 )}
                 {!error && !isLoading && (
                     <>
+                        {(modal === "friends") && (
+                            <FriendModal setModal={setModal} friends={presentedUser.friends} />
+                        )}
                         {(modal === "post-form") && (
                             <PostForm setModal={setModal} />
                         )}
@@ -149,6 +155,7 @@ export default function Profile() {
                                 <img src={presentedUser.pfp} alt="account pic" />
                                 <p><b>{presentedUser.displayName}</b> &#183; {presentedUser.username}</p>
                                 <p>{filteredPosts.length} {filteredPosts.length === 1 ? "post" : "posts"}</p>
+                                <button type="button" onClick={() => setModal("friends")}>Friends</button>
                                 {user && (user.username === presentedUser.username) && (
                                     <>
                                         <button type="button" onClick={() => setModal("post-form")}>Make New Post</button>
