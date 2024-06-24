@@ -10,18 +10,28 @@
     transition: 0.25s;
 }
 
-.user img {
-    width: 100%;
-    border: 5px solid gray;
-    border-radius: 50%;
+.user.search-page:hover  {
+    background-color: white;
 }
 
-.user:hover {
-    background-color: white;
+.user.profile-page:hover {
+    background-color: #D299FF;
+}
+
+.user img {
+    width: 100%;
+    border: 3px solid gray;
+    border-radius: 50%;
 }
 
 .user .loading {
     filter: blur(5px);
+}
+
+.user .icon-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .user .info-section {

@@ -121,6 +121,83 @@ export default function Profile() {
         else return 0;
     }
 
+    // Helper function to return index of object found in array
+    function getMatchIndex(list, key, value) {
+        for (let i in list) {
+            if (list[i][key] === value) return Number(i);
+        }
+
+        return -1;
+    }
+
+    // Helper function to return the appropriate text for the friend control button
+    function getFuncText() {
+        const match = getMatchIndex(user.friends, "user_id", presentedUser.id);
+
+        if (match === -1) return "Add Friend";
+        else {
+            switch (user.friends[match].code) {
+                case "SR":
+                    return "Remove Friend Request";
+                case "RR":
+                    return "Add Friend";
+                case "CR":
+                    return "Remove Friend";
+                default:
+                    return "...";
+            }
+        }
+    }
+
+    // Carry out specified action to update friends list in back-end
+    async function handleFriendControl(e) {
+        const getAction = (t) => {
+            switch (t) {
+                case "Add Friend":
+                    return "send";
+                case "Remove Friend Request":
+                    return "revoke";
+                case "Remove Friend":
+                    return "remove";
+                default:
+                    return "unknown";
+            }
+        };
+
+        const text = e.target.innerHTML;
+        const request = {
+            from: user.id,
+            to: presentedUser.id,
+            action: getAction(text)
+        };
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            if (request.action === "unknown") throw new Error("Unknown action!");
+
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/users/friends`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(request)
+            });
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.message);
+
+            sessionStorage.setItem("user", JSON.stringify({
+                ...user,
+                friends: data.friends
+            }));
+
+            window.location.reload();
+        } catch (error) {
+            setError(handleError(error));
+            setIsLoading(false);
+        }
+    }
+
     return (
         <>
             <Helmet>
@@ -156,13 +233,18 @@ export default function Profile() {
                                 <p><b>{presentedUser.displayName}</b> &#183; {presentedUser.username}</p>
                                 <p>{filteredPosts.length} {filteredPosts.length === 1 ? "post" : "posts"}</p>
                                 <button type="button" onClick={() => setModal("friends")}>Friends</button>
-                                {user && (user.username === presentedUser.username) && (
+                                {user && user.username === presentedUser.username && (
                                     <>
                                         <button type="button" onClick={() => setModal("post-form")}>Make New Post</button>
                                         <button type="button" onClick={() => setModal("notifs")} className={`${(unreadCheck() > 0) ? "flash" : undefined}`}>Notifications</button>
                                         <button type="button" onClick={() => setModal("update")}>Settings</button>
                                         <button type="button" onClick={handleLogout}>Log Out</button>
                                     </>
+                                )}
+                                {user && user.username !== presentedUser.username && (
+                                    <button type="button" onClick={(e) => handleFriendControl(e)} id="friend-control">
+                                        {getFuncText()}
+                                    </button>
                                 )}
                             </div>
                             <div className={`col-md-8 col-12 ${(windowWidth < 768) ? "mini" : ""}`} id="posts-col">

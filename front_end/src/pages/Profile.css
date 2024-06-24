@@ -68,6 +68,11 @@
     transform: scale(0.9);
 }
 
+#profile-cont #info-col #friend-control {
+    color: #f0f0f0;
+    background-color: black;
+}
+
 #profile-cont #info-col > hr {
     width: 80%;
     height: 2px;

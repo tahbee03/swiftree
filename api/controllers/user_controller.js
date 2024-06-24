@@ -109,18 +109,18 @@ const friendControl = async (req, res) => {
 
         if (match === -1) { // The sender is not in the receiver's friend list
             s.friends.push({
-                user_id: r._id,
+                user_id: r._id.toString(),
                 code: "SR"
             });
             await s.save();
 
             r.friends.push({
-                user_id: s._id,
+                user_id: s._id.toString(),
                 code: "RR"
             });
             await r.save();
 
-            return res.status(200).json({ message: "Friend request sent." });
+            return res.status(200).json(s);
         } else { // The sender is in the receiver's friend list
             switch (r.friends[match].code) {
                 case "SR":
@@ -143,13 +143,13 @@ const friendControl = async (req, res) => {
                 case "SR":
                     return res.status(400).json({ message: "You have a pending request from this user." });
                 case "RR":
-                    s.friends = s.friends.filter(f => f.user_id !== r._id);
+                    s.friends = s.friends.filter(f => f.user_id !== r._id.toString());
                     await s.save();
 
-                    r.friends = r.friends.filter(f => f.user_id !== s._id);
+                    r.friends = r.friends.filter(f => f.user_id !== s._id.toString());
                     await r.save();
 
-                    return res.status(200).json({ message: "Friend request removed." });
+                    return res.status(200).json(s);
                 case "CR":
                     return res.status(400).json({ message: "You are already friends with this user." });
             }
@@ -171,7 +171,7 @@ const friendControl = async (req, res) => {
                     r.friends[matchS].code = "CR";
                     await r.save();
 
-                    return res.status(200).json({ message: "Friend request accepted." });
+                    return res.status(200).json(s);
                 case "RR":
                     return res.status(400).json({ message: "The user already has a pending request from you." });
                 case "CR":
@@ -188,13 +188,13 @@ const friendControl = async (req, res) => {
         } else { // The sender is in the receiver's friend list
             switch (r.friends[match].code) {
                 case "SR":
-                    s.friends = s.friends.filter(f => f.user_id !== r._id);
+                    s.friends = s.friends.filter(f => f.user_id !== r._id.toString());
                     await s.save();
 
-                    r.friends = r.friends.filter(f => f.user_id !== s._id);
+                    r.friends = r.friends.filter(f => f.user_id !== s._id.toString());
                     await r.save();
 
-                    return res.status(200).json({ message: "Friend request declined." });
+                    return res.status(200).json(s);
                 case "RR":
                     return res.status(400).json({ message: "The user already has a pending request from you." });
                 case "CR":
@@ -215,13 +215,13 @@ const friendControl = async (req, res) => {
                 case "RR":
                     return res.status(400).json({ message: "The user already has a pending request from you." });
                 case "CR":
-                    s.friends = s.friends.filter(f => f.user_id !== r._id);
+                    s.friends = s.friends.filter(f => f.user_id !== r._id.toString());
                     await s.save();
 
-                    r.friends = r.friends.filter(f => f.user_id !== s._id);
+                    r.friends = r.friends.filter(f => f.user_id !== s._id.toString());
                     await r.save();
 
-                    return res.status(200).json({ message: "Friend removed." });
+                    return res.status(200).json(s);
             }
         }
     };

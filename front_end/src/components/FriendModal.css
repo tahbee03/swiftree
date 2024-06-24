@@ -2,8 +2,36 @@
     height: 75vh;
 }
 
-.friend-cont {
+.modal-content.friends .buttons {
+    display: flex;
+    align-items: center;
+}
+
+.modal-content.friends .buttons > * {
+    width: 50%;
+    height: 50%;
+}
+
+.modal-content.friends .buttons.mini > * {
+    width: 50%;
+    height: 100%;
+}
+
+.modal-content.friends .accept {
+    background-color: green;
+}
+
+.modal-content.friends .decline {
+    background-color: red;
+}
+
+.friend-cont, .pending-cont {
     overflow-y: auto;
+}
+
+.pending.row {
+    width: 100%;
+    margin: 0;
 }
 
 h4.count { 
