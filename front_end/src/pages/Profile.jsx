@@ -17,6 +17,7 @@ import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
 import { useLogout } from "../hooks/useLogout"; // useLogout()
 import { Helmet } from "react-helmet"; // <Helmet>
 import { useNotifContext } from "../hooks/useNotifContext"; // useNotifContext()
+import { useNotify } from "../hooks/useNotify"; // useNotify()
 
 export default function Profile() {
     const [presentedUser, setPresentedUser] = useState({
@@ -40,6 +41,7 @@ export default function Profile() {
     const logout = useLogout(); // Custom hook to log out logged in user
     const { user } = useAuthContext(); // Contains data for logged in user
     const { notifications } = useNotifContext(); // Contains notifications for logged in user
+    const notify = useNotify(); // Custom hook to create a new notification
 
     // Runs on mount
     useEffect(() => {
@@ -190,6 +192,10 @@ export default function Profile() {
                 ...user,
                 friends: data.friends
             }));
+
+            if (request.action === "send") {
+                notify(presentedUser.id, `${user.username} sent you a friend request.`, user.pfp);
+            }
 
             window.location.reload();
         } catch (error) {

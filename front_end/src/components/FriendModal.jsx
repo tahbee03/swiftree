@@ -5,6 +5,7 @@ import User from "./User"; // <User />
 import { useState, useEffect } from "react"; // useState(), useEffect()
 import { handleError } from "../utils"; // handleError()
 import { useAuthContext } from "../hooks/useAuthContext"; // useAuthContext()
+import { useNotify } from "../hooks/useNotify"; // useNotify()
 
 export default function FriendModal({ setModal, friends }) {
     const [friendData, setFriendData] = useState([]); // List of data for each friend
@@ -14,6 +15,7 @@ export default function FriendModal({ setModal, friends }) {
     const [error, setError] = useState(null); // Stores error from back-end response (if any)
 
     const { user } = useAuthContext(); // Contains data for logged in user
+    const notify = useNotify(); // Custom hook to create a new notification
 
     // Runs when setModal() is loaded
     useEffect(() => {
@@ -91,6 +93,11 @@ export default function FriendModal({ setModal, friends }) {
                 ...user,
                 friends: data.friends
             }));
+
+            if (request.action === "accept") {
+                notify(friend._id, `You are now friends with ${user.username}!`, user.pfp);
+                notify(user.id, `You are now friends with ${friend.username}!`, friend.image.url);
+            }
 
             window.location.reload();
         } catch (error) {
