@@ -31,8 +31,8 @@ const getNotification = async (req, res) => {
 // Create new notification
 const createNotification = async (req, res) => {
     try {
-        const { user_id, message, icon } = req.body;
-        const notif = await Notification.create({ user_id, message, icon });
+        const { user_id, message, icon, link } = req.body;
+        const notif = await Notification.create({ user_id, message, icon, link });
         return res.status(200).json(notif);
     } catch (error) {
         console.log(error);

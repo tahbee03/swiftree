@@ -81,7 +81,13 @@ export default function Notification({ content }) {
                     ) : (
                         <>
                             <div className="col-md-1 col-2 icon-section">
-                                <img src={content.icon} alt="notification icon" draggable="false" />
+                                {(content.link) ? (
+                                    <a href={content.link}>
+                                        <img src={content.icon} alt="notification icon" draggable="false" />
+                                    </a>
+                                ) : (
+                                    <img src={content.icon} alt="notification icon" draggable="false" />
+                                )}
                             </div>
                             <div className="col-md-8 col-10 content-section">
                                 <p>{content.message}</p>

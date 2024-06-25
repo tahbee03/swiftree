@@ -67,7 +67,7 @@ export default function PostForm({ setModal }) {
                 let matches = userData.filter(u => tags.includes(`@${u.username}`)); // Filter users based on matching tags
 
                 // Create a notification for each matching user that exists
-                for (let m of matches) notify(m._id, `${user.username} tagged you in a post.`, user.pfp);
+                for (let m of matches) notify(m._id, `${user.username} tagged you in a post.`, user.pfp, `${window.location.origin}/profile/${user.username}`);
             }
 
             await sleep(1);

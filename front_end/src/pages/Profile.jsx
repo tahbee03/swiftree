@@ -194,7 +194,7 @@ export default function Profile() {
             }));
 
             if (request.action === "send") {
-                notify(presentedUser.id, `${user.username} sent you a friend request.`, user.pfp);
+                notify(presentedUser.id, `${user.username} sent you a friend request.`, user.pfp, `${window.location.origin}/profile/${user.username}`);
             }
 
             window.location.reload();

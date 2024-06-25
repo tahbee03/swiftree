@@ -95,8 +95,8 @@ export default function FriendModal({ setModal, friends }) {
             }));
 
             if (request.action === "accept") {
-                notify(friend._id, `You are now friends with ${user.username}!`, user.pfp);
-                notify(user.id, `You are now friends with ${friend.username}!`, friend.image.url);
+                notify(friend._id, `You are now friends with ${user.username}!`, user.pfp, `${window.location.origin}/profile/${user.username}`);
+                notify(user.id, `You are now friends with ${friend.username}!`, friend.image.url, `${window.location.origin}/profile/${friend.username}`);
             }
 
             window.location.reload();
