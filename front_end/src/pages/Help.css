@@ -13,7 +13,7 @@
 .visual {
     max-width: 100%;
     display: block; /* Needed for 'margin: auto' to work for images */
-    margin: auto;
+    margin: 15px auto 15px auto;
     user-select: none;
     border-radius: 5px;
     outline: 5px black solid;

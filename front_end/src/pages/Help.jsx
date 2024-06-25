@@ -31,18 +31,21 @@ export default function Help() {
                             min-heap data structure
                         </a>
                         , meaning that the closer the posts are to the root, the more recent they are. Nodes that were opened will be filled to help you keep track of what
-                        you have already opened.
+                        you have already opened. When you log in and make friends, you will be able access the <span className="keyword">Friend Tree</span>, which
+                        shows the most recent posts made by your friends.
                     </p>
                     <img src="/visual1.gif" alt="visual1" className="visual" draggable="false" />
+                    <img src="/visual2.gif" alt="visual2" className="visual" draggable="false" />
                 </div>
                 <div className="section">
                     <h2>Profile Page</h2>
                     <p>
-                        Your very own profile page! Here, you can customize your profile with the available settings and view all the posts you have made in your&nbsp;
+                        Your very own profile page! Here, you can customize your profile with the available settings and manage all the posts you have made in your&nbsp;
                         <span className="keyword">Personal Tree</span>
-                        . You can also create new posts to be shared and delete existing posts.
+                        . You can also view your friends, manage incoming friend requests, and view any notifications you may have. When viewing another user's
+                        profile, you can manage your friend status with them.
                     </p>
-                    <img src="/visual2.gif" alt="visual2" className="visual" draggable="false" />
+                    <img src="/visual3.gif" alt="visual3" className="visual" draggable="false" />
                 </div>
                 <div className="section">
                     <h2>Search Page</h2>
@@ -51,7 +54,8 @@ export default function Help() {
                         depending on the mode you have selected. For posts, the matching text will be highlighted so it is easier to locate. For users, your search input
                         will be used to match both display names and usernames.
                     </p>
-                    <img src="/visual3.gif" alt="visual3" className="visual" draggable="false" />
+                    <img src="/visual4.gif" alt="visual4" className="visual" draggable="false" />
+                    <img src="/visual5.gif" alt="visual5" className="visual" draggable="false" />
                 </div>
             </div>
             <Footer />
