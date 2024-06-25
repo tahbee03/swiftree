@@ -3,6 +3,15 @@
     margin-top: 5vh;
     margin-bottom: 5vh;
     padding: 0;
+    position: relative;
+}
+
+#home-cont .tree-text {
+    margin-top: 5px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
 }
 
 .spinner-cont {

@@ -1,26 +1,17 @@
 import "./TreeMode.css"; // Styles for Tree Mode component
 
-export default function TreeMode({ mode, switchMode }) {
+export default function TreeMode({ mode, switchMode, options }) {
     return (
         <div className="tree-mode">
-            <button
-                className={(mode === "all") ? "active-button" : undefined}
-                onClick={() => switchMode("all")}
-            >
-                All
-            </button>
-            <button
-                className={(mode === "owned") ? "active-button" : undefined}
-                onClick={() => switchMode("owned")}
-            >
-                Owned
-            </button>
-            <button
-                className={(mode === "tagged") ? "active-button" : undefined}
-                onClick={() => switchMode("tagged")}
-            >
-                Tagged
-            </button>
+            {options.map((o, i) => (
+                <button
+                    className={(mode === o) ? "active-button" : undefined}
+                    onClick={() => switchMode(o)}
+                    key={i}
+                >
+                    {o.toUpperCase()}
+                </button>
+            ))}
         </div>
     );
 }

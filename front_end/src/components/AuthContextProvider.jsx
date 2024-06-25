@@ -31,6 +31,7 @@ export default function AuthContextProvider({ children }) {
                         token: user.token
                     };
 
+                    sessionStorage.setItem("user", JSON.stringify(newData)); // Update user data in browser storage
                     dispatch({ type: "LOGIN", payload: newData }); // Update user context
                 } catch (error) {
                     console.log(handleError(error));

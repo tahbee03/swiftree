@@ -258,7 +258,7 @@ export default function Profile() {
                                     <p>This user has no posts!</p>
                                 ) : (
                                     <>
-                                        <TreeMode mode={mode} switchMode={switchMode} />
+                                        <TreeMode mode={mode} switchMode={switchMode} options={["all", "owned", "tagged"]} />
                                         {(filteredPosts.length === 0) && (mode === "owned") && (
                                             <p>This user has not created any posts!</p>
                                         )}
