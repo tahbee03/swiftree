@@ -110,7 +110,44 @@ export default function DeleteForm() {
                 await sleep(3);
             }
 
-            // STEP 5: Delete user data
+            // STEP 5: Delete friends (if any)
+            if (user.friends.length > 0) {
+                setLoadingMsg("Deleting friends and friend requests...");
+
+                const getAction = (c) => {
+                    switch (c) {
+                        case "SR":
+                            return "revoke";
+                        case "RR":
+                            return "decline";
+                        case "CR":
+                            return "remove";
+                        default:
+                            throw new Error("Unknown action!");
+                    }
+                };
+
+                for (let f of user.friends) {
+                    const request = {
+                        from: user.id,
+                        to: f.user_id,
+                        action: getAction(f.code)
+                    };
+
+                    const response = await fetch(`${process.env.REACT_APP_API_URL}/users/friends`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(request)
+                    });
+                    const data = await response.json();
+
+                    if (!response.ok) throw new Error(data.message);
+                }
+
+                await sleep(3);
+            }
+
+            // STEP 6: Delete user data
             setLoadingMsg("Deleting user...");
 
             logout(); // Remove user data from browser and context
